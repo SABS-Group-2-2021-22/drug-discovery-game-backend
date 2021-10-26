@@ -12,5 +12,5 @@ def hello_world():
 
 @app.route("/r-group-<string:r_group_id>")
 def rgroup_img(r_group_id):
-    img_filename = f'./{r_group_id}.png'
+    img_filename = f'./images/{r_group_id}.png'
     return flask.send_file(img_filename, mimetype='image/png')
