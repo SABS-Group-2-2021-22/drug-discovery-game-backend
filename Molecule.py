@@ -6,6 +6,7 @@ from rdkit.Chem import rdMolDescriptors
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import Crippen
 from rdkit.Chem.FilterCatalog import *
+from rdkit.Chem import AllChem
 
 
 # Build scaffold and read in csv
@@ -55,9 +56,15 @@ class Molecule:
         
         return violations, result
 
-    def draw_molecule(self, drawn_file_name):
-        """Draws the molecule."""
+    def draw_molecule(self, drawn_file_name, orient_with_scaffold):
+        """Draws the molecule. The variable 'orient_with_scaffold' can take 
+        the values True and False. It should take the value True if and 
+        only if the molecule contains the scaffold"""
         drawn_mol = Chem.MolFromSmiles(self.mol_smiles)
+        #Align molecule with scaffold if the molecule contains the scaffold.
+        if orient_with_scaffold == True:
+            AllChem.Compute2DCoords(scaffold)
+            _ =AllChem.GenerateDepictionMatching2DStructure(drawn_mol, scaffold)
         d = rdMolDraw2D.MolDraw2DCairo(250, 200)
         d.drawOptions().addStereoAnnotation = True
         d.drawOptions().clearBackground = False
@@ -118,6 +125,7 @@ class FinalMolecule(Molecule):
         self.rgroup2 = rgroup2
     
     def drug_properties(self):
+        """Selects properties of the final drug from the data."""
         drug_properties = [
                             'pic50',
                             'clearance_mouse',
