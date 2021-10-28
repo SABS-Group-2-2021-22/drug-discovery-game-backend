@@ -132,7 +132,6 @@ class Molecule:
         img = Chem.Draw.MolToImage(drawn_mol)
         imgByteArray = io.BytesIO()
         img.save(imgByteArray, format='png')
-        # img.seek(0)
         imgByteArray = imgByteArray.getvalue()
         imgByteArray = base64.b64encode(imgByteArray).decode("utf-8") 
         return imgByteArray
