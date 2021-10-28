@@ -5,12 +5,15 @@ from rdkit.Chem import Descriptors
 from rdkit.Chem import rdMolDescriptors
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import Crippen
-# from rdkit.Chem import FilterCatalog
-# from rdkit.Chem.FilterCatalog import FilterCatalogParams
 from rdkit.Chem import AllChem
 
-#can't delete the following!!!
+#can't delete the following!!! Steph: last year they couldn't 
+# get rid of the warning message
 from rdkit.Chem.FilterCatalog import *
+
+# Didn't work:
+# from rdkit.Chem import FilterCatalog
+# from rdkit.Chem.FilterCatalog import FilterCatalogParams
 
 # Build scaffold and read in csv
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
