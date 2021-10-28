@@ -5,12 +5,12 @@ from rdkit.Chem import Descriptors
 from rdkit.Chem import rdMolDescriptors
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import Crippen
-from rdkit.Chem import FilterCatalog
-from rdkit.Chem.FilterCatalog import FilterCatalogParams 
+# from rdkit.Chem import FilterCatalog
+# from rdkit.Chem.FilterCatalog import FilterCatalogParams
 from rdkit.Chem import AllChem
 
-#can probably delete the following
-# from rdkit.Chem.FilterCatalog import *
+#can't delete the following!!!
+from rdkit.Chem.FilterCatalog import *
 
 # Build scaffold and read in csv
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
@@ -85,10 +85,11 @@ class Molecule:
         params.AddCatalog(FilterCatalogParams.FilterCatalogs.BRENK)
         params.AddCatalog(FilterCatalogParams.FilterCatalogs.NIH)
         catalog = FilterCatalog(params)
-        if catalog.HasMatch(self.mol_smiles):
-            print("FAIL FILTERS")
+        mol = Chem.MolFromSmiles(self.mol_smiles) 
+        if catalog.HasMatch(mol):
+            return "FAIL FILTERS"
         else:
-            print("PASSED FILTERS")
+            return "PASSED FILTERS"
 
 
 class R_group(Molecule): 
