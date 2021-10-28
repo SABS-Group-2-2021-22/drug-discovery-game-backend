@@ -132,9 +132,9 @@ class Molecule:
         img = Chem.Draw.MolToImage(drawn_mol)
         imgByteArray = io.BytesIO()
         img.save(imgByteArray, format='png')
-        imgByteArray = imgByteArray.getvalue()
-        imgByteArray = base64.b64encode(imgByteArray).decode("utf-8") 
-        return imgByteArray
+        # imgByteArray = imgByteArray.getvalue()
+        # imgByteArray = base64.b64encode(imgByteArray).decode("utf-8") 
+        return imgByteArray.read()
 
     def filter_properties(self):
         """See whether molecule passes or fails FILTERS"""
@@ -155,17 +155,21 @@ class Molecule:
 class R_group(Molecule):
     """Name of R group is of the form 'Axy' or 'Bxy' e.g. A01 etc. 
     Number corresponds to whether it is an R1 or R2 group"""
-    def ___init___(self, name, number):
+    def __init__(self, name, number):
+        
         self.name = name
         self.number = number
-
+        mol_smiles = self.extract_smilefromcsv()
+        super().__init__(mol_smiles)
+    
     def extract_smilefromcsv(self):
         """Extracts the SMILE for the R group """
+
         if self.number == 1:
-            rgroup_smiles = csv_file[csv_file['atag']==self.name]['R1'][0]
+            rgroup_smiles = csv_file[csv_file['atag']==self.name]['R1'].iloc[0]
         if self.number == 2:
-            rgroup_smiles = csv_file[csv_file['btag']==self.name]['R2'][0]
-        print(rgroup_smiles)
+            rgroup_smiles = csv_file[csv_file['btag']==self.name]['R2'].iloc[0]
+        return(rgroup_smiles)
 
 
 class Scaffold_and_Rgroups(Molecule):   # Can I also make this have R-group???
