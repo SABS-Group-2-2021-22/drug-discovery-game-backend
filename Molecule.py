@@ -8,22 +8,56 @@ from rdkit.Chem import Crippen
 from rdkit.Chem.FilterCatalog import *
 from rdkit.Chem import AllChem
 
+import io
+import base64
 
 # Build scaffold and read in csv
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
-csv_file = pd.read_csv('r_group_decomp.csv')
+# csv_file = pd.read_csv('r_group_decomp.csv')
+csv_file = pd.read_csv(
+    '/home/sabsr3/DrugDiscoveryGame/drug_discovery_game/data/r_group_decomp.csv')
 
 
 class Molecule:
-    """A molecule. In particular, either the R1 or R2 group, or the scaffold and one or two groups.
-     There are methods which tell you the properties of the molecule and if it passes the Lipsinki test."""
+    """ A molecule. In particular, either the R1 or R2 group, or the scaffold
+    and one or two groups.
+    There are methods which tell you the properties of the molecule and if it
+    passes the Lipsinki test
+    """
 
     def __init__(self, mol_smiles):
-        self.mol_smiles = mol_smiles
+        """Constructor for Molecule class. Initialises Molecule instance from
+        smile string.
+
+        :param mol_smiles: smile string of molecule
+        :type mol_smiles: String
+        """
+        self.__mol_smiles = mol_smiles
+
+    @property
+    def get_smile_string(self):
+        """Returns molecule's smile string
+
+        :return: smile string of molecule
+        :rtype: String
+        """
+        return self.__mol_smiles
 
     def descriptors(self):
-        """Calculate descriptors"""
-        mol = Chem.MolFromSmiles(self.mol_smiles)
+        """Calculate molecule descriptor metrics as dict: 
+        | mol - smile string
+        | MW - molecular weight
+        | logP - logP
+        | TPSA - topological polar surface area
+        | HA - heavy atom count
+        | h_acc - H acceptor count
+        | h_don - H donator count
+        | rings - ring count
+
+        :return: molecule descriptor metrics
+        :rtype: dict
+        """
+        mol = Chem.MolFromSmiles(self.__mol_smiles)
         mw = Descriptors.ExactMolWt(mol)
         log_p = Crippen.MolLogP(mol)
         tpsa = rdMolDescriptors.CalcTPSA(mol)  # topological polar surface area
@@ -32,45 +66,75 @@ class Molecule:
         h_donors = Lipinski.NumHDonors(mol)
         rings = Lipinski.RingCount(mol)
 
-        desc_dict = {'mol': self.mol_smiles,
-                    'MW': mw,
-                    'logP': log_p,
-                    'TPSA': tpsa,
-                    'HA': ha,
-                    'h_acc': h_acceptors,
-                    'h_don': h_donors,
-                    'rings': rings
-                    }
+        desc_dict = {'mol': self.__mol_smiles,
+                     'MW': mw,
+                     'logP': log_p,
+                     'TPSA': tpsa,
+                     'HA': ha,
+                     'h_acc': h_acceptors,
+                     'h_don': h_donors,
+                     'rings': rings
+                     }
         return desc_dict
 
     def lipinski(self, desc_dict):
         """Calculate Lipinski from the descriptor dictionary.
         Return the number of rules broken and whether the molecule passes.
+
+        :param desc_dict: molecule descriptor metrics
+        :type desc_dict: dict
+        :return: violations, result
+        | Number of violations and 'fails' or passes'
+        :rtype: int, String
         """
-        violations=[desc_dict['MW'] >= 500.0, desc_dict['h_acc'] >= 10, 
-        desc_dict['h_don'] >= 5, desc_dict['logP'] >= 5].count(True)
+        violations = [desc_dict['MW'] >= 500.0,
+                      desc_dict['h_acc'] >= 10,
+                      desc_dict['h_don'] >= 5,
+                      desc_dict['logP'] >= 5].count(True)
         if violations > 1:
             result = 'fails'
         else:
             result = 'passes'
-        
         return violations, result
 
     def draw_molecule(self, drawn_file_name, orient_with_scaffold):
-        """Draws the molecule. The variable 'orient_with_scaffold' can take 
-        the values True and False. It should take the value True if and 
-        only if the molecule contains the scaffold"""
-        drawn_mol = Chem.MolFromSmiles(self.mol_smiles)
-        #Align molecule with scaffold if the molecule contains the scaffold.
-        if orient_with_scaffold == True:
+        """Draws the molecule.
+
+        :param drawn_file_name: filename to save drawn molecule with
+        :type drawn_file_name: String
+        :param orient_with_scaffold: Aligns combined molecule with original
+        scaffold. It should take the value True if and
+        only if the molecule contains the scaffold.
+        :type orient_with_scaffold: bool
+        """
+        drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
+        # Align molecule with scaffold if the molecule contains the scaffold.
+        if orient_with_scaffold is True:
             AllChem.Compute2DCoords(scaffold)
-            _ =AllChem.GenerateDepictionMatching2DStructure(drawn_mol, scaffold)
+            # TODO: test if _ assignment is needed or if fn call wo./
+            # assignment is sufficient
+            _ = AllChem.GenerateDepictionMatching2DStructure(drawn_mol,
+                                                             scaffold)
         d = rdMolDraw2D.MolDraw2DCairo(250, 200)
         d.drawOptions().addStereoAnnotation = True
         d.drawOptions().clearBackground = False
         d.DrawMolecule(drawn_mol)
         d.FinishDrawing()
         d.WriteDrawingText(f'{drawn_file_name}.png')
+
+    def drawMoleculeAsByteStream(self):
+        """Returns png image of molecule as bytestream
+
+        :return: base64 png image bytestream
+        :rtype: String
+        """
+        drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
+        img = Chem.Draw.MolToImage(drawn_mol)
+        imgByteArray = io.BytesIO()
+        img.save(imgByteArray, format='png')
+        imgByteArray = imgByteArray.getvalue()
+        imgByteArray = base64.b64encode(imgByteArray).decode("utf-8") 
+        return imgByteArray
 
     def filter_properties(self):
         """See whether molecule passes or fails FILTERS"""
@@ -88,12 +152,12 @@ class Molecule:
             print("PASSED FILTERS")
 
 
-class R_group(Molecule): 
+class R_group(Molecule):
     """Name of R group is of the form 'Axy' or 'Bxy' e.g. A01 etc. 
     Number corresponds to whether it is an R1 or R2 group"""
     def ___init___(self, name, number):
-        self.name=name
-        self.number=number
+        self.name = name
+        self.number = number
 
     def extract_smilefromcsv(self):
         """Extracts the SMILE for the R group """
@@ -103,7 +167,8 @@ class R_group(Molecule):
             rgroup_smiles = csv_file[csv_file['btag']==self.name]['R2'][0]
         print(rgroup_smiles)
 
-class Scaffold_and_Rgroups(Molecule): #Can I also make this have R-group???
+
+class Scaffold_and_Rgroups(Molecule):   # Can I also make this have R-group???
     """Add a R group to the old molecule (either the scaffold with R1 attached or just the scaffold)."""
     def ___init___(self, old_molecule, rgroup, number):
         self.old_molecule = old_molecule
