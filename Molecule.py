@@ -5,10 +5,17 @@ from rdkit.Chem import Descriptors
 from rdkit.Chem import rdMolDescriptors
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import Crippen
-from rdkit.Chem import FilterCatalog
-from rdkit.Chem.FilterCatalog import FilterCatalogParams
+# from rdkit.Chem import FilterCatalog
+# from rdkit.Chem.FilterCatalog import FilterCatalogParams
 from rdkit.Chem import AllChem
 
+#can't delete the following!!! Steph: last year they couldn't 
+# get rid of the warning message
+from rdkit.Chem.FilterCatalog import *
+
+# Didn't work:
+# from rdkit.Chem import FilterCatalog
+# from rdkit.Chem.FilterCatalog import FilterCatalogParams
 
 # Build scaffold and read in csv
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
@@ -27,7 +34,7 @@ class Molecule:
     def descriptors(self):
         """Calculate descriptors"""
         mol = Chem.MolFromSmiles(self.mol_smiles)
-        mw = Descriptors.ExactMolWt(mol)
+        mw = round(Descriptors.ExactMolWt(mol), 4) #round so easier to test
         log_p = Crippen.MolLogP(mol)
         tpsa = rdMolDescriptors.CalcTPSA(mol)  # topological polar surface area
         ha = Lipinski.HeavyAtomCount(mol)  # heavy atom count
@@ -88,10 +95,11 @@ class Molecule:
         params.AddCatalog(FilterCatalogParams.FilterCatalogs.BRENK)
         params.AddCatalog(FilterCatalogParams.FilterCatalogs.NIH)
         catalog = FilterCatalog(params)
-        if catalog.HasMatch(drawn_mol_final):
-            print("FAIL FILTERS")
+        mol = Chem.MolFromSmiles(self.mol_smiles) 
+        if catalog.HasMatch(mol):
+            return "FAIL FILTERS"
         else:
-            print("PASSED FILTERS")
+            return "PASSED FILTERS"
 
 
 class R_group(Molecule):
