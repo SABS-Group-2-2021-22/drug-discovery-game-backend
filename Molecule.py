@@ -5,11 +5,19 @@ from rdkit.Chem import Descriptors
 from rdkit.Chem import rdMolDescriptors
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import Crippen
-from rdkit.Chem.FilterCatalog import *
+# from rdkit.Chem import FilterCatalog
+# from rdkit.Chem.FilterCatalog import FilterCatalogParams
 from rdkit.Chem import AllChem
 
 import io
 import base64
+#can't delete the following!!! Steph: last year they couldn't 
+# get rid of the warning message
+from rdkit.Chem.FilterCatalog import *
+
+# Didn't work:
+# from rdkit.Chem import FilterCatalog
+# from rdkit.Chem.FilterCatalog import FilterCatalogParams
 
 # Build scaffold and read in csv
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
@@ -65,7 +73,6 @@ class Molecule:
         h_acceptors = Lipinski.NumHAcceptors(mol)
         h_donors = Lipinski.NumHDonors(mol)
         rings = Lipinski.RingCount(mol)
-
         desc_dict = {'mol': self.__mol_smiles,
                      'MW': mw,
                      'logP': log_p,
@@ -90,7 +97,8 @@ class Molecule:
         violations = [desc_dict['MW'] >= 500.0,
                       desc_dict['h_acc'] >= 10,
                       desc_dict['h_don'] >= 5,
-                      desc_dict['logP'] >= 5].count(True)
+                      desc_dict['logP'] >= 5
+                      ].count(True)
         if violations > 1:
             result = 'fails'
         else:
@@ -146,10 +154,11 @@ class Molecule:
         params.AddCatalog(FilterCatalogParams.FilterCatalogs.BRENK)
         params.AddCatalog(FilterCatalogParams.FilterCatalogs.NIH)
         catalog = FilterCatalog(params)
-        if catalog.HasMatch(drawn_mol_final):
-            print("FAIL FILTERS")
+        mol = Chem.MolFromSmiles(self.mol_smiles) 
+        if catalog.HasMatch(mol):
+            return "FAIL FILTERS"
         else:
-            print("PASSED FILTERS")
+            return "PASSED FILTERS"
 
 
 class R_group(Molecule):
@@ -172,8 +181,10 @@ class R_group(Molecule):
         return(rgroup_smiles)
 
 
-class Scaffold_and_Rgroups(Molecule):   # Can I also make this have R-group???
-    """Add a R group to the old molecule (either the scaffold with R1 attached or just the scaffold)."""
+class Scaffold_and_Rgroups(Molecule):
+    # Can I also make this have R-group???
+    """Add a R group to the old molecule (either the scaffold with R1 attached
+    or just the scaffold)."""
     def ___init___(self, old_molecule, rgroup, number):
         self.old_molecule = old_molecule
         self.rgroup = rgroup
@@ -187,12 +198,14 @@ class Scaffold_and_Rgroups(Molecule):   # Can I also make this have R-group???
         new_mol = new_mol.replace('(9)', '9')
         self.new_molecule = new_mol
 
+
 class FinalMolecule(Molecule):
     """Final molecule with scaffold and two R groups."""
-    def ___init___(self, rgroup1, rgroup2):     #Name of R groups should be in the form 'Axy' or 'Bxy' e.g. A01 etc. 
+    def ___init___(self, rgroup1, rgroup2):
+        # Name of R groups should be in the form 'Axy' or 'Bxy' e.g. A01 etc.
         self.rgroup1 = rgroup1
         self.rgroup2 = rgroup2
-    
+
     def drug_properties(self):
         """Selects properties of the final drug from the data."""
         drug_properties = [
@@ -203,6 +216,6 @@ class FinalMolecule(Molecule):
                             'pampa'
                             ]
         for d in drug_properties:
-            value = csv_file[csv_file['atag']==self.rgroup1]
-            value_two = value[csv_file['btag']==self.rgroup2][d][0]
+            value = csv_file[csv_file['atag'] == self.rgroup1]
+            value_two = value[csv_file['btag'] == self.rgroup2][d][0]
         print(d, value_two)

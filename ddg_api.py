@@ -13,6 +13,7 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/r-group-*": {"origins": "http://localhost:3000"}})
 # CORS
 
+
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
