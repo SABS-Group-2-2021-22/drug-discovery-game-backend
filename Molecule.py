@@ -11,9 +11,9 @@ from rdkit.Chem import AllChem
 
 import io
 import base64
-#can't delete the following!!! Steph: last year they couldn't 
+# can't delete the following!!! Steph: last year they couldn't
 # get rid of the warning message
-from rdkit.Chem.FilterCatalog import *
+# from rdkit.Chem.FilterCatalog import *
 
 # Didn't work:
 # from rdkit.Chem import FilterCatalog
@@ -22,8 +22,7 @@ from rdkit.Chem.FilterCatalog import *
 # Build scaffold and read in csv
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
 # csv_file = pd.read_csv('r_group_decomp.csv')
-csv_file = pd.read_csv(
-    '/home/sabsr3/DrugDiscoveryGame/drug_discovery_game/data/r_group_decomp.csv')
+csv_file = pd.read_csv('../drug_discovery_game/data/r_group_decomp.csv')
 
 
 class Molecule:
@@ -52,7 +51,7 @@ class Molecule:
         return self.__mol_smiles
 
     def descriptors(self):
-        """Calculate molecule descriptor metrics as dict: 
+        """Calculate molecule descriptor metrics as dict:
         | mol - smile string
         | MW - molecular weight
         | logP - logP
@@ -141,20 +140,26 @@ class Molecule:
         imgByteArray = io.BytesIO()
         img.save(imgByteArray, format='png')
         imgByteArray = imgByteArray.getvalue()
-        imgByteArray = base64.b64encode(imgByteArray).decode("utf-8") 
+        imgByteArray = base64.b64encode(imgByteArray).decode("utf-8")
         return imgByteArray
 
     def filter_properties(self):
         """See whether molecule passes or fails FILTERS"""
-        params = FilterCatalogParams()
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_A)
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_B)
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_C)
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.ZINC)
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.BRENK)
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.NIH)
-        catalog = FilterCatalog(params)
-        mol = Chem.MolFromSmiles(self.mol_smiles) 
+        params = Chem.FilterCatalog.FilterCatalogParams()
+        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+                          FilterCatalogs.PAINS_A)
+        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+                          FilterCatalogs.PAINS_B)
+        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+                          FilterCatalogs.PAINS_C)
+        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+                          FilterCatalogs.ZINC)
+        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+                          FilterCatalogs.BRENK)
+        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+                          FilterCatalogs.NIH)
+        catalog = Chem.FilterCatalog.FilterCatalog(params)
+        mol = Chem.MolFromSmiles(self.mol_smiles)
         if catalog.HasMatch(mol):
             return "FAIL FILTERS"
         else:
@@ -162,22 +167,23 @@ class Molecule:
 
 
 class R_group(Molecule):
-    """Name of R group is of the form 'Axy' or 'Bxy' e.g. A01 etc. 
+    """Name of R group is of the form 'Axy' or 'Bxy' e.g. A01 etc.
     Number corresponds to whether it is an R1 or R2 group"""
     def __init__(self, name, number):
-        
         self.name = name
         self.number = number
         mol_smiles = self.extract_smilefromcsv()
         super().__init__(mol_smiles)
-    
+
     def extract_smilefromcsv(self):
         """Extracts the SMILE for the R group """
 
         if self.number == 1:
-            rgroup_smiles = csv_file[csv_file['atag']==self.name]['R1'].iloc[0]
+            rgroup_smiles = csv_file[csv_file['atag'] ==
+                                     self.name]['R1'].iloc[0]
         if self.number == 2:
-            rgroup_smiles = csv_file[csv_file['btag']==self.name]['R2'].iloc[0]
+            rgroup_smiles = csv_file[csv_file['btag'] ==
+                                     self.name]['R2'].iloc[0]
         return(rgroup_smiles)
 
 
