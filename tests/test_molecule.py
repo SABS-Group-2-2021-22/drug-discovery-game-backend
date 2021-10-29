@@ -40,6 +40,23 @@ class TestMolecule(unittest.TestCase):
         failing_mol = Molecule('O=C(NC(C1=C(C)C=C2N1C=CC=C2)=S)C3=CC=CC=C3')
         self.assertEqual(failing_mol.filter_properties(), message)
 
+    def test_lipinski_no_violations(self):
+        """Tests water correctly passes the Lipsinki rule of 5."""
+        message = 0, "passes"
+        one_violation_molecule = Molecule('O')
+        descriptors = one_violation_molecule.descriptors()
+        self.assertEqual(one_violation_molecule.lipinski(descriptors), message)
+
+    # def test_lipinski_one_violation(self):
+    #     "Tests that water fails one Lipinski rule and passses the rest"
+        
+
+
+    # def test_lipinski_(self):
+    #     """Tests a molecule correctly passes the lipinski"""
+    #     message = 0, passes
+
+
 if __name__=='__main__':
     unittest.main()
 
