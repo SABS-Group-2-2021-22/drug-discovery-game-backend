@@ -5,24 +5,18 @@ from rdkit.Chem import Descriptors
 from rdkit.Chem import rdMolDescriptors
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import Crippen
-# from rdkit.Chem import FilterCatalog
-# from rdkit.Chem.FilterCatalog import FilterCatalogParams
 from rdkit.Chem import AllChem
+from rdkit.Chem.FilterCatalog import FilterCatalog, FilterCatalogParams
 
 import io
 import base64
-# can't delete the following!!! Steph: last year they couldn't
-# get rid of the warning message
-# from rdkit.Chem.FilterCatalog import *
-
-# Didn't work:
-# from rdkit.Chem import FilterCatalog
-# from rdkit.Chem.FilterCatalog import FilterCatalogParams
 
 # Build scaffold and read in csv
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
-# csv_file = pd.read_csv('r_group_decomp.csv')
-csv_file = pd.read_csv('../drug_discovery_game/data/r_group_decomp.csv')
+try:
+    csv_file = pd.read_csv('./drug-discovery-game-backend/r_group_decomp.csv')
+except FileNotFoundError:
+    csv_file = pd.read_csv('r_group_decomp.csv')
 
 
 class Molecule:
@@ -104,13 +98,11 @@ class Molecule:
             result = 'passes'
         return violations, result
 
+# csv_file = pd.read_csv('r_group_decomp.csv')
     def draw_molecule(self, drawn_file_name, orient_with_scaffold):
         """Draws the molecule.
 
         :param drawn_file_name: filename to save drawn molecule with
-        :type drawn_file_name: String
-        :param orient_with_scaffold: Aligns combined molecule with original
-        scaffold. It should take the value True if and
         only if the molecule contains the scaffold.
         :type orient_with_scaffold: bool
         """
@@ -123,9 +115,6 @@ class Molecule:
             _ = AllChem.GenerateDepictionMatching2DStructure(drawn_mol,
                                                              scaffold)
         d = rdMolDraw2D.MolDraw2DCairo(250, 200)
-        d.drawOptions().addStereoAnnotation = True
-        d.drawOptions().clearBackground = False
-        d.DrawMolecule(drawn_mol)
         d.FinishDrawing()
         d.WriteDrawingText(f'{drawn_file_name}.png')
 
@@ -145,21 +134,21 @@ class Molecule:
 
     def filter_properties(self):
         """See whether molecule passes or fails FILTERS"""
-        params = Chem.FilterCatalog.FilterCatalogParams()
-        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+        params = FilterCatalogParams()
+        params.AddCatalog(FilterCatalogParams.
                           FilterCatalogs.PAINS_A)
-        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+        params.AddCatalog(FilterCatalogParams.
                           FilterCatalogs.PAINS_B)
-        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+        params.AddCatalog(FilterCatalogParams.
                           FilterCatalogs.PAINS_C)
-        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+        params.AddCatalog(FilterCatalogParams.
                           FilterCatalogs.ZINC)
-        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+        params.AddCatalog(FilterCatalogParams.
                           FilterCatalogs.BRENK)
-        params.AddCatalog(Chem.FilterCatalog.FilterCatalogParams.
+        params.AddCatalog(FilterCatalogParams.
                           FilterCatalogs.NIH)
-        catalog = Chem.FilterCatalog.FilterCatalog(params)
-        mol = Chem.MolFromSmiles(self.mol_smiles)
+        catalog = FilterCatalog(params)
+        mol = Chem.MolFromSmiles(self.__mol_smiles)
         if catalog.HasMatch(mol):
             return "FAIL FILTERS"
         else:

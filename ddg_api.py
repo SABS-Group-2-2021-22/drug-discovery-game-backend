@@ -1,17 +1,11 @@
-import flask
 from flask import Flask, jsonify
 from flask_cors import CORS
-import base64
-import io
 
-from flask import send_file
-
-import Molecule
-from Molecule import R_group
+from Molecule import R_group, Molecule
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/r-group-*": {"origins": "http://localhost:3000"}})
-# CORS
+cors = CORS(app, resources={r"/r-group-*":
+                            {"origins": "http://localhost:3000"}})
 
 
 @app.route("/")
@@ -22,7 +16,7 @@ def hello_world():
 @app.route("/r-group-<string:r_group_id>")
 def rgroup_img(r_group_id):
     smile_string = get_smile_string(r_group_id)
-    mol = Molecule.Molecule(smile_string)
+    mol = Molecule(smile_string)
     bytestream = mol.drawMoleculeAsByteStream()
     return jsonify({'img_html': f"data:;base64,{bytestream}"})
 
@@ -30,7 +24,7 @@ def rgroup_img(r_group_id):
 @app.route("/byte-img")
 def byte_image():
     smile_string = 'O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]'
-    mol = Molecule.Molecule(smile_string)
+    mol = Molecule(smile_string)
     bytestream = mol.drawMoleculeAsByteStream()
     return f'<img src="data:;base64,{bytestream}"/>'
 
