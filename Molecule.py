@@ -85,7 +85,7 @@ class Molecule:
         d.FinishDrawing()
         d.WriteDrawingText(f'{drawn_file_name}.png')
 
-    def filter_properties(self, drawn_mol_final):
+    def filter_properties(self):
         """See whether molecule passes or fails FILTERS"""
         params = FilterCatalogParams()
         params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_A)

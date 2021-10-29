@@ -1,64 +1,48 @@
-import pytest
-import sys
-# sys.path.append('path')
-# sys.path.insert(0, '/Molecule.py')
-# import os.path
-# cwd = os.path.dirname(__file__)  # get current working directory
+import unittest
 from Molecule import Molecule
-# import .r_group_decomp
-
 import pandas as pd
 from rdkit import Chem
-from rdkit.Chem import Lipinski
-from rdkit.Chem import Descriptors
-from rdkit.Chem import rdMolDescriptors
-from rdkit.Chem.Draw import rdMolDraw2D
-from rdkit.Chem import Crippen
-from rdkit.Chem.FilterCatalog import *
-from rdkit.Chem import AllChem
 
 
-import numpy.testing as npt
-# import pandas as pd
-# from game_scripts import filters
-# from rdkit import Chem
-# from io import StringIO
 
-#Make into class
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
 csv_file = pd.read_csv('r_group_decomp.csv')
 
 
-"""Tests for getting descriptors for molecules and ranking them"""
-def test_descriptors():
-    """Can get all specified descriptors for single moiety and return as dict"""
-    mol = Molecule('Oc1ccc(C[*:1])cc1')
-    
-    true_case = {'mol': 'Oc1ccc(C[*:1])cc1',
-                 'MW': 107.0497,
-                 'logP': 1.4415,
-                 'TPSA': 20.23,
-                 'HA': 8,
-                 'h_acc': 1,
-                 'h_don': 1,
-                 'rings': 1
-                 }
-    test_case = mol.descriptors()
-    assert true_case == test_case
+class TestMolecule(unittest.TestCase):
+    """Tests for getting descriptors for molecules and ranking them"""
+    def test_descriptors(self):
+        """Can get all specified descriptors for single moiety and return as dict"""
+        mol = Molecule('Oc1ccc(C[*:1])cc1')
+        
+        true_case = {'mol': 'Oc1ccc(C[*:1])cc1',
+                    'MW': 107.0497,
+                    'logP': 1.4415,
+                    'TPSA': 20.23,
+                    'HA': 8,
+                    'h_acc': 1,
+                    'h_don': 1,
+                    'rings': 1
+                    }
+        test_case = mol.descriptors()
+        self.assertAlmostEqual(true_case, test_case)
 
-def test_filter_passes():
-    """Tests a molecule correctly passes the filters"""
-    message = "PASSED FILTERS"
-    passing_mol = Molecule('CC')
-    testmessage = passing_mol.filter_properties()
-    assert passing_mol.filter_properties() == message
+    def test_filter_passes(self):
+        """Tests a molecule correctly passes the filters"""
+        message = "PASSED FILTERS"
+        passing_mol = Molecule('CC')
+        self.assertEqual(passing_mol.filter_properties(), message)
 
 
-def test_filter_fails():    
-    """Tests a molecule containing a thiocarbonyl fails the filter"""
-    message = "FAIL FILTERS"
-    failing_mol = Molecule('O=C(NC(C1=C(C)C=C2N1C=CC=C2)=S)C3=CC=CC=C3')
-    assert failing_mol.filter_properties() == message
+    def test_filter_fails(self):    
+        """Tests a molecule containing a thiocarbonyl fails the filter"""
+        message = "FAIL FILTERS"
+        failing_mol = Molecule('O=C(NC(C1=C(C)C=C2N1C=CC=C2)=S)C3=CC=CC=C3')
+        self.assertEqual(failing_mol.filter_properties(), message)
+
+if __name__=='__main__':
+    unittest.main()
+
 
 # Further tests needed
 
