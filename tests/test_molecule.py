@@ -69,7 +69,7 @@ class TestMolecule(unittest.TestCase):
 #     unittest.main()
 
 
-# Further tests needed
+# Further tests needed - relevant tests from last year are below
 
 # def test_apply_filter():
 #     """Tests that a dataframe is filtered correctly"""
