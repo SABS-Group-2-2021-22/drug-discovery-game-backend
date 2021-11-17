@@ -52,22 +52,21 @@ class TestMolecule(unittest.TestCase):
     # def test_lipinski_one_violation(self):
     #     "Tests that ... fails one Lipinski rule and passses the rest"
 
-# one_violation_molecule = Molecule(...)        
+# one_violation_molecule = Molecule(...)
 # descriptors = one_violation_molecule.descriptors()
 # print(descriptors)
 # print(one_violation_molecule.lipinski(descriptors))
 
     def test_lipinski_no_violations2(self):
-        """Tests glucose (an edge case with h_don=5) correctly passes the Lipsinki rule of 5."""
+        """Tests glucose (an edge case with h_don = 5) correctly
+        passes the Lipsinki rule of 5."""
         message = 0, "passes"
         no_violation_molecule2 = Molecule('C(C1C(C(C(C(O1)O)O)O)O)O')
         descriptors = no_violation_molecule2.descriptors()
         self.assertEqual(no_violation_molecule2.lipinski(descriptors), message)
 
-
-
-if __name__ == '__main__':
-    unittest.main()
+# if __name__ == '__main__':
+#     unittest.main()
 
 
 # Further tests needed
