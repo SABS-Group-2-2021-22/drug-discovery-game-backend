@@ -181,12 +181,15 @@ class Scaffold_and_Rgroups(Molecule):
     """Add a R group to the old molecule (either the scaffold with R1 attached
     or just the scaffold)."""
     def ___init___(self, old_molecule, rgroup, number):
+
         self.old_molecule = old_molecule
         self.rgroup = rgroup
         self.number = number
         self.new_molecule = None
+        self.add_r_group()
 
-    def add_r_group(self, new_mol):
+    # def add_r_group(self, new_mol):
+    def add_r_group(self):
         """ Add R group to molecule"""
         new_mol = Chem.MolToSmiles(self.old_molecule) + '.' + self.rgroup
         new_mol = new_mol.replace(f'[*:{self.number}]', '9')
