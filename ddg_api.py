@@ -77,12 +77,12 @@ def molecule_img():
     return jsonify({'img_html': f"data:;base64,{bytestream}"})
 
 
-def add_r_group(scaffold_as_smiles, r_group_as_smiles, r_group_nr=1):
+def add_r_group(base_molecule_as_smiles, r_group_as_smiles, r_group_nr=1):
     """Adds smile string of R group to scaffold smile string
     and returns combined compound as SMILE string.
 
-    :param scaffold_as_smiles: Scaffold molecule as SMILE string
-    :type scaffold_as_smiles: String
+    :param base_molecule_as_smiles: Scaffold molecule as SMILE string
+    :type base_molecule_as_smiles: String
     :param r_group_as_smiles: R Group to be added to molecule as SMILE string
     :type r_group_as_smiles: String
     :param r_group_nr: R group number determines location where R-group is
@@ -91,7 +91,7 @@ def add_r_group(scaffold_as_smiles, r_group_as_smiles, r_group_nr=1):
     :return: Compound molecule as SMILE string
     :rtype: String
     """
-    new_mol = scaffold_as_smiles + '.' + r_group_as_smiles
+    new_mol = base_molecule_as_smiles + '.' + r_group_as_smiles
     connection_site = str(7+r_group_nr)
     new_mol = new_mol.replace(f'[*:{r_group_nr}]', connection_site)
     new_mol = new_mol.replace('('+connection_site+')', connection_site)
