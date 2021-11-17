@@ -41,11 +41,12 @@ def byte_image():
 # Pass R group IDs as queries: /molecule?r1=A01&r2=B10
 @app.route("/molecule")
 def molecule_img():
-    """Returns bytestream image of compund molecule consisting of scaffold
-    and up to two R Groups, if these are specified in the query parameters.
+    """Returns bytestream image of compund molecule consisting of
+    scaffold and up to two R Groups, if these are specified in
+    the query parameters.
     Pass R group IDs as queries: /molecule?r1=A01&r2=B10
     If no R groups are specified this returns the scaffold.
-    
+
     :return: JSON containing image of compound molecule as bytestream.
     :rtype: json dict
     """
