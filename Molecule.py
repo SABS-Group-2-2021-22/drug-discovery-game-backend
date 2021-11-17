@@ -5,44 +5,68 @@ from rdkit.Chem import Descriptors
 from rdkit.Chem import rdMolDescriptors
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import Crippen
-# from rdkit.Chem import FilterCatalog
-# from rdkit.Chem.FilterCatalog import FilterCatalogParams
 from rdkit.Chem import AllChem
+from rdkit.Chem.FilterCatalog import FilterCatalog, FilterCatalogParams
 
-#can't delete the following!!! Steph: last year they couldn't 
-# get rid of the warning message
-from rdkit.Chem.FilterCatalog import *
-
-# Didn't work:
-# from rdkit.Chem import FilterCatalog
-# from rdkit.Chem.FilterCatalog import FilterCatalogParams
+import io
+import base64
 
 # Build scaffold and read in csv
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
-csv_file = pd.read_csv('r_group_decomp.csv')
+try:
+    csv_file = pd.read_csv('./drug-discovery-game-backend/r_group_decomp.csv')
+except FileNotFoundError:
+    csv_file = pd.read_csv('r_group_decomp.csv')
 
 
 class Molecule:
-    """A molecule. In particular, either the R1 or R2 group, or the scaffold
+    """ A molecule. In particular, either the R1 or R2 group, or the scaffold
     and one or two groups.
-     There are methods which tell you the properties of the molecule and if it
-     passes the Lipsinki test."""
+    There are methods which tell you the properties of the molecule and if it
+    passes the Lipsinki test
+    """
 
     def __init__(self, mol_smiles):
-        self.mol_smiles = mol_smiles
+        """Constructor for Molecule class. Initialises Molecule instance from
+        smile string.
+
+        :param mol_smiles: smile string of molecule
+        :type mol_smiles: String
+        """
+        self.__mol_smiles = mol_smiles
+
+    @property
+    def get_smile_string(self):
+        """Returns molecule's smile string
+
+        :return: smile string of molecule
+        :rtype: String
+        """
+        return self.__mol_smiles
 
     def descriptors(self):
-        """Calculate descriptors"""
-        mol = Chem.MolFromSmiles(self.mol_smiles)
-        mw = round(Descriptors.ExactMolWt(mol), 4) #round so easier to test
+        """Calculate molecule descriptor metrics as dict:
+        | mol - smile string
+        | MW - molecular weight
+        | logP - logP
+        | TPSA - topological polar surface area
+        | HA - heavy atom count
+        | h_acc - H acceptor count
+        | h_don - H donator count
+        | rings - ring count
+
+        :return: molecule descriptor metrics
+        :rtype: dict
+        """
+        mol = Chem.MolFromSmiles(self.__mol_smiles)
+        mw = Descriptors.ExactMolWt(mol)
         log_p = Crippen.MolLogP(mol)
         tpsa = rdMolDescriptors.CalcTPSA(mol)  # topological polar surface area
         ha = Lipinski.HeavyAtomCount(mol)  # heavy atom count
         h_acceptors = Lipinski.NumHAcceptors(mol)
         h_donors = Lipinski.NumHDonors(mol)
         rings = Lipinski.RingCount(mol)
-
-        desc_dict = {'mol': self.mol_smiles,
+        desc_dict = {'mol': self.__mol_smiles,
                      'MW': mw,
                      'logP': log_p,
                      'TPSA': tpsa,
@@ -56,6 +80,12 @@ class Molecule:
     def lipinski(self, desc_dict):
         """Calculate Lipinski from the descriptor dictionary.
         Return the number of rules broken and whether the molecule passes.
+
+        :param desc_dict: molecule descriptor metrics
+        :type desc_dict: dict
+        :return: violations, result
+        | Number of violations and 'fails' or passes'
+        :rtype: int, String
         """
         violations = [desc_dict['MW'] >= 500.0,
                       desc_dict['h_acc'] >= 10,
@@ -68,34 +98,57 @@ class Molecule:
             result = 'passes'
         return violations, result
 
+# csv_file = pd.read_csv('r_group_decomp.csv')
     def draw_molecule(self, drawn_file_name, orient_with_scaffold):
-        """Draws the molecule. The variable 'orient_with_scaffold' can take
-        the values True and False. It should take the value True if and
-        only if the molecule contains the scaffold"""
-        drawn_mol = Chem.MolFromSmiles(self.mol_smiles)
+        """Draws the molecule.
+
+        :param drawn_file_name: filename to save drawn molecule with
+        only if the molecule contains the scaffold.
+        :type orient_with_scaffold: bool
+        """
+        drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
         # Align molecule with scaffold if the molecule contains the scaffold.
         if orient_with_scaffold is True:
             AllChem.Compute2DCoords(scaffold)
+            # TODO: test if _ assignment is needed or if fn call wo./
+            # assignment is sufficient
             _ = AllChem.GenerateDepictionMatching2DStructure(drawn_mol,
                                                              scaffold)
         d = rdMolDraw2D.MolDraw2DCairo(250, 200)
-        d.drawOptions().addStereoAnnotation = True
-        d.drawOptions().clearBackground = False
-        d.DrawMolecule(drawn_mol)
         d.FinishDrawing()
         d.WriteDrawingText(f'{drawn_file_name}.png')
+
+    def drawMoleculeAsByteStream(self):
+        """Returns png image of molecule as bytestream
+
+        :return: base64 png image bytestream
+        :rtype: String
+        """
+        drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
+        img = Chem.Draw.MolToImage(drawn_mol)
+        imgByteArray = io.BytesIO()
+        img.save(imgByteArray, format='png')
+        imgByteArray = imgByteArray.getvalue()
+        imgByteArray = base64.b64encode(imgByteArray).decode("utf-8")
+        return imgByteArray
 
     def filter_properties(self):
         """See whether molecule passes or fails FILTERS"""
         params = FilterCatalogParams()
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_A)
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_B)
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_C)
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.ZINC)
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.BRENK)
-        params.AddCatalog(FilterCatalogParams.FilterCatalogs.NIH)
+        params.AddCatalog(FilterCatalogParams.
+                          FilterCatalogs.PAINS_A)
+        params.AddCatalog(FilterCatalogParams.
+                          FilterCatalogs.PAINS_B)
+        params.AddCatalog(FilterCatalogParams.
+                          FilterCatalogs.PAINS_C)
+        params.AddCatalog(FilterCatalogParams.
+                          FilterCatalogs.ZINC)
+        params.AddCatalog(FilterCatalogParams.
+                          FilterCatalogs.BRENK)
+        params.AddCatalog(FilterCatalogParams.
+                          FilterCatalogs.NIH)
         catalog = FilterCatalog(params)
-        mol = Chem.MolFromSmiles(self.mol_smiles) 
+        mol = Chem.MolFromSmiles(self.__mol_smiles)
         if catalog.HasMatch(mol):
             return "FAIL FILTERS"
         else:
@@ -105,17 +158,22 @@ class Molecule:
 class R_group(Molecule):
     """Name of R group is of the form 'Axy' or 'Bxy' e.g. A01 etc.
     Number corresponds to whether it is an R1 or R2 group"""
-    def ___init___(self, name, number):
+    def __init__(self, name, number):
         self.name = name
         self.number = number
+        mol_smiles = self.extract_smilefromcsv()
+        super().__init__(mol_smiles)
 
     def extract_smilefromcsv(self):
         """Extracts the SMILE for the R group """
+
         if self.number == 1:
-            rgroup_smiles = csv_file[csv_file['atag'] == self.name]['R1'][0]
+            rgroup_smiles = csv_file[csv_file['atag'] ==
+                                     self.name]['R1'].iloc[0]
         if self.number == 2:
-            rgroup_smiles = csv_file[csv_file['btag'] == self.name]['R2'][0]
-        print(rgroup_smiles)
+            rgroup_smiles = csv_file[csv_file['btag'] ==
+                                     self.name]['R2'].iloc[0]
+        return(rgroup_smiles)
 
 
 class Scaffold_and_Rgroups(Molecule):
