@@ -58,7 +58,7 @@ class TestMolecule(unittest.TestCase):
         self.assertEqual(no_violation_molecule2.lipinski(descriptors), message)
 
     def test_lipinski_one_violation(self):
-        """Tests that cholestrol fails one Lipinski rule and 
+        """Tests that cholestrol fails one Lipinski rule and
         passses the rest"""
         message = 1, "passes"
         one_violation_molecule = Molecule('CC(C)CCCC(C)C1CCC2C1(CCC3C2CC=C4C3('
@@ -70,7 +70,8 @@ class TestMolecule(unittest.TestCase):
         """Tests that Dextran fails the Lipinski rule of 5 and
         violates 3 of the 4 rules."""
         message = 3, "fails"
-        one_violation_molecule = Molecule('C(C1C(C(C(C(O1)OCC2C(C(C(C(O2)OCC(C(C(C(C=O)O)O)O)O)O)O)O)O)O)O)O')
+        one_violation_molecule = Molecule('C(C1C(C(C(C(O1)OCC2C(C(C(C(O2)OCC('
+                                          'C(C(C(C=O)O)O)O)O)O)O)O)O)O)O)O')
         descriptors = one_violation_molecule.descriptors()
         self.assertEqual(one_violation_molecule.lipinski(descriptors), message)
 
