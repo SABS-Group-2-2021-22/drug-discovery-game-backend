@@ -88,8 +88,8 @@ class Molecule:
         :rtype: int, String
         """
         violations = [desc_dict['MW'] >= 500.0,
-                      desc_dict['h_acc'] >= 10,
-                      desc_dict['h_don'] >= 5,
+                      desc_dict['h_acc'] > 10,
+                      desc_dict['h_don'] > 5,
                       desc_dict['logP'] >= 5
                       ].count(True)
         if violations > 1:
