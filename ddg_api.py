@@ -111,7 +111,6 @@ def get_smile_string(r_group_id):
     try:
         mol = R_group(r_group_id, group_number)
         smile_string = mol.get_smile_string
-    except:
-        print("R group ID is invalid")
+    except ValueError('R group ID is invalid'):
         smile_string = None
     return smile_string
