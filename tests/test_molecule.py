@@ -79,5 +79,5 @@ class TestMolecule(unittest.TestCase):
 #     unittest.main()
 
 
-# Further tests needed - relevant tests from last year that could be adapted
+# Further tests are needed - relevant tests from last year that could be adapted
 # are test_apply_filter(),  test_molchoose_correct()
