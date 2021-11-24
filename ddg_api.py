@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-from Molecule import R_group, Molecule
+from Molecule import R_group, Molecule, FinalMolecule
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*":
@@ -55,6 +55,9 @@ def molecule_img():
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
 
+    r_group_1 = None
+    r_group_2 = None
+
     scaffold_smiles = 'O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]'
     molecule_smiles = scaffold_smiles
 
@@ -73,10 +76,13 @@ def molecule_img():
             molecule_smiles = add_r_group(molecule_smiles,
                                           r_group_2,
                                           r_group_nr=2)
-
     molecule = Molecule(molecule_smiles)
     bytestream = molecule.drawMoleculeAsByteStream()
-    return jsonify({'img_html': f"data:;base64,{bytestream}"})
+    if r_group_1 is not None and r_group_2 is not None:
+        drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+        drug_property_dict = drug_mol.drug_properties()
+    return jsonify({'img_html': f"data:;base64,{bytestream}",
+                    'drug_props': drug_property_dict})
 
 
 def add_r_group(base_molecule_as_smiles, r_group_as_smiles, r_group_nr=1):

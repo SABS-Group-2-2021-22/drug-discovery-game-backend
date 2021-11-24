@@ -26,7 +26,7 @@ class Molecule:
     passes the Lipsinki test
     """
 
-    def __init__(self, mol_smiles):
+    def __init__(self, mol_smiles=None):
         """Constructor for Molecule class. Initialises Molecule instance from
         smile string.
 
@@ -199,8 +199,9 @@ class Scaffold_and_Rgroups(Molecule):
 
 class FinalMolecule(Molecule):
     """Final molecule with scaffold and two R groups."""
-    def ___init___(self, rgroup1, rgroup2):
+    def __init__(self, rgroup1, rgroup2):
         # Name of R groups should be in the form 'Axy' or 'Bxy' e.g. A01 etc.
+        super().__init__()
         self.rgroup1 = rgroup1
         self.rgroup2 = rgroup2
 
@@ -213,7 +214,9 @@ class FinalMolecule(Molecule):
                             'logd',
                             'pampa'
                             ]
+        drug_property_dict = {}
         for d in drug_properties:
             value = csv_file[csv_file['atag'] == self.rgroup1]
-            value_two = value[csv_file['btag'] == self.rgroup2][d][0]
-        print(d, value_two)
+            value_two = value[csv_file['btag'] == self.rgroup2][d].iloc[0]
+            drug_property_dict[d] = value_two
+        return drug_property_dict
