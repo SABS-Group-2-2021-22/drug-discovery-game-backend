@@ -73,7 +73,7 @@ def molecule_img():
                                           r_group_nr=2)
 
     molecule = Molecule(molecule_smiles)
-    bytestream = molecule.drawMoleculeAsByteStream()
+    bytestream = molecule.drawMoleculeAsByteStream(orient_with_scaffold = True)
     return jsonify({'img_html': f"data:;base64,{bytestream}"})
 
 
