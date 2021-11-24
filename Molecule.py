@@ -132,7 +132,7 @@ class Molecule:
             # TODO: test if _ assignment is needed or if fn call wo./
             # assignment is sufficient
             _ = AllChem.GenerateDepictionMatching2DStructure(drawn_mol,
-                                                             orient_scaffold, acceptFailure=False)
+                                                             orient_scaffold)
         img = Chem.Draw.MolToImage(drawn_mol)
         imgByteArray = io.BytesIO()
         img.save(imgByteArray, format='png')
