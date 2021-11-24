@@ -77,7 +77,7 @@ def molecule_img():
                                           r_group_2,
                                           r_group_nr=2)
     molecule = Molecule(molecule_smiles)
-    bytestream = molecule.drawMoleculeAsByteStream()
+    bytestream = molecule.drawMoleculeAsByteStream(orient_with_scaffold=True)
     if r_group_1 is not None and r_group_2 is not None:
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()

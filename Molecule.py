@@ -13,6 +13,7 @@ import base64
 
 # Build scaffold and read in csv
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
+orient_scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccccc1)')
 try:
     csv_file = pd.read_csv('./drug-discovery-game-backend/r_group_decomp.csv')
 except FileNotFoundError:
@@ -88,8 +89,8 @@ class Molecule:
         :rtype: int, String
         """
         violations = [desc_dict['MW'] >= 500.0,
-                      desc_dict['h_acc'] >= 10,
-                      desc_dict['h_don'] >= 5,
+                      desc_dict['h_acc'] > 10,
+                      desc_dict['h_don'] > 5,
                       desc_dict['logP'] >= 5
                       ].count(True)
         if violations > 1:
@@ -109,22 +110,29 @@ class Molecule:
         drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
         # Align molecule with scaffold if the molecule contains the scaffold.
         if orient_with_scaffold is True:
-            AllChem.Compute2DCoords(scaffold)
+            AllChem.Compute2DCoords(orient_scaffold)
             # TODO: test if _ assignment is needed or if fn call wo./
             # assignment is sufficient
             _ = AllChem.GenerateDepictionMatching2DStructure(drawn_mol,
-                                                             scaffold)
+                                                             orient_scaffold)
         d = rdMolDraw2D.MolDraw2DCairo(250, 200)
         d.FinishDrawing()
         d.WriteDrawingText(f'{drawn_file_name}.png')
 
-    def drawMoleculeAsByteStream(self):
+    def drawMoleculeAsByteStream(self, orient_with_scaffold=False):
         """Returns png image of molecule as bytestream
 
         :return: base64 png image bytestream
         :rtype: String
         """
         drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
+        if orient_with_scaffold is True:
+            AllChem.Compute2DCoords(orient_scaffold)
+            AllChem.Compute2DCoords(drawn_mol)
+            # TODO: test if _ assignment is needed or if fn call wo./
+            # assignment is sufficient
+            _ = AllChem.GenerateDepictionMatching2DStructure(drawn_mol,
+                                                             orient_scaffold)
         img = Chem.Draw.MolToImage(drawn_mol)
         imgByteArray = io.BytesIO()
         img.save(imgByteArray, format='png')
