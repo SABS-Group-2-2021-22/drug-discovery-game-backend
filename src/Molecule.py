@@ -13,6 +13,7 @@ import base64
 
 # Build scaffold and read in csv
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
+orient_scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccccc1)')
 try:
     csv_file = pd.read_csv('src/r_group_decomp.csv')
 except FileNotFoundError:
@@ -26,7 +27,7 @@ class Molecule:
     passes the Lipsinki test
     """
 
-    def __init__(self, mol_smiles):
+    def __init__(self, mol_smiles=None):
         """Constructor for Molecule class. Initialises Molecule instance from
         smile string.
 
@@ -109,22 +110,29 @@ class Molecule:
         drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
         # Align molecule with scaffold if the molecule contains the scaffold.
         if orient_with_scaffold is True:
-            AllChem.Compute2DCoords(scaffold)
+            AllChem.Compute2DCoords(orient_scaffold)
             # TODO: test if _ assignment is needed or if fn call wo./
             # assignment is sufficient
             _ = AllChem.GenerateDepictionMatching2DStructure(drawn_mol,
-                                                             scaffold)
+                                                             orient_scaffold)
         d = rdMolDraw2D.MolDraw2DCairo(250, 200)
         d.FinishDrawing()
         d.WriteDrawingText(f'{drawn_file_name}.png')
 
-    def drawMoleculeAsByteStream(self):
+    def drawMoleculeAsByteStream(self, orient_with_scaffold=False):
         """Returns png image of molecule as bytestream
 
         :return: base64 png image bytestream
         :rtype: String
         """
         drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
+        if orient_with_scaffold is True:
+            AllChem.Compute2DCoords(orient_scaffold)
+            AllChem.Compute2DCoords(drawn_mol)
+            # TODO: test if _ assignment is needed or if fn call wo./
+            # assignment is sufficient
+            _ = AllChem.GenerateDepictionMatching2DStructure(drawn_mol,
+                                                             orient_scaffold)
         img = Chem.Draw.MolToImage(drawn_mol)
         imgByteArray = io.BytesIO()
         img.save(imgByteArray, format='png')
@@ -181,12 +189,15 @@ class Scaffold_and_Rgroups(Molecule):
     """Add a R group to the old molecule (either the scaffold with R1 attached
     or just the scaffold)."""
     def ___init___(self, old_molecule, rgroup, number):
+
         self.old_molecule = old_molecule
         self.rgroup = rgroup
         self.number = number
         self.new_molecule = None
+        self.add_r_group()
 
-    def add_r_group(self, new_mol):
+    # def add_r_group(self, new_mol):
+    def add_r_group(self):
         """ Add R group to molecule"""
         new_mol = Chem.MolToSmiles(self.old_molecule) + '.' + self.rgroup
         new_mol = new_mol.replace(f'[*:{self.number}]', '9')
@@ -196,8 +207,9 @@ class Scaffold_and_Rgroups(Molecule):
 
 class FinalMolecule(Molecule):
     """Final molecule with scaffold and two R groups."""
-    def ___init___(self, rgroup1, rgroup2):
+    def __init__(self, rgroup1, rgroup2):
         # Name of R groups should be in the form 'Axy' or 'Bxy' e.g. A01 etc.
+        super().__init__()
         self.rgroup1 = rgroup1
         self.rgroup2 = rgroup2
 
@@ -210,7 +222,9 @@ class FinalMolecule(Molecule):
                             'logd',
                             'pampa'
                             ]
+        drug_property_dict = {}
         for d in drug_properties:
             value = csv_file[csv_file['atag'] == self.rgroup1]
-            value_two = value[csv_file['btag'] == self.rgroup2][d][0]
-        print(d, value_two)
+            value_two = value[csv_file['btag'] == self.rgroup2][d].iloc[0]
+            drug_property_dict[d] = value_two
+        return drug_property_dict
