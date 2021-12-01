@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-from Molecule import R_group, Molecule
+from src.Molecule import R_group, Molecule
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/r-group-*":

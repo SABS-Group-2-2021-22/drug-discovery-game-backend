@@ -1,14 +1,16 @@
 import unittest
-from Molecule import Molecule
+from src.Molecule import Molecule
 import pandas as pd
 from rdkit import Chem
 
+# import os
+# print(os.getcwd())
 
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
 try:
-    csv_file = pd.read_csv('./drug-discovery-game-backend/r_group_decomp.csv')
+    csv_file = pd.read_csv('src/r_group_decomp.csv')
 except FileNotFoundError:
-    csv_file = pd.read_csv('r_group_decomp.csv')
+    csv_file = pd.read_csv('tests/r_group_decomp.csv')
 
 
 class TestMolecule(unittest.TestCase):
@@ -79,5 +81,5 @@ class TestMolecule(unittest.TestCase):
 #     unittest.main()
 
 
-# Further tests are needed - relevant tests from last year that could be adapted
-# are test_apply_filter(),  test_molchoose_correct()
+# Further tests are needed - relevant tests from last year that could be
+# adapted are test_apply_filter(),  test_molchoose_correct()
