@@ -3,9 +3,6 @@ from src.Molecule import Molecule
 import pandas as pd
 from rdkit import Chem
 
-# import os
-# print(os.getcwd())
-
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
 try:
     csv_file = pd.read_csv('src/r_group_decomp.csv')
