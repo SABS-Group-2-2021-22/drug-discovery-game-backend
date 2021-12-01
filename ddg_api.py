@@ -7,10 +7,28 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*":
                             {"origins": "http://localhost:3000"}})
 
+global saved_mols
+# Can't serialize sets using json
+saved_mols = []
+
 
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
+
+
+@app.route("/save")
+def save_molecule():
+    r_group_1_id = request.args.get('r1')
+    r_group_2_id = request.args.get('r2')
+    saved_mols.append([r_group_1_id, r_group_2_id])
+    print(saved_mols)
+    return jsonify({'saved_mols': saved_mols})
+
+
+@app.route("/savedmolecules")
+def return_saved_molecules():
+    return jsonify({'saved_mols': saved_mols})
 
 
 @app.route("/r-group-<string:r_group_id>")
