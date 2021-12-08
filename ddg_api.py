@@ -11,10 +11,78 @@ global saved_mols
 # Can't serialize sets using json
 saved_mols = []
 
+global chosen_mol
+chosen_mol = []
+
+global money
+money = [100000.0]
+
+global time
+time = [30.0]
+
+global assay_prices
+assay_prices = {
+    "pIC50": 70.0,
+    "c_mouse": 7000.0,
+    "c_human": 9000.0,
+    "LogD": 1000.0,
+    "PAMPA": 700.0,
+}
+
+global assay_times
+assay_times = {
+    "pIC50": 1.0,
+    "c_mouse": 3.0,
+    "c_human": 3.5,
+    "LogD": 1.5,
+    "PAMPA": 1.0,
+}
+
 
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
+
+
+@app.route("/update_time_money")
+def update_time_and_money():
+    return jsonify((money[-1], time[-1]))
+
+
+# Pass Yes/No for each assay as query:
+# /assays?pIC50=Yes&c_mouse=No&c_human=Yes&LogD=No&PAMPA=Yes
+@app.route("/assays", methods=['POST'])
+def run_assays():
+    assay_list = []
+    for label in ['pIC50', 'c_mouse', 'LogD', 'PAMPA']:
+        if request.args.get(label) == "Yes":
+            assay_list.append(label)
+    if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
+        pass
+    else:
+        money.append(money[-1] - sum([assay_prices[p] for p in assay_list]))
+    if time[-1] - max([assay_times[p] for p in assay_list]) < 0:
+        pass
+    else:
+        time.append(time[-1] - max([assay_times[p] for p in assay_list]))
+    return jsonify((money[-1], time[-1]))
+
+
+# Pass molecule ID as query: /choose?r1=A01&r2=B10
+@app.route("/choose", methods=['POST'])
+def choose_molecule():
+    if len(chosen_mol) > 0:
+        return jsonify({'chosen_mol': chosen_mol})
+    else:
+        r_group_1_id = request.args.get('r1')
+        r_group_2_id = request.args.get('r2')
+        chosen_mol.append((r_group_1_id, r_group_2_id))
+        return jsonify({'chosen_mol': chosen_mol})
+
+
+@app.route("/chosenmolecule")
+def return_chosen_molecules():
+    return jsonify({'chosen_mol': chosen_mol})
 
 
 # Pass molecule IDs as queries: /save?r1=A01&r2=B10
@@ -81,7 +149,7 @@ def molecule_img():
     r_group_2 = None
 
     scaffold_smiles = 'O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]'
-    molecule_smiles = scaffold_smiles
+    # molecule_smiles = scaffold_smiles
 
     base_molecule = Molecule(scaffold_smiles)
 
@@ -97,7 +165,9 @@ def molecule_img():
         if r_group_2 is not None:       # Check R2 id was valid
             base_molecule = r_group_2.add_r_group(base_molecule)
 
-    bytestream = base_molecule.drawMoleculeAsByteStream(orient_with_scaffold=True, size=(800, 800))
+    bytestream = base_molecule.drawMoleculeAsByteStream(
+        orient_with_scaffold=True, size=(800, 800)
+        )
     if r_group_1_id is not None and r_group_2_id is not None:
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()
