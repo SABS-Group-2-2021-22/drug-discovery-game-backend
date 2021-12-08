@@ -17,11 +17,13 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 
-@app.route("/save")
+# Pass molecule IDs as queries: /save?r1=A01&r2=B10
+@app.route("/save", methods=['POST'])
 def save_molecule():
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
-    saved_mols.append([r_group_1_id, r_group_2_id])
+    if (r_group_1_id, r_group_2_id) not in saved_mols:
+        saved_mols.append((r_group_1_id, r_group_2_id))
     print(saved_mols)
     return jsonify({'saved_mols': saved_mols})
 
