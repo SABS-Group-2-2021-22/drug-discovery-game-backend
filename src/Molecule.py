@@ -15,7 +15,7 @@ import base64
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
 orient_scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccccc1)')
 try:
-    csv_file = pd.read_csv('./drug-discovery-game-backend/r_group_decomp.csv')
+    csv_file = pd.read_csv('src/r_group_decomp.csv')
 except FileNotFoundError:
     csv_file = pd.read_csv('r_group_decomp.csv')
 
