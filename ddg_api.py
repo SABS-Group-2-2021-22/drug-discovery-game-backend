@@ -8,6 +8,7 @@ cors = CORS(app, resources={r"/*":
                             {"origins": "http://localhost:3000"}})
 
 global saved_mols
+
 # Can't serialize sets using json
 saved_mols = []
 
