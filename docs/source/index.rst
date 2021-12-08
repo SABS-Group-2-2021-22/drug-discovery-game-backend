@@ -10,7 +10,9 @@ Welcome to the Drug Discovery Game's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+
    modules
+
 
 Indices and tables
 ==================

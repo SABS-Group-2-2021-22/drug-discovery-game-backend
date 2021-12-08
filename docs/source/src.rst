@@ -1,11 +1,11 @@
 src package
-===============
+===========
 
 Submodules
 ----------
 
 src.Molecule module
-----------------------------
+-------------------
 
 .. automodule:: src.Molecule
    :members:
