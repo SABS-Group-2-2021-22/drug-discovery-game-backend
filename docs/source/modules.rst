@@ -17,4 +17,4 @@ Classes
 
 .. automodule:: tests.test_molecule
    :members:
-   :inherited-members:
+   :inherited-members:   
