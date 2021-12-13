@@ -23,20 +23,20 @@ time = [30.0]
 
 global assay_prices
 assay_prices = {
-    "pIC50": 70.0,
-    "c_mouse": 7000.0,
-    "c_human": 9000.0,
-    "LogD": 1000.0,
-    "PAMPA": 700.0,
+    "pic50": 70.0,
+    "clearance_mouse": 7000.0,
+    "clearance_human": 9000.0,
+    "logd": 1000.0,
+    "pampa": 700.0,
 }
 
 global assay_times
 assay_times = {
-    "pIC50": 1.0,
-    "c_mouse": 3.0,
-    "c_human": 3.5,
-    "LogD": 1.5,
-    "PAMPA": 1.0,
+    "pic50": 1.0,
+    "clearance_mouse": 3.0,
+    "clearance_human": 3.5,
+    "logd": 1.5,
+    "pampa": 1.0,
 }
 
 global assayed_molecules
@@ -60,13 +60,24 @@ def run_assays():
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
     assay_list = []
-    for label in ['pic50', 'clearance_mouse', 'clearance_human', 'logd', 'pampa']:
+
+    for label in ['pic50',
+                  'clearance_mouse',
+                  'clearance_human',
+                  'logd',
+                  'pampa']:
         if request.args.get(label) == "Yes":
             assay_list.append(label)
-    if (r_group_1_id, r_group_2_id) in assayed_molecules:
-        assayed_molecules[(r_group_1_id, r_group_2_id)].extend(assay_list)
+
+    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+    drug_properties = {label: drug_mol.drug_properties()[
+        label] for label in assay_list}
+    molecule_key = tuple2str((r_group_1_id, r_group_2_id))
+    if molecule_key not in assayed_molecules.keys():
+        assayed_molecules[molecule_key] = drug_properties
     else:
-        assayed_molecules[(r_group_1_id, r_group_2_id)] = assay_list
+        for label in assay_list:
+            assayed_molecules[molecule_key][label] = drug_properties[label]
     if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
         pass
     else:
@@ -75,12 +86,18 @@ def run_assays():
         pass
     else:
         time.append(time[-1] - max([assay_times[p] for p in assay_list]))
-    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
-    drug_properties = drug_mol.drug_properties()
-    return jsonify({drug_properties[label] for label in assayed_molecules[(r_group_1_id, r_group_2_id)]})
+    return jsonify({'assay_dict': assayed_molecules})
 
+
+def tuple2str(tuple_in):
+    string = ''
+    for i in tuple_in:
+        string += str(i)
+    return string
 
 # Pass molecule ID as query: /choose?r1=A01&r2=B10
+
+
 @app.route("/choose", methods=['POST'])
 def choose_molecule():
     if len(chosen_mol) > 0:
@@ -179,7 +196,7 @@ def molecule_img():
 
     bytestream = base_molecule.drawMoleculeAsByteStream(
         orient_with_scaffold=True, size=(800, 800)
-        )
+    )
     if r_group_1_id is not None and r_group_2_id is not None:
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()
