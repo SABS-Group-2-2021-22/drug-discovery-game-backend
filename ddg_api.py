@@ -7,27 +7,48 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*":
                             {"origins": "http://localhost:3000"}})
 
+global saved_mols
+# Can't serialize sets using json
+saved_mols = []
+
 
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
 
 
+# Pass molecule IDs as queries: /save?r1=A01&r2=B10
+@app.route("/save", methods=['POST'])
+def save_molecule():
+    r_group_1_id = request.args.get('r1')
+    r_group_2_id = request.args.get('r2')
+    if (r_group_1_id, r_group_2_id) not in saved_mols:
+        saved_mols.append((r_group_1_id, r_group_2_id))
+    print(saved_mols)
+    return jsonify({'saved_mols': saved_mols})
+
+
+@app.route("/savedmolecules")
+def return_saved_molecules():
+    return jsonify({'saved_mols': saved_mols})
+
+
 @app.route("/r-group-<string:r_group_id>")
 def rgroup_img(r_group_id):
-    """Returns image of R group specified by ID as a
-    bytestream to be rendered in a browser.
+    """Returns image and stats R group specified by ID as a
+    bytestream and dict to be rendered in a browser.
 
     :param r_group_id: ID number of R Group, eg. 'B26'
     :type r_group_id: String
-    :return: Image of R Group as bytstream in a json dict.
-    Access image bytestream with `img_html` key
+    :return: Image and stats of R Group in a json dict.
+    Access image bytestream with `img_html` key and stats with 'stats'
     :rtype: json dict
     """
-    smile_string = get_smile_string(r_group_id)
-    mol = Molecule(smile_string)
+    # smile_string = get_smile_string(r_group_id)
+    # mol = Molecule(smile_string)
+    mol = R_group(r_group_id)
     bytestream = mol.drawMoleculeAsByteStream()
-    stats_dict = (mol.descriptors())
+    stats_dict = mol.descriptors()
     return jsonify({'img_html': f"data:;base64,{bytestream}",
                     'stats': stats_dict})
 
@@ -43,7 +64,8 @@ def byte_image():
 # Pass R group IDs as queries: /molecule?r1=A01&r2=B10
 @app.route("/molecule")
 def molecule_img():
-    """Returns bytestream image of compund molecule consisting of
+    """Returns bytestream image  and drug properties
+    of compund molecule consisting of
     scaffold and up to two R Groups, if these are specified in
     the query parameters.
     Pass R group IDs as queries: /molecule?r1=A01&r2=B10
@@ -59,26 +81,24 @@ def molecule_img():
     r_group_2 = None
 
     scaffold_smiles = 'O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]'
-    molecule_smiles = scaffold_smiles
+
+    base_molecule = Molecule(scaffold_smiles)
 
     # Add R group one
     if r_group_1_id is not None:        # Check R1 was included in query
-        r_group_1 = get_smile_string(r_group_1_id)
+        r_group_1 = R_group(r_group_1_id)
         if r_group_1 is not None:       # Check R1 id was valid
-            molecule_smiles = add_r_group(molecule_smiles,
-                                          r_group_1,
-                                          r_group_nr=1)
+            base_molecule = r_group_1.add_r_group(base_molecule)
 
     # Add R group one
     if r_group_2_id is not None:        # Check R2 was included in query
-        r_group_2 = get_smile_string(r_group_2_id)
+        r_group_2 = R_group(r_group_2_id)
         if r_group_2 is not None:       # Check R2 id was valid
-            molecule_smiles = add_r_group(molecule_smiles,
-                                          r_group_2,
-                                          r_group_nr=2)
-    molecule = Molecule(molecule_smiles)
-    bytestream = molecule.drawMoleculeAsByteStream(orient_with_scaffold=True)
-    if r_group_1 is not None and r_group_2 is not None:
+            base_molecule = r_group_2.add_r_group(base_molecule)
+
+    bytestream = base_molecule.drawMoleculeAsByteStream(
+        orient_with_scaffold=True, size=(800, 800))
+    if r_group_1_id is not None and r_group_2_id is not None:
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()
     return jsonify({'img_html': f"data:;base64,{bytestream}",
