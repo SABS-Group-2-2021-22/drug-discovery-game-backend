@@ -7,10 +7,12 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*":
                             {"origins": "http://localhost:3000"}})
 
+# Temporary storage of data
 global saved_mols
-
-# Can't serialize sets using json
 saved_mols = []
+
+global assayed_molecules
+assayed_molecules = {}
 
 global chosen_mol
 chosen_mol = []
@@ -21,27 +23,6 @@ money = [100000.0]
 global time
 time = [30.0]
 
-global assay_prices
-assay_prices = {
-    "pic50": 70.0,
-    "clearance_mouse": 7000.0,
-    "clearance_human": 9000.0,
-    "logd": 1000.0,
-    "pampa": 700.0,
-}
-
-global assay_times
-assay_times = {
-    "pic50": 1.0,
-    "clearance_mouse": 3.0,
-    "clearance_human": 3.5,
-    "logd": 1.5,
-    "pampa": 1.0,
-}
-
-global assayed_molecules
-assayed_molecules = {}
-
 
 @app.route("/")
 def hello_world():
@@ -50,6 +31,11 @@ def hello_world():
 
 @app.route("/update_time_money")
 def update_time_and_money():
+    """Updates the time and money values
+
+    :returns: A json tuple of the latest money and time value.
+    :rtype: json tuple
+    """
     return jsonify((money[-1], time[-1]))
 
 
@@ -57,10 +43,38 @@ def update_time_and_money():
 # /assays?r1=A01&r2=B10&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes
 @app.route("/assays")
 def run_assays():
+    """Runs assays selected for a specific molecule, tracking the reduction of
+    time and money as a result.
+    The longest time of the assays being run is taken from the total amount of
+    time.
+    The sum of the cost of the assays is taken from the total amount of money.
+
+    :returns: A json dictionary of which molecules have been assayed, indexed
+    by the concatenated string of their R Group IDs, with the values being
+    which assays have been run and their values for all assays
+    :rtype: json dict
+    """
+
+    # The prices of each assay
+    assay_prices = {
+        "pic50": 70.0,
+        "clearance_mouse": 7000.0,
+        "clearance_human": 9000.0,
+        "logd": 1000.0,
+        "pampa": 700.0,
+    }
+    # How long each assay takes in weeks
+    assay_times = {
+        "pic50": 1.0,
+        "clearance_mouse": 3.0,
+        "clearance_human": 3.5,
+        "logd": 1.5,
+        "pampa": 1.0,
+    }
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
     assay_list = []
-
+    # Make a list of the assays being run
     for label in ['pic50',
                   'clearance_mouse',
                   'clearance_human',
@@ -90,16 +104,29 @@ def run_assays():
 
 
 def tuple2str(tuple_in):
+    """Converts a tuple into a string
+
+    :param tuple_in: tuple to convery
+    :type tuple_in: tuple
+    :returns: concatenated string version of the tuple
+    :rtype: str
+    """
     string = ''
     for i in tuple_in:
         string += str(i)
     return string
 
+
 # Pass molecule ID as query: /choose?r1=A01&r2=B10
-
-
 @app.route("/choose", methods=['POST'])
 def choose_molecule():
+    """Saves the final choice of molecule for the end of the game as a tuple of
+    the final molecule's R Group IDs.
+
+    :returns: Tuple of the R Group IDs as a json dict. Access tuple with
+    'chosen_mol' key.
+    :rtype: json dict
+    """
     if len(chosen_mol) > 0:
         return jsonify({'chosen_mol': chosen_mol})
     else:
@@ -111,12 +138,26 @@ def choose_molecule():
 
 @app.route("/chosenmolecule")
 def return_chosen_molecules():
+    """Returns the final choice of molecule for the end of the game as a json
+    dict containing the tuple of the final molecule's R Group IDs.
+
+    :returns: Tuple of the R Group IDs as a json dict. Access tuple with
+    'chosen_mol' key.
+    :rtype: json dict
+    """
     return jsonify({'chosen_mol': chosen_mol})
 
 
 # Pass molecule IDs as queries: /save?r1=A01&r2=B10
 @app.route("/save", methods=['POST'])
 def save_molecule():
+    """Saves a molecule from the front-end, storing in the back-end,
+    representing it as a pair of R Group IDs. Uses POST API call.
+
+    :return: List of tuples, containing the R Group IDs as a json dict. Access
+    list with 'saved_mols' key
+    :rtype: json dict
+    """
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
     if (r_group_1_id, r_group_2_id) not in saved_mols:
@@ -127,13 +168,22 @@ def save_molecule():
 
 @app.route("/savedmolecules")
 def return_saved_molecules():
+    """Returns the list of saved molecules as json dict of a list, containing
+    tuples of the R Group IDs. Currently a global variable in place of database
+    storage
+
+    :return: List of tuples, containing the R Group IDs as a json dict.
+    Access list with 'saved_mols' key.
+    :rtype: json dict
+    """
     return jsonify({'saved_mols': saved_mols})
 
 
+# REDUNDANT FUNCTION
 @app.route("/r-group-<string:r_group_id>")
 def rgroup_img(r_group_id):
-    """Returns image and stats R group specified by ID as a
-    bytestream and dict to be rendered in a browser.
+    """Returns image and stats R group specified by ID as a bytestream and dict
+    to be rendered in a browser.
 
     :param r_group_id: ID number of R Group, eg. 'B26'
     :type r_group_id: String
@@ -150,20 +200,11 @@ def rgroup_img(r_group_id):
                     'stats': stats_dict})
 
 
-@app.route("/byte-img")
-def byte_image():
-    smile_string = 'O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]'
-    mol = Molecule(smile_string)
-    bytestream = mol.drawMoleculeAsByteStream()
-    return f'<img src="data:;base64,{bytestream}"/>'
-
-
 # Pass R group IDs as queries: /molecule?r1=A01&r2=B10
 @app.route("/molecule")
 def molecule_img():
-    """Returns bytestream image  and drug properties
-    of compund molecule consisting of
-    scaffold and up to two R Groups, if these are specified in
+    """Returns bytestream image  and drug properties of compund molecule
+    consisting of scaffold and up to two R Groups, if these are specified in
     the query parameters.
     Pass R group IDs as queries: /molecule?r1=A01&r2=B10
     If no R groups are specified this returns the scaffold.
@@ -178,7 +219,6 @@ def molecule_img():
     r_group_2 = None
 
     scaffold_smiles = 'O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]'
-    # molecule_smiles = scaffold_smiles
 
     base_molecule = Molecule(scaffold_smiles)
 
@@ -202,43 +242,3 @@ def molecule_img():
         drug_property_dict = drug_mol.drug_properties()
     return jsonify({'img_html': f"data:;base64,{bytestream}",
                     'drug_props': drug_property_dict})
-
-
-def add_r_group(base_molecule_as_smiles, r_group_as_smiles, r_group_nr=1):
-    """Adds smile string of R group to scaffold smile string
-    and returns combined compound as SMILE string.
-
-    :param base_molecule_as_smiles: Scaffold molecule as SMILE string
-    :type base_molecule_as_smiles: String
-    :param r_group_as_smiles: R Group to be added to molecule as SMILE string
-    :type r_group_as_smiles: String
-    :param r_group_nr: R group number determines location where R-group is
-    attached to scaffold, defaults to 1
-    :type r_group_nr: int, optional
-    :return: Compound molecule as SMILE string
-    :rtype: String
-    """
-    new_mol = base_molecule_as_smiles + '.' + r_group_as_smiles
-    connection_site = str(7+r_group_nr)
-    new_mol = new_mol.replace(f'[*:{r_group_nr}]', connection_site)
-    new_mol = new_mol.replace('('+connection_site+')', connection_site)
-    return new_mol
-
-
-def get_smile_string(r_group_id):
-    """Retrieves smile string of rgroup by id
-
-    :param r_group_id: R Group ID
-    :type r_group_id: String
-    :param group_number: R Group, defaults to 1
-    :type group_number: int, optional
-    :return: smile string of R group
-    :rtype: String
-    """
-    group_number = 1 if r_group_id[0] == 'A' else 2
-    try:
-        mol = R_group(r_group_id, group_number)
-        smile_string = mol.get_smile_string
-    except ValueError('R group ID is invalid'):
-        smile_string = None
-    return smile_string
