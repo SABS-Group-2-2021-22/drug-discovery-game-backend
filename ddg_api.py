@@ -39,8 +39,6 @@ def update_time_and_money():
     return jsonify((money[-1], time[-1]))
 
 
-# Pass Yes/No for each assay as query, with the molecule as a key:
-# /assays?r1=A01&r2=B10&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes
 @app.route("/assays")
 def run_assays():
     """Runs assays selected for a specific molecule, tracking the reduction of
@@ -48,6 +46,9 @@ def run_assays():
     The longest time of the assays being run is taken from the total amount of
     time.
     The sum of the cost of the assays is taken from the total amount of money.
+    Pass R group IDs as queries: /assays?r1=A01&r2=B10... and Yes or No for
+    each assay,
+    ...&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes.
 
     :returns: A json dictionary of which molecules have been assayed, indexed
     by the concatenated string of their R Group IDs, with the values being
@@ -117,16 +118,17 @@ def tuple2str(tuple_in):
     return string
 
 
-# Pass molecule ID as query: /choose?r1=A01&r2=B10
 @app.route("/choose", methods=['POST'])
 def choose_molecule():
     """Saves the final choice of molecule for the end of the game as a tuple of
     the final molecule's R Group IDs.
+    Pass R group IDs as queries: /choose?r1=A01&r2=B10
 
     :returns: Tuple of the R Group IDs as a json dict. Access tuple with
     'chosen_mol' key.
     :rtype: json dict
     """
+    # Prevents overwrite if a molecule has already been chosen
     if len(chosen_mol) > 0:
         return jsonify({'chosen_mol': chosen_mol})
     else:
@@ -148,11 +150,11 @@ def return_chosen_molecules():
     return jsonify({'chosen_mol': chosen_mol})
 
 
-# Pass molecule IDs as queries: /save?r1=A01&r2=B10
 @app.route("/save", methods=['POST'])
 def save_molecule():
     """Saves a molecule from the front-end, storing in the back-end,
     representing it as a pair of R Group IDs. Uses POST API call.
+    Pass R group IDs as queries: /save?r1=A01&r2=B10
 
     :return: List of tuples, containing the R Group IDs as a json dict. Access
     list with 'saved_mols' key
@@ -177,27 +179,6 @@ def return_saved_molecules():
     :rtype: json dict
     """
     return jsonify({'saved_mols': saved_mols})
-
-
-# REDUNDANT FUNCTION
-@app.route("/r-group-<string:r_group_id>")
-def rgroup_img(r_group_id):
-    """Returns image and stats R group specified by ID as a bytestream and dict
-    to be rendered in a browser.
-
-    :param r_group_id: ID number of R Group, eg. 'B26'
-    :type r_group_id: String
-    :return: Image and stats of R Group in a json dict.
-    Access image bytestream with `img_html` key and stats with 'stats'
-    :rtype: json dict
-    """
-    # smile_string = get_smile_string(r_group_id)
-    # mol = Molecule(smile_string)
-    mol = R_group(r_group_id)
-    bytestream = mol.drawMoleculeAsByteStream()
-    stats_dict = mol.descriptors()
-    return jsonify({'img_html': f"data:;base64,{bytestream}",
-                    'stats': stats_dict})
 
 
 # Pass R group IDs as queries: /molecule?r1=A01&r2=B10
