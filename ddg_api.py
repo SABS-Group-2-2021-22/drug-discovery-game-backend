@@ -59,7 +59,7 @@ def run_assays():
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
     assay_list = []
-    for label in ['pIC50', 'c_mouse', 'LogD', 'PAMPA']:
+    for label in ['pIC50', 'c_mouse', 'c_human', 'LogD', 'PAMPA']:
         if request.args.get(label) == "Yes":
             assay_list.append(label)
     if (r_group_1_id, r_group_2_id) in assayed_molecules:
