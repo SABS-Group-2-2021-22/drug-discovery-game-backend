@@ -53,13 +53,13 @@ def update_time_and_money():
 
 
 # Pass Yes/No for each assay as query, with the molecule as a key:
-# /assays?r1=A01&r2=B10&pIC50=Yes&c_mouse=No&c_human=Yes&LogD=No&PAMPA=Yes
-@app.route("/assays", methods=['POST'])
+# /assays?r1=A01&r2=B10&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes
+@app.route("/assays")
 def run_assays():
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
     assay_list = []
-    for label in ['pIC50', 'c_mouse', 'c_human', 'LogD', 'PAMPA']:
+    for label in ['pic50', 'clearance_mouse', 'clearance_human', 'logd', 'pampa']:
         if request.args.get(label) == "Yes":
             assay_list.append(label)
     if (r_group_1_id, r_group_2_id) in assayed_molecules:
@@ -74,7 +74,9 @@ def run_assays():
         pass
     else:
         time.append(time[-1] - max([assay_times[p] for p in assay_list]))
-    return jsonify((money[-1], time[-1]))
+    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+    drug_properties = drug_mol.drug_properties()
+    return jsonify({drug_properties[label] for label in assayed_molecules[(r_group_1_id, r_group_2_id)]})
 
 
 # Pass molecule ID as query: /choose?r1=A01&r2=B10
