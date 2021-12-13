@@ -121,7 +121,6 @@ def save_molecule():
     r_group_2_id = request.args.get('r2')
     if (r_group_1_id, r_group_2_id) not in saved_mols:
         saved_mols.append((r_group_1_id, r_group_2_id))
-    print(saved_mols)
     return jsonify({'saved_mols': saved_mols})
 
 
