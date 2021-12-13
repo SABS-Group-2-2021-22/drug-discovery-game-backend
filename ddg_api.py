@@ -101,7 +101,7 @@ def run_assays():
         pass
     else:
         time.append(time[-1] - max([assay_times[p] for p in assay_list]))
-    return jsonify({'assay_dict': assayed_molecules})
+    return jsonify(assayed_molecules)
 
 
 def tuple2str(tuple_in):
@@ -179,6 +179,24 @@ def return_saved_molecules():
     :rtype: json dict
     """
     return jsonify({'saved_mols': saved_mols})
+
+
+@app.route("/r-group-<string:r_group_id>")
+def rgroup_img(r_group_id):
+    """Returns image and stats R group specified by ID as a bytestream and dict
+    to be rendered in a browser.
+
+    :param r_group_id: ID number of R Group, eg. 'B26'
+    :type r_group_id: String
+    :return: Image and stats of R Group in a json dict.
+    Access image bytestream with `img_html` key and stats with 'stats'
+    :rtype: json dict
+    """
+    mol = R_group(r_group_id)
+    bytestream = mol.drawMoleculeAsByteStream()
+    stats_dict = mol.descriptors()
+    return jsonify({'img_html': f"data:;base64,{bytestream}",
+                    'stats': stats_dict})
 
 
 # Pass R group IDs as queries: /molecule?r1=A01&r2=B10
