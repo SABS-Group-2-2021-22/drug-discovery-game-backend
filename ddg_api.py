@@ -81,7 +81,6 @@ def molecule_img():
     r_group_2 = None
 
     scaffold_smiles = 'O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]'
-    molecule_smiles = scaffold_smiles
 
     base_molecule = Molecule(scaffold_smiles)
 
@@ -97,7 +96,8 @@ def molecule_img():
         if r_group_2 is not None:       # Check R2 id was valid
             base_molecule = r_group_2.add_r_group(base_molecule)
 
-    bytestream = base_molecule.drawMoleculeAsByteStream(orient_with_scaffold=True, size=(800, 800))
+    bytestream = base_molecule.drawMoleculeAsByteStream(
+        orient_with_scaffold=True, size=(800, 800))
     if r_group_1_id is not None and r_group_2_id is not None:
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()

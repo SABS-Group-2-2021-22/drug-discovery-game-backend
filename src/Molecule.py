@@ -169,6 +169,7 @@ class Molecule:
 class R_group(Molecule):
     """Name of R group is of the form 'Axy' or 'Bxy' e.g. A01 etc.
     Number corresponds to whether it is an R1 or R2 group"""
+
     def __init__(self, name, number=None):
         self.name = name
         if number is None:
@@ -187,14 +188,14 @@ class R_group(Molecule):
         try:
             if self.number == 1:
                 rgroup_smiles = csv_file[csv_file['atag'] ==
-                                        self.name]['R1'].iloc[0]
+                                         self.name]['R1'].iloc[0]
             if self.number == 2:
                 rgroup_smiles = csv_file[csv_file['btag'] ==
-                                        self.name]['R2'].iloc[0]
+                                         self.name]['R2'].iloc[0]
         except ValueError('Invalid R Group ID'):
             raise ValueError('Invalid R Group ID')
         return(rgroup_smiles)
-    
+
     def add_r_group(self, base_molecule):
         new_mol = base_molecule.get_smile_string + '.' + self.get_smile_string
         connection_site = str(7+self.number)
@@ -207,6 +208,7 @@ class Scaffold_and_Rgroups(Molecule):
     # Can I also make this have R-group???
     """Add a R group to the old molecule (either the scaffold with R1 attached
     or just the scaffold)."""
+
     def ___init___(self, old_molecule, rgroup, number):
 
         self.old_molecule = old_molecule
@@ -226,6 +228,7 @@ class Scaffold_and_Rgroups(Molecule):
 
 class FinalMolecule(Molecule):
     """Final molecule with scaffold and two R groups."""
+
     def __init__(self, rgroup1, rgroup2):
         # Name of R groups should be in the form 'Axy' or 'Bxy' e.g. A01 etc.
         self.rgroup1 = rgroup1
@@ -234,12 +237,12 @@ class FinalMolecule(Molecule):
     def drug_properties(self):
         """Selects properties of the final drug from the data."""
         drug_properties = [
-                            'pic50',
-                            'clearance_mouse',
-                            'clearance_human',
-                            'logd',
-                            'pampa'
-                            ]
+            'pic50',
+            'clearance_mouse',
+            'clearance_human',
+            'logd',
+            'pampa'
+        ]
         drug_property_dict = {}
         for d in drug_properties:
             value = csv_file[csv_file['atag'] == self.rgroup1]
