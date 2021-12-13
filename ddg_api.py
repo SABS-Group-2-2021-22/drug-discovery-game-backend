@@ -8,13 +8,110 @@ cors = CORS(app, resources={r"/*":
                             {"origins": "http://localhost:3000"}})
 
 global saved_mols
+
 # Can't serialize sets using json
 saved_mols = []
+
+global chosen_mol
+chosen_mol = []
+
+global money
+money = [100000.0]
+
+global time
+time = [30.0]
+
+global assay_prices
+assay_prices = {
+    "pic50": 70.0,
+    "clearance_mouse": 7000.0,
+    "clearance_human": 9000.0,
+    "logd": 1000.0,
+    "pampa": 700.0,
+}
+
+global assay_times
+assay_times = {
+    "pic50": 1.0,
+    "clearance_mouse": 3.0,
+    "clearance_human": 3.5,
+    "logd": 1.5,
+    "pampa": 1.0,
+}
+
+global assayed_molecules
+assayed_molecules = {}
 
 
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
+
+
+@app.route("/update_time_money")
+def update_time_and_money():
+    return jsonify((money[-1], time[-1]))
+
+
+# Pass Yes/No for each assay as query, with the molecule as a key:
+# /assays?r1=A01&r2=B10&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes
+@app.route("/assays")
+def run_assays():
+    r_group_1_id = request.args.get('r1')
+    r_group_2_id = request.args.get('r2')
+    assay_list = []
+
+    for label in ['pic50',
+                  'clearance_mouse',
+                  'clearance_human',
+                  'logd',
+                  'pampa']:
+        if request.args.get(label) == "Yes":
+            assay_list.append(label)
+
+    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+    drug_properties = {label: drug_mol.drug_properties()[
+        label] for label in assay_list}
+    molecule_key = tuple2str((r_group_1_id, r_group_2_id))
+    if molecule_key not in assayed_molecules.keys():
+        assayed_molecules[molecule_key] = drug_properties
+    else:
+        for label in assay_list:
+            assayed_molecules[molecule_key][label] = drug_properties[label]
+    if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
+        pass
+    else:
+        money.append(money[-1] - sum([assay_prices[p] for p in assay_list]))
+    if time[-1] - max([assay_times[p] for p in assay_list]) < 0:
+        pass
+    else:
+        time.append(time[-1] - max([assay_times[p] for p in assay_list]))
+    return jsonify({'assay_dict': assayed_molecules})
+
+
+def tuple2str(tuple_in):
+    string = ''
+    for i in tuple_in:
+        string += str(i)
+    return string
+
+# Pass molecule ID as query: /choose?r1=A01&r2=B10
+
+
+@app.route("/choose", methods=['POST'])
+def choose_molecule():
+    if len(chosen_mol) > 0:
+        return jsonify({'chosen_mol': chosen_mol})
+    else:
+        r_group_1_id = request.args.get('r1')
+        r_group_2_id = request.args.get('r2')
+        chosen_mol.append((r_group_1_id, r_group_2_id))
+        return jsonify({'chosen_mol': chosen_mol})
+
+
+@app.route("/chosenmolecule")
+def return_chosen_molecules():
+    return jsonify({'chosen_mol': chosen_mol})
 
 
 # Pass molecule IDs as queries: /save?r1=A01&r2=B10
@@ -24,7 +121,6 @@ def save_molecule():
     r_group_2_id = request.args.get('r2')
     if (r_group_1_id, r_group_2_id) not in saved_mols:
         saved_mols.append((r_group_1_id, r_group_2_id))
-    print(saved_mols)
     return jsonify({'saved_mols': saved_mols})
 
 
@@ -81,6 +177,7 @@ def molecule_img():
     r_group_2 = None
 
     scaffold_smiles = 'O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]'
+    # molecule_smiles = scaffold_smiles
 
     base_molecule = Molecule(scaffold_smiles)
 
@@ -97,7 +194,8 @@ def molecule_img():
             base_molecule = r_group_2.add_r_group(base_molecule)
 
     bytestream = base_molecule.drawMoleculeAsByteStream(
-        orient_with_scaffold=True, size=(800, 800))
+        orient_with_scaffold=True, size=(800, 800)
+    )
     if r_group_1_id is not None and r_group_2_id is not None:
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()
