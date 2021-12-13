@@ -39,6 +39,9 @@ assay_times = {
     "PAMPA": 1.0,
 }
 
+global assayed_molecules
+assayed_molecules = {}
+
 
 @app.route("/")
 def hello_world():
@@ -50,14 +53,20 @@ def update_time_and_money():
     return jsonify((money[-1], time[-1]))
 
 
-# Pass Yes/No for each assay as query:
-# /assays?pIC50=Yes&c_mouse=No&c_human=Yes&LogD=No&PAMPA=Yes
-@app.route("/assays", methods=['POST'])
+# Pass Yes/No for each assay as query, with the molecule as a key:
+# /assays?r1=A01&r2=B10&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes
+@app.route("/assays")
 def run_assays():
+    r_group_1_id = request.args.get('r1')
+    r_group_2_id = request.args.get('r2')
     assay_list = []
-    for label in ['pIC50', 'c_mouse', 'LogD', 'PAMPA']:
+    for label in ['pic50', 'clearance_mouse', 'clearance_human', 'logd', 'pampa']:
         if request.args.get(label) == "Yes":
             assay_list.append(label)
+    if (r_group_1_id, r_group_2_id) in assayed_molecules:
+        assayed_molecules[(r_group_1_id, r_group_2_id)].extend(assay_list)
+    else:
+        assayed_molecules[(r_group_1_id, r_group_2_id)] = assay_list
     if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
         pass
     else:
@@ -66,7 +75,9 @@ def run_assays():
         pass
     else:
         time.append(time[-1] - max([assay_times[p] for p in assay_list]))
-    return jsonify((money[-1], time[-1]))
+    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+    drug_properties = drug_mol.drug_properties()
+    return jsonify({drug_properties[label] for label in assayed_molecules[(r_group_1_id, r_group_2_id)]})
 
 
 # Pass molecule ID as query: /choose?r1=A01&r2=B10
