@@ -25,6 +25,8 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         pip install coverage codecov
+        $CONDA/bin/conda install pandas numpy matplotlib flask flake8
+        $CONDA/bin/conda install -c conda-forge rdkit
     - name: Run coverage
       run: |
         coverage run -m unittest
