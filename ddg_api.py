@@ -82,7 +82,8 @@ def run_assays():
         if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
             pass
         else:
-            money.append(money[-1] - sum([assay_prices[p] for p in assay_list]))
+            money.append(money[-1] - sum([assay_prices[p]
+                         for p in assay_list]))
         if time[-1] - max([assay_times[p] for p in assay_list]) < 0:
             pass
         else:
