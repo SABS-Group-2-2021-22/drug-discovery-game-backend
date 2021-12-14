@@ -235,11 +235,13 @@ class FinalMolecule(Molecule):
         self.rgroup2 = rgroup2
         mol_smiles = self.build_final_smiles()
         super().__init__(mol_smiles)
-    
+
     def build_final_smiles(self):
         r_group_mol_1 = R_group(self.rgroup1, 1)
         r_group_mol_2 = R_group(self.rgroup2, 2)
-        intermediate_mol = r_group_mol_1.add_r_group(Molecule('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]'))
+        intermediate_mol = r_group_mol_1.add_r_group(
+            Molecule('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
+            )
         final_mol = r_group_mol_2.add_r_group(intermediate_mol)
         return(final_mol.get_smile_string)
 
