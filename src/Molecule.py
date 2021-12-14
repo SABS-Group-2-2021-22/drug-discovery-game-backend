@@ -88,16 +88,11 @@ class Molecule:
         | Number of violations and 'fails' or passes'
         :rtype: int, String
         """
-        violations = [desc_dict['MW'] >= 500.0,
-                      desc_dict['h_acc'] > 10,
-                      desc_dict['h_don'] > 5,
-                      desc_dict['logP'] >= 5
-                      ].count(True)
-        if violations > 1:
-            result = 'fails'
-        else:
-            result = 'passes'
-        return violations, result
+        violations = {'MW': desc_dict['MW'] < 500.0,
+                      'h_acc': desc_dict['h_acc'] <= 10,
+                      'h_don': desc_dict['h_don'] <= 5,
+                      'logP': desc_dict['logP'] < 5}
+        return violations
 
 # csv_file = pd.read_csv('r_group_decomp.csv')
     def draw_molecule(self, drawn_file_name, orient_with_scaffold):
@@ -145,25 +140,36 @@ class Molecule:
 
     def filter_properties(self):
         """See whether molecule passes or fails FILTERS"""
-        params = FilterCatalogParams()
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.PAINS_A)
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.PAINS_B)
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.PAINS_C)
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.ZINC)
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.BRENK)
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.NIH)
-        catalog = FilterCatalog(params)
+        pains_params = FilterCatalogParams()
+        pains_params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_A)
+        pains_params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_B)
+        pains_params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_C)
+
+        zinc_params = FilterCatalogParams()
+        zinc_params.AddCatalog(FilterCatalogParams.FilterCatalogs.ZINC)
+
+        brenk_params = FilterCatalogParams()
+        brenk_params.AddCatalog(FilterCatalogParams.FilterCatalogs.BRENK)
+
+        nih_params = FilterCatalogParams()
+        nih_params.AddCatalog(FilterCatalogParams.FilterCatalogs.NIH)
+
+        params = [pains_params, zinc_params, brenk_params, nih_params]
+        filt_names = ['PAINS', 'ZINC', 'BRENK', 'NIH']
         mol = Chem.MolFromSmiles(self.__mol_smiles)
-        if catalog.HasMatch(mol):
-            return "FAIL FILTERS"
-        else:
-            return "PASSED FILTERS"
+        all_warnings = {}
+
+        for param, name in zip(params, filt_names):
+            catalog = FilterCatalog(param)
+            entries = catalog.GetMatches(mol)
+            warnings = []
+            for e in entries:
+                warnings.append(e.GetDescription())
+            if len(warnings) != 0:
+                all_warnings[name] = warnings
+            else:
+                all_warnings[name] = 'passing'
+        return all_warnings
 
 
 class R_group(Molecule):
@@ -233,6 +239,17 @@ class FinalMolecule(Molecule):
         # Name of R groups should be in the form 'Axy' or 'Bxy' e.g. A01 etc.
         self.rgroup1 = rgroup1
         self.rgroup2 = rgroup2
+        mol_smiles = self.build_final_smiles()
+        super().__init__(mol_smiles)
+
+    def build_final_smiles(self):
+        r_group_mol_1 = R_group(self.rgroup1, 1)
+        r_group_mol_2 = R_group(self.rgroup2, 2)
+        intermediate_mol = r_group_mol_1.add_r_group(
+            Molecule('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
+            )
+        final_mol = r_group_mol_2.add_r_group(intermediate_mol)
+        return(final_mol.get_smile_string)
 
     def drug_properties(self):
         """Selects properties of the final drug from the data."""
