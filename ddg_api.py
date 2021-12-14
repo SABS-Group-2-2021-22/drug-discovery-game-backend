@@ -55,6 +55,7 @@ def tuple2str(tuple_in):
         string += str(i)
     return string
 
+
 # e.g. http://127.0.0.1:5000/lipinski?r1=A01&r2=B01
 @app.route("/lipinski")
 def run_lipinski():
@@ -74,7 +75,8 @@ def run_lipinski():
     return jsonify({"lipinski_dict": lipinski_dict})
 
 
-# e.g. http://127.0.0.1:5000/assays?r1=A01&r2=B01&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes
+# e.g. http://127.0.0.1:5000/assays?r1=A01&r2=B01&pic50=Yes&clearance_mouse=No&
+# clearance_human=Yes&logd=No&pampa=Yes
 @app.route("/assays")
 def run_assays():
     """Runs assays selected for a specific molecule, tracking the reduction of
@@ -143,6 +145,7 @@ def run_assays():
         time.append(time[-1] - max([assay_times[p] for p in assay_list]))
     return jsonify({"assay_dict": assay_dict})
 
+
 # e.g. http://127.0.0.1:5000/descriptors?r1=A01&r2=B01
 @app.route("/descriptors")
 def run_descriptors():
@@ -180,7 +183,7 @@ def run_filters():
             pass
         else:
             molecule_info[molecule_key]["filters"] = {}
-        molecule_info[molecule_key]["filters"][label] = drug_filters[label] 
+        molecule_info[molecule_key]["filters"][label] = drug_filters[label]
         filt_dict[molecule_key][label] = drug_filters[label]
     return jsonify({"filter_dict": filt_dict})
 
@@ -216,7 +219,8 @@ def return_chosen_molecules():
     """
     return jsonify({'chosen_mol': chosen_mol})
 
-#http://127.0.0.1:5000/save?r1=A01&r2=B01
+
+# http://127.0.0.1:5000/save?r1=A01&r2=B01
 @app.route("/save", methods=['POST'])
 def save_molecule():
     """Saves a molecule from the front-end, storing in the back-end,
@@ -237,7 +241,7 @@ def save_molecule():
     return jsonify({'saved_mols': list_saved_mols})
 
 
-#http://127.0.0.1:5000/savedmolecules
+# http://127.0.0.1:5000/savedmolecules
 @app.route("/savedmolecules")
 def return_saved_molecules():
     """Returns the list of saved molecules as json dict of a list, containing

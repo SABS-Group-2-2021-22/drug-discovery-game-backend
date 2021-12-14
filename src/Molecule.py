@@ -91,8 +91,7 @@ class Molecule:
         violations = {'MW': desc_dict['MW'] < 500.0,
                       'h_acc': desc_dict['h_acc'] <= 10,
                       'h_don': desc_dict['h_don'] <= 5,
-                      'logP': desc_dict['logP'] < 5
-                    }
+                      'logP': desc_dict['logP'] < 5}
         return violations
 
 # csv_file = pd.read_csv('r_group_decomp.csv')
@@ -170,7 +169,6 @@ class Molecule:
                 all_warnings[name] = warnings
             else:
                 all_warnings[name] = 'passing'
-    
         return all_warnings
 
 
