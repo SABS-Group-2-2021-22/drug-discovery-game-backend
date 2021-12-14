@@ -78,14 +78,16 @@ def run_assays():
     else:
         for label in assay_list:
             assayed_molecules[molecule_key][label] = drug_properties[label]
-    if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
-        pass
-    else:
-        money.append(money[-1] - sum([assay_prices[p] for p in assay_list]))
-    if time[-1] - max([assay_times[p] for p in assay_list]) < 0:
-        pass
-    else:
-        time.append(time[-1] - max([assay_times[p] for p in assay_list]))
+    if len(assay_list) > 0:
+        if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
+            pass
+        else:
+            money.append(money[-1] - sum([assay_prices[p]
+                         for p in assay_list]))
+        if time[-1] - max([assay_times[p] for p in assay_list]) < 0:
+            pass
+        else:
+            time.append(time[-1] - max([assay_times[p] for p in assay_list]))
     return jsonify({'assay_dict': assayed_molecules})
 
 
