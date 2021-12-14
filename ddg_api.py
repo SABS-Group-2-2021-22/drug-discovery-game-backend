@@ -198,7 +198,6 @@ def rgroup_img(r_group_id):
                     'stats': stats_dict})
 
 
-# Pass R group IDs as queries: /molecule?r1=A01&r2=B10
 @app.route("/molecule")
 def molecule_img():
     """Returns bytestream image  and drug properties of compund molecule
