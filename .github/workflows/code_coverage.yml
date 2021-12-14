@@ -5,9 +5,9 @@ name: Run coverage test
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -22,15 +22,15 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        pip install coverage codecov
+        $CONDA/bin/conda install -c conda-forge codecov
+        $CONDA/bin/conda install pandas numpy matplotlib flask flake8
+        $CONDA/bin/conda install -c conda-forge rdkit
     - name: Run coverage
       run: |
-        coverage run -m unittest
+        $CONDA/bin/coverage run -m unittest
     - name: Run codecov
       if: success()
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN  }}
       run: |
-        codecov
+        $CONDA/bin/codecov

@@ -31,19 +31,33 @@ class TestMolecule(unittest.TestCase):
 
     def test_filter_passes(self):
         """Tests a molecule correctly passes the filters"""
-        message = "PASSED FILTERS"
+        message = {
+            'PAINS': 'passing',
+            'ZINC': 'passing',
+            'BRENK': 'passing',
+            'NIH': 'passing'
+        }
         passing_mol = Molecule('CC')
         self.assertEqual(passing_mol.filter_properties(), message)
 
     def test_filter_fails(self):
         """Tests a molecule containing a thiocarbonyl fails the filter"""
-        message = "FAIL FILTERS"
+        message = {
+            'PAINS': ['thio_keto_het(2)'],
+            'ZINC': 'passing',
+            'BRENK': ['Thiocarbonyl_group'],
+            'NIH': 'passing'}
         failing_mol = Molecule('O=C(NC(C1=C(C)C=C2N1C=CC=C2)=S)C3=CC=CC=C3')
         self.assertEqual(failing_mol.filter_properties(), message)
 
     def test_lipinski_no_violations(self):
         """Tests water correctly passes the Lipsinki rule of 5."""
-        message = 0, "passes"
+        message = {
+            'MW': True,
+            'h_acc': True,
+            'h_don': True,
+            'logP': True
+            }
         no_violation_molecule = Molecule('O')
         descriptors = no_violation_molecule.descriptors()
         self.assertEqual(no_violation_molecule.lipinski(descriptors), message)
@@ -51,7 +65,12 @@ class TestMolecule(unittest.TestCase):
     def test_lipinski_no_violations2(self):
         """Tests glucose (an edge case with h_don = 5) correctly
         passes the Lipsinki rule of 5."""
-        message = 0, "passes"
+        message = {
+                'MW': True,
+                'h_acc': True,
+                'h_don': True,
+                'logP': True
+            }
         no_violation_molecule2 = Molecule('C(C1C(C(C(C(O1)O)O)O)O)O')
         descriptors = no_violation_molecule2.descriptors()
         self.assertEqual(no_violation_molecule2.lipinski(descriptors), message)
@@ -59,7 +78,12 @@ class TestMolecule(unittest.TestCase):
     def test_lipinski_one_violation(self):
         """Tests that cholestrol fails one Lipinski rule and
         passses the rest"""
-        message = 1, "passes"
+        message = {
+            'MW': True,
+            'h_acc': True,
+            'h_don': True,
+            'logP': False
+            }
         one_violation_molecule = Molecule('CC(C)CCCC(C)C1CCC2C1(CCC3C2CC=C4C3('
                                           'CCC(C4)O)C)C')
         descriptors = one_violation_molecule.descriptors()
@@ -68,7 +92,12 @@ class TestMolecule(unittest.TestCase):
     def test_lipinski_fails(self):
         """Tests that Dextran fails the Lipinski rule of 5 and
         violates 3 of the 4 rules."""
-        message = 3, "fails"
+        message = {
+            'MW': False,
+            'h_acc': False,
+            'h_don': False,
+            'logP': True
+            }
         one_violation_molecule = Molecule('C(C1C(C(C(C(O1)OCC2C(C(C(C(O2)OCC('
                                           'C(C(C(C=O)O)O)O)O)O)O)O)O)O)O)O')
         descriptors = one_violation_molecule.descriptors()
