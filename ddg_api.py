@@ -101,7 +101,7 @@ def run_assays():
         pass
     else:
         time.append(time[-1] - max([assay_times[p] for p in assay_list]))
-    return jsonify(assayed_molecules)
+    return jsonify({"assay_dict": assayed_molecules})
 
 
 def tuple2str(tuple_in):
