@@ -39,6 +39,20 @@ def update_time_and_money():
     return jsonify((money[-1], time[-1]))
 
 
+def tuple2str(tuple_in):
+    """Converts a tuple into a string
+
+    :param tuple_in: tuple to convery
+    :type tuple_in: tuple
+    :returns: concatenated string version of the tuple
+    :rtype: str
+    """
+    string = ''
+    for i in tuple_in:
+        string += str(i)
+    return string
+
+
 @app.route("/assays")
 def run_assays():
     """Runs assays selected for a specific molecule, tracking the reduction of
@@ -103,19 +117,34 @@ def run_assays():
         time.append(time[-1] - max([assay_times[p] for p in assay_list]))
     return jsonify({"assay_dict": assayed_molecules})
 
+# e.g. http://127.0.0.1:5000/descriptors?r1=A01&r2=B01
+@app.route("/descriptors")
+def run_descriptors():
+    descriptor_list = ['MW', 'logP', 'TPSA', 'HA', 'h_acc', 'h_don', 'rings']
+    r_group_1_id = request.args.get('r1')
+    r_group_2_id = request.args.get('r2')
+    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+    drug_descriptors = {label: drug_mol.descriptors()[label] for label in descriptor_list}
+    molecule_key = tuple2str((r_group_1_id, r_group_2_id))
+    if molecule_key not in assayed_molecules:
+        assayed_molecules[molecule_key] = drug_descriptors
+    else:
+        for label in descriptor_list:
+            assayed_molecules[molecule_key][label] = drug_descriptors[label]
+    return jsonify({"assay_dict": assayed_molecules})
 
-def tuple2str(tuple_in):
-    """Converts a tuple into a string
 
-    :param tuple_in: tuple to convery
-    :type tuple_in: tuple
-    :returns: concatenated string version of the tuple
-    :rtype: str
-    """
-    string = ''
-    for i in tuple_in:
-        string += str(i)
-    return string
+@app.route("/filters")
+def run_filters():
+    r_group_1_id = request.args.get('r1')
+    r_group_2_id = request.args.get('r2')
+    if (r_group_1_id, r_group_2_id) in assayed_molecules:
+        assayed_molecules[(r_group_1_id, r_group_2_id)].extend(['filters'])
+    else:
+        assayed_molecules[(r_group_1_id, r_group_2_id)] = ['filters']
+    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+    filters = drug_mol.filter_properties()
+    return jsonify({'filters': filters})
 
 
 @app.route("/choose", methods=['POST'])
