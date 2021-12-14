@@ -88,16 +88,12 @@ class Molecule:
         | Number of violations and 'fails' or passes'
         :rtype: int, String
         """
-        violations = [desc_dict['MW'] >= 500.0,
-                      desc_dict['h_acc'] > 10,
-                      desc_dict['h_don'] > 5,
-                      desc_dict['logP'] >= 5
-                      ].count(True)
-        if violations > 1:
-            result = 'fails'
-        else:
-            result = 'passes'
-        return violations, result
+        violations = {'MW': desc_dict['MW'] < 500.0,
+                      'h_acc': desc_dict['h_acc'] <= 10,
+                      'h_don': desc_dict['h_don'] <= 5,
+                      'logP': desc_dict['logP'] < 5
+                    }
+        return violations
 
 # csv_file = pd.read_csv('r_group_decomp.csv')
     def draw_molecule(self, drawn_file_name, orient_with_scaffold):

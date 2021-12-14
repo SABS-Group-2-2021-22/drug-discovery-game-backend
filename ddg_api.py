@@ -8,9 +8,6 @@ cors = CORS(app, resources={r"/*":
                             {"origins": "http://localhost:3000"}})
 
 # Temporary storage of data
-global saved_mols
-saved_mols = []
-
 global molecule_info
 molecule_info = {}
 
@@ -57,6 +54,24 @@ def tuple2str(tuple_in):
     for i in tuple_in:
         string += str(i)
     return string
+
+# e.g. http://127.0.0.1:5000/lipinski?r1=A01&r2=B01
+@app.route("/lipinski")
+def run_lipinski():
+    lipinski_list = ['MW', 'logP', 'h_acc', 'h_don']
+    r_group_1_id = request.args.get('r1')
+    r_group_2_id = request.args.get('r2')
+    molecule_key = tuple2str((r_group_1_id, r_group_2_id))
+    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+    drug_lipinski = drug_mol.lipinski(drug_mol.descriptors())
+    lipinski_dict = {molecule_key: drug_lipinski}
+    for label in lipinski_list:
+        if "lipinski" in molecule_info[molecule_key].keys():
+            pass
+        else:
+            molecule_info[molecule_key]["lipinski"] = {}
+        molecule_info[molecule_key]["lipinski"][label] = drug_lipinski[label]
+    return jsonify({"lipinski_dict": lipinski_dict})
 
 
 # e.g. http://127.0.0.1:5000/assays?r1=A01&r2=B01&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes
