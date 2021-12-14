@@ -11,8 +11,8 @@ cors = CORS(app, resources={r"/*":
 global saved_mols
 saved_mols = []
 
-global assayed_molecules
-assayed_molecules = {}
+global molecule_info
+molecule_info = {}
 
 global chosen_mol
 chosen_mol = []
@@ -27,6 +27,12 @@ time = [30.0]
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
+
+
+# e.g. http://127.0.0.1:5000/get_all_mol_info
+@app.route("/get_all_mol_info")
+def get_all_mol_info():
+    return jsonify(molecule_info)
 
 
 @app.route("/update_time_money")
@@ -53,6 +59,7 @@ def tuple2str(tuple_in):
     return string
 
 
+# e.g. http://127.0.0.1:5000/assays?r1=A01&r2=B01&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes
 @app.route("/assays")
 def run_assays():
     """Runs assays selected for a specific molecule, tracking the reduction of
@@ -60,7 +67,7 @@ def run_assays():
     The longest time of the assays being run is taken from the total amount of
     time.
     The sum of the cost of the assays is taken from the total amount of money.
-    Pass R group IDs as queries: /assays?r1=A01&r2=B10... and Yes or No for
+    Pass R group IDs as queries: /assays?r1=A01&r2=B01... and Yes or No for
     each assay,
     ...&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes.
 
@@ -102,11 +109,15 @@ def run_assays():
     drug_properties = {label: drug_mol.drug_properties()[
         label] for label in assay_list}
     molecule_key = tuple2str((r_group_1_id, r_group_2_id))
-    if molecule_key not in assayed_molecules.keys():
-        assayed_molecules[molecule_key] = drug_properties
-    else:
-        for label in assay_list:
-            assayed_molecules[molecule_key][label] = drug_properties[label]
+    assay_dict = {}
+    assay_dict[molecule_key] = {}
+    for label in assay_list:
+        if "assays" in molecule_info[molecule_key].keys():
+            pass
+        else:
+            molecule_info[molecule_key]["assays"] = {}
+        molecule_info[molecule_key]["assays"][label] = drug_properties[label]
+        assay_dict[molecule_key][label] = drug_properties[label]
     if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
         pass
     else:
@@ -115,36 +126,48 @@ def run_assays():
         pass
     else:
         time.append(time[-1] - max([assay_times[p] for p in assay_list]))
-    return jsonify({"assay_dict": assayed_molecules})
+    return jsonify({"assay_dict": assay_dict})
 
 # e.g. http://127.0.0.1:5000/descriptors?r1=A01&r2=B01
 @app.route("/descriptors")
 def run_descriptors():
-    descriptor_list = ['MW', 'logP', 'TPSA', 'HA', 'h_acc', 'h_don', 'rings']
+    desc_list = ['MW', 'logP', 'TPSA', 'HA', 'h_acc', 'h_don', 'rings']
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
     drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
-    drug_descriptors = {label: drug_mol.descriptors()[label] for label in descriptor_list}
+    drug_desc = {label: drug_mol.descriptors()[label] for label in desc_list}
     molecule_key = tuple2str((r_group_1_id, r_group_2_id))
-    if molecule_key not in assayed_molecules:
-        assayed_molecules[molecule_key] = drug_descriptors
-    else:
-        for label in descriptor_list:
-            assayed_molecules[molecule_key][label] = drug_descriptors[label]
-    return jsonify({"assay_dict": assayed_molecules})
+    desc_dict = {}
+    desc_dict[molecule_key] = {}
+    for label in desc_list:
+        if "descriptors" in molecule_info[molecule_key].keys():
+            pass
+        else:
+            molecule_info[molecule_key]["descriptors"] = {}
+        molecule_info[molecule_key]["descriptors"][label] = drug_desc[label]
+        desc_dict[molecule_key][label] = drug_desc[label]
+    return jsonify({"desc_dict": desc_dict})
 
 
+# e.g. http://127.0.0.1:5000/filters?r1=A01&r2=B01
 @app.route("/filters")
 def run_filters():
+    filter_names = ['PAINS', 'ZINC', 'BRENK', 'NIH']
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
-    if (r_group_1_id, r_group_2_id) in assayed_molecules:
-        assayed_molecules[(r_group_1_id, r_group_2_id)].extend(['filters'])
-    else:
-        assayed_molecules[(r_group_1_id, r_group_2_id)] = ['filters']
     drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
-    filters = drug_mol.filter_properties()
-    return jsonify({'filters': filters})
+    drug_filters = drug_mol.filter_properties()
+    molecule_key = tuple2str((r_group_1_id, r_group_2_id))
+    filt_dict = {}
+    filt_dict[molecule_key] = {}
+    for label in filter_names:
+        if "filters" in molecule_info[molecule_key].keys():
+            pass
+        else:
+            molecule_info[molecule_key]["filters"] = {}
+        molecule_info[molecule_key]["filters"][label] = drug_filters[label] 
+        filt_dict[molecule_key][label] = drug_filters[label]
+    return jsonify({"filter_dict": filt_dict})
 
 
 @app.route("/choose", methods=['POST'])
@@ -178,7 +201,7 @@ def return_chosen_molecules():
     """
     return jsonify({'chosen_mol': chosen_mol})
 
-
+#http://127.0.0.1:5000/save?r1=A01&r2=B01
 @app.route("/save", methods=['POST'])
 def save_molecule():
     """Saves a molecule from the front-end, storing in the back-end,
@@ -191,11 +214,15 @@ def save_molecule():
     """
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
-    if (r_group_1_id, r_group_2_id) not in saved_mols:
-        saved_mols.append((r_group_1_id, r_group_2_id))
-    return jsonify({'saved_mols': saved_mols})
+    molecule_key = tuple2str((r_group_1_id, r_group_2_id))
+    if molecule_key not in molecule_info:
+        molecule_info[molecule_key] = {}
+        molecule_info[molecule_key]["keys"] = (r_group_1_id, r_group_2_id)
+    list_saved_mols = [molecule_info[m]["keys"] for m in molecule_info.keys()]
+    return jsonify({'saved_mols': list_saved_mols})
 
 
+#http://127.0.0.1:5000/savedmolecules
 @app.route("/savedmolecules")
 def return_saved_molecules():
     """Returns the list of saved molecules as json dict of a list, containing
@@ -206,7 +233,8 @@ def return_saved_molecules():
     Access list with 'saved_mols' key.
     :rtype: json dict
     """
-    return jsonify({'saved_mols': saved_mols})
+    list_saved_mols = [molecule_info[m]["keys"] for m in molecule_info.keys()]
+    return jsonify({'saved_mols': list_saved_mols})
 
 
 @app.route("/r-group-<string:r_group_id>")

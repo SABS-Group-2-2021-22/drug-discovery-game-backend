@@ -145,25 +145,37 @@ class Molecule:
 
     def filter_properties(self):
         """See whether molecule passes or fails FILTERS"""
-        params = FilterCatalogParams()
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.PAINS_A)
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.PAINS_B)
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.PAINS_C)
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.ZINC)
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.BRENK)
-        params.AddCatalog(FilterCatalogParams.
-                          FilterCatalogs.NIH)
-        catalog = FilterCatalog(params)
+        pains_params = FilterCatalogParams()
+        pains_params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_A)
+        pains_params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_B)
+        pains_params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_C)
+
+        zinc_params = FilterCatalogParams()
+        zinc_params.AddCatalog(FilterCatalogParams.FilterCatalogs.ZINC)
+
+        brenk_params = FilterCatalogParams()
+        brenk_params.AddCatalog(FilterCatalogParams.FilterCatalogs.BRENK)
+
+        nih_params = FilterCatalogParams()
+        nih_params.AddCatalog(FilterCatalogParams.FilterCatalogs.NIH)
+
+        params = [pains_params, zinc_params, brenk_params, nih_params]
+        filt_names = ['PAINS', 'ZINC', 'BRENK', 'NIH']
         mol = Chem.MolFromSmiles(self.__mol_smiles)
-        if catalog.HasMatch(mol):
-            return "FAIL FILTERS"
-        else:
-            return "PASSED FILTERS"
+        all_warnings = {}
+
+        for param, name in zip(params, filt_names):
+            catalog = FilterCatalog(param)
+            entries = catalog.GetMatches(mol)
+            warnings = []
+            for e in entries:
+                warnings.append(e.GetDescription())
+            if len(warnings) != 0:
+                all_warnings[name] = warnings
+            else:
+                all_warnings[name] = 'passing'
+    
+        return all_warnings
 
 
 class R_group(Molecule):
