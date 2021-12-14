@@ -319,4 +319,12 @@ def molecule_img():
                     'drug_props': drug_property_dict})
 
 
-
+@app.route("/getplotdata")
+def return_assayed_data():
+    data = {}
+    for k,v in molecule_info.items():
+        data[k] = v['assays']
+    for k,v in data.items():
+        v['--'] = 0
+    print (data)
+    return jsonify({'assay_dict': [data]})
