@@ -1,4 +1,5 @@
 [![codecov](https://codecov.io/gh/SABS-Group-2-2021-22/drug-discovery-game-backend/branch/main/graph/badge.svg?token=8521K2DNMB)](https://codecov.io/gh/SABS-Group-2-2021-22/drug-discovery-game-backend)
+[![Documentation Status](https://readthedocs.org/projects/drug-discovery-game-backend/badge/?version=latest)](https://drug-discovery-game-backend.readthedocs.io/en/latest/?badge=latest)
 # drug-discovery-game-backend
 
 
