@@ -1,20 +1,15 @@
 Documentation
 ===================================================================
 
-.. automodule:: src
-   :members:
-
-.. automodule:: tests
-   :members:
-
 =====================================================
 Classes
 =====================================================
 
-.. automodule:: src.Molecule
+.. autoclass:: src.Molecule.Molecule
    :members:
-   :inherited-members:
 
-.. automodule:: tests.test_molecule
+.. autoclass:: src.Molecule.R_group
    :members:
-   :inherited-members:
+
+.. autoclass:: src.Molecule.FinalMolecule
+   :members:
