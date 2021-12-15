@@ -369,10 +369,16 @@ def molecule_img():
 
 @app.route("/getplotdata")
 def return_assayed_data():
+    """Returns molecule_info in a restructured format, to facilatate easier
+    plotting.
+    Call just /getplotdata.
+
+    :returns: A json dictionary, with a key 'assay_dict' and a list as a value. 
+    :rtype: json dict
+    """
     data = {}
-    for k,v in molecule_info.items():
+    for k, v in molecule_info.items():
         data[k] = v['assays']
-    for k,v in data.items():
+    for k, v in data.items():
         v['--'] = 0
-    print (data)
     return jsonify({'assay_dict': [data]})
