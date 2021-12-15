@@ -5,14 +5,14 @@ Documentation
 Classes
 =====================================================
 
-.. autoclass:: Molecule.Molecule
+.. autoclass:: src.Molecule.Molecule
    :members:
 
-.. autoclass:: Molecule.R_group
+.. autoclass:: src.Molecule.R_group
    :members:
 
-.. autoclass:: Molecule.Scaffold_and_Rgroups
+.. autoclass:: src.Molecule.Scaffold_and_Rgroups
    :members:
 
-.. autoclass:: Molecule.FinalMolecule
+.. autoclass:: src.Molecule.FinalMolecule
    :members:
