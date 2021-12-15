@@ -10,7 +10,9 @@ Welcome to Drug Discovery Game Backend's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-Hello World
+
+   modules
+
 
 Indices and tables
 ==================
