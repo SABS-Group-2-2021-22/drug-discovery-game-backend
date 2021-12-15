@@ -383,3 +383,73 @@ def return_assayed_data():
     for k, v in data.items():
         v['--'] = 0
     return jsonify({'assay_dict': [data]})
+
+
+
+@app.route("/getspiderdata")
+def return_spider_data():
+
+    assay_list = ['pic50', 'clearance_mouse', 'clearance_human', 
+                  'logd', 'pampa']
+    
+    if int(chosen_mol[0][0]) < 10:
+        r_group_1_id = 'A' + '0' + str(chosen_mol[0][0])
+    else:
+        r_group_1_id = 'A' + str(chosen_mol[0][0])
+    if int(chosen_mol[0][1]) < 10:
+        r_group_2_id = 'B' + '0' + str(chosen_mol[0][1])
+    else:
+        r_group_2_id = 'B' + str(chosen_mol[0][1])
+
+    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+    drug_properties = {label: drug_mol.drug_properties()[
+    label] for label in assay_list}
+
+    ref_mol = FinalMolecule('A05', 'B07')
+    ref_properties = {label: ref_mol.drug_properties()[
+    label] for label in assay_list}
+
+    drug_properties = numerise_params(drug_properties)
+    ref_properties = numerise_params(ref_properties)
+    
+    property_arr = [drug_properties, ref_properties]
+    return jsonify({'param_dict': property_arr})
+
+
+def numerise_params(prop_dict):
+    clearance_dict = {
+                'low (< 5.6)': 1,
+                'medium (5.6-30.5)': 4,
+                'low (< 3.7)': 1, 
+                'good':1,
+                'high (> 30.5)': 7,
+                'fair': 4,
+                'poor': 7,
+                'low (< 12)': 1,
+                'medium (12-44)': 4,
+                'medium (5.6-30.5)':4
+    }
+    pampa_dict = {
+                'neg':0,
+                'poor':1,
+                'low': 2.5,
+                'fair':5.5,
+                'med2high':5.5,
+                'good':6.5,
+                'best':8
+    }
+
+    drug_properties = prop_dict
+
+    for k,v in clearance_dict.items():
+        if k == drug_properties['clearance_mouse']:
+            drug_properties['clearance_mouse'] = v
+        if k == drug_properties['clearance_human']:
+            drug_properties['clearance_human'] = v
+    for k,v in pampa_dict.items():
+        if k == drug_properties['pampa']:
+            drug_properties['pampa'] = v
+    
+    return (drug_properties)
+
+
