@@ -12,6 +12,11 @@ except FileNotFoundError:
 
 class TestMolecule(unittest.TestCase):
     """Tests for getting descriptors for molecules and ranking them"""
+    def test_get_smile_string(self):
+        mol = Molecule('Oc1ccc(C[*:1])cc1')
+        true_case = 'Oc1ccc(C[*:1])cc1'
+        self.assertEqual(mol.get_smile_string, true_case)
+
     def test_descriptors(self):
         """Can get all specified descriptors for single moiety and
         return as dict"""
