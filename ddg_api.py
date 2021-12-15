@@ -95,7 +95,7 @@ def run_lipinski():
         else:
             molecule_info[molecule_key]["lipinski"] = {}
         molecule_info[molecule_key]["lipinski"][label] = drug_lipinski[label]
-    return jsonify({"lipinski_dict": lipinski_dict})
+    return jsonify({"lipinski": lipinski_dict})
 
 
 # e.g. http://127.0.0.1:5000/assays?r1=A01&r2=B01&pic50=Yes&clearance_mouse=No&
@@ -170,7 +170,7 @@ def run_assays():
             pass
         else:
             time.append(time[-1] - max([assay_times[p] for p in assay_list]))
-    return jsonify({"assay_dict": assay_dict})
+    return jsonify({"assays": assay_dict})
 
 
 # e.g. http://127.0.0.1:5000/descriptors?r1=A01&r2=B01
@@ -202,7 +202,7 @@ def run_descriptors():
             molecule_info[molecule_key]["descriptors"] = {}
         molecule_info[molecule_key]["descriptors"][label] = drug_desc[label]
         desc_dict[molecule_key][label] = drug_desc[label]
-    return jsonify({"desc_dict": desc_dict})
+    return jsonify({"descriptors": desc_dict})
 
 
 # e.g. http://127.0.0.1:5000/filters?r1=A01&r2=B01
