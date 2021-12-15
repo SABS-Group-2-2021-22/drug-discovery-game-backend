@@ -144,7 +144,7 @@ def run_assays():
                   'pampa']:
         if request.args.get(label) == "Yes":
             assay_list.append(label)
-    print (assay_list)
+    print(assay_list)
     drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
     drug_properties = {label: drug_mol.drug_properties()[
         label] for label in assay_list}
@@ -158,7 +158,8 @@ def run_assays():
             molecule_info[molecule_key]["assays"] = {}
         molecule_info[molecule_key]["assays"][label] = drug_properties[label]
         assay_dict[molecule_key][label] = drug_properties[label]
-    # Ensures that if run assay button is pressed, this code is not run and so no crash occurs
+    # Ensures that if run assay button is pressed, this code is not run and
+    # so no crash occurs
     if len(assay_list) > 0:
         if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
             pass
@@ -373,7 +374,7 @@ def return_assayed_data():
     plotting.
     Call just /getplotdata.
 
-    :returns: A json dictionary, with a key 'assay_dict' and a list as a value. 
+    :returns: A json dictionary, with a key 'assay_dict' and a list as a value.
     :rtype: json dict
     """
     data = {}
