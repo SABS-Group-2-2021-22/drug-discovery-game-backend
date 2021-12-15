@@ -15,7 +15,7 @@ import base64
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
 orient_scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccccc1)')
 try:
-    csv_file = pd.read_csv('src/r_group_decomp.csv')
+    csv_file = pd.read_csv('../src/r_group_decomp.csv')
 except FileNotFoundError:
     csv_file = pd.read_csv('r_group_decomp.csv')
 
@@ -79,14 +79,13 @@ class Molecule:
         return desc_dict
 
     def lipinski(self, desc_dict):
-        """Calculate Lipinski from the descriptor dictionary.
-        Return the number of rules broken and whether the molecule passes.
+        """Calculate Lipinski from the descriptor dictionary. Returns the
+        number of rules broken and whether the molecule passes.
 
         :param desc_dict: molecule descriptor metrics
         :type desc_dict: dict
-        :return: violations, result
-        | Number of violations and 'fails' or passes'
-        :rtype: int, String
+        :return: violations
+        :rtype: dict
         """
         violations = {'MW': desc_dict['MW'] < 500.0,
                       'h_acc': desc_dict['h_acc'] <= 10,
@@ -98,8 +97,7 @@ class Molecule:
     def draw_molecule(self, drawn_file_name, orient_with_scaffold):
         """Draws the molecule.
 
-        :param drawn_file_name: filename to save drawn molecule with
-        only if the molecule contains the scaffold.
+        :param drawn_file_name: filename to save drawn molecule
         :type orient_with_scaffold: bool
         """
         drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
@@ -139,7 +137,8 @@ class Molecule:
         return imgByteArray
 
     def filter_properties(self):
-        """See whether molecule passes or fails FILTERS"""
+        """See whether molecule passes or fails FILTERS
+        """
         pains_params = FilterCatalogParams()
         pains_params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_A)
         pains_params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_B)
@@ -174,7 +173,8 @@ class Molecule:
 
 class R_group(Molecule):
     """Name of R group is of the form 'Axy' or 'Bxy' e.g. A01 etc.
-    Number corresponds to whether it is an R1 or R2 group"""
+    Number corresponds to whether it is an R1 or R2 group
+    """
 
     def __init__(self, name, number=None):
         self.name = name
@@ -190,7 +190,8 @@ class R_group(Molecule):
         super().__init__(mol_smiles)
 
     def extract_smilefromcsv(self):
-        """Extracts the SMILE for the R group """
+        """Extracts the SMILE for the R group
+        """
         try:
             if self.number == 1:
                 rgroup_smiles = csv_file[csv_file['atag'] ==
@@ -213,7 +214,8 @@ class R_group(Molecule):
 class Scaffold_and_Rgroups(Molecule):
     # Can I also make this have R-group???
     """Add a R group to the old molecule (either the scaffold with R1 attached
-    or just the scaffold)."""
+    or just the scaffold).
+    """
 
     def ___init___(self, old_molecule, rgroup, number):
 
@@ -233,7 +235,8 @@ class Scaffold_and_Rgroups(Molecule):
 
 
 class FinalMolecule(Molecule):
-    """Final molecule with scaffold and two R groups."""
+    """Final molecule with scaffold and two R groups.
+    """
 
     def __init__(self, rgroup1, rgroup2):
         # Name of R groups should be in the form 'Axy' or 'Bxy' e.g. A01 etc.
@@ -252,7 +255,8 @@ class FinalMolecule(Molecule):
         return(final_mol.get_smile_string)
 
     def drug_properties(self):
-        """Selects properties of the final drug from the data."""
+        """Selects properties of the final drug from the data.
+        """
         drug_properties = [
             'pic50',
             'clearance_mouse',
