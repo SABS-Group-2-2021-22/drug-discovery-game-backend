@@ -1,3 +1,4 @@
+pandas==1.1.3 
 # alabaster==0.7.12
 # # appnope @ file:///opt/concourse/worker/volumes/live/0291c9e1-4b15-459f-623e-2770f55be269/volume/appnope_1594338395037/work
 # arcade==2.5.6
