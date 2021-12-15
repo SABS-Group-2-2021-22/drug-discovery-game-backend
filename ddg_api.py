@@ -29,12 +29,21 @@ def hello_world():
 # e.g. http://127.0.0.1:5000/get_all_mol_info
 @app.route("/get_all_mol_info")
 def get_all_mol_info():
+    """Returns all assay, lipinski, filters and descriptor values for those run,
+    for all molecules saved.
+    Call just /get_all_mol_info
+
+    :returns: Json dictionary of all saved information during a game
+    :rtype: json dict
+    """
     return jsonify(molecule_info)
 
 
+# e.g. http://127.0.0.1:5000/update_time_money
 @app.route("/update_time_money")
 def update_time_and_money():
-    """Updates the time and money values
+    """Updates the time and money values.
+    Call just /update_time_money.
 
     :returns: A json tuple of the latest money and time value.
     :rtype: json tuple
@@ -43,9 +52,9 @@ def update_time_and_money():
 
 
 def tuple2str(tuple_in):
-    """Converts a tuple into a string
+    """Converts a tuple into a string.
 
-    :param tuple_in: tuple to convery
+    :param tuple_in: tuple to convert
     :type tuple_in: tuple
     :returns: concatenated string version of the tuple
     :rtype: str
@@ -59,6 +68,20 @@ def tuple2str(tuple_in):
 # e.g. http://127.0.0.1:5000/lipinski?r1=A01&r2=B01
 @app.route("/lipinski")
 def run_lipinski():
+    """Checks if molecule passes Lipinski's Rule of 5:
+        MW < 500.0
+        h_acc <= 10
+        h_don <= 5
+        logP < 5
+    Saves the information to the global molecule_info dict and returns the
+    information as its own dict.
+    Pass R Group IDs as queries: /lipinski?r1=A01&r2=B01.
+
+    :returns: A json dictionary of the molecule, indexed
+    by the concatenated string of its R Group IDs, with the values being
+    True or False for each descriptor relevant to Lipinski's Rule of 5.
+    :rtype: json dict
+    """
     lipinski_list = ['MW', 'logP', 'h_acc', 'h_don']
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
@@ -88,9 +111,9 @@ def run_assays():
     each assay,
     ...&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes.
 
-    :returns: A json dictionary of which molecules have been assayed, indexed
-    by the concatenated string of their R Group IDs, with the values being
-    which assays have been run and their values for all assays
+    :returns: A json dictionary of the molecule assayed, indexed
+    by the concatenated string of its R Group IDs, with the values being
+    which assays have been run and their values.
     :rtype: json dict
     """
 
@@ -121,7 +144,7 @@ def run_assays():
                   'pampa']:
         if request.args.get(label) == "Yes":
             assay_list.append(label)
-    print (assay_list)
+    print(assay_list)
     drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
     drug_properties = {label: drug_mol.drug_properties()[
         label] for label in assay_list}
@@ -135,6 +158,8 @@ def run_assays():
             molecule_info[molecule_key]["assays"] = {}
         molecule_info[molecule_key]["assays"][label] = drug_properties[label]
         assay_dict[molecule_key][label] = drug_properties[label]
+    # Ensures that if run assay button is pressed, this code is not run and
+    # so no crash occurs
     if len(assay_list) > 0:
         if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
             pass
@@ -151,6 +176,17 @@ def run_assays():
 # e.g. http://127.0.0.1:5000/descriptors?r1=A01&r2=B01
 @app.route("/descriptors")
 def run_descriptors():
+    """Runs descriptors ('MW', 'logP', 'TPSA', 'HA', 'h_acc', 'h_don', 'rings')
+    for molecule selected.
+    Saves the information to the global molecule_info dict and returns the
+    information as its own dict.
+    Pass R Group IDs as queries: /descriptors?r1=A01&r2=B01.
+
+    :returns: A json dictionary of the molecule, indexed
+    by the concatenated string of its R Group IDs, with the values for each
+    descriptor, with each key being its respective descriptor label.
+    :rtype: json dict
+    """
     desc_list = ['MW', 'logP', 'TPSA', 'HA', 'h_acc', 'h_don', 'rings']
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
@@ -172,6 +208,16 @@ def run_descriptors():
 # e.g. http://127.0.0.1:5000/filters?r1=A01&r2=B01
 @app.route("/filters")
 def run_filters():
+    """Runs filters ('PAINS', 'ZINC', 'BRENK', 'NIH')for molecule selected.
+    Saves the information to the global molecule_info dict and returns the
+    information as its own dict.
+    Pass R Group IDs as queries: /filters?r1=A01&r2=B01
+
+    :returns: A json dictionary of the molecule, indexed
+    by the concatenated string of its R Group IDs, with the values for each
+    descriptor, with each key being its respective descriptor label.
+    :rtype: json dict
+    """
     filter_names = ['PAINS', 'ZINC', 'BRENK', 'NIH']
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
@@ -214,6 +260,7 @@ def choose_molecule():
 def return_chosen_molecules():
     """Returns the final choice of molecule for the end of the game as a json
     dict containing the tuple of the final molecule's R Group IDs.
+    Call just /chosenmolecule.
 
     :returns: Tuple of the R Group IDs as a json dict. Access tuple with
     'chosen_mol' key.
@@ -248,7 +295,8 @@ def save_molecule():
 def return_saved_molecules():
     """Returns the list of saved molecules as json dict of a list, containing
     tuples of the R Group IDs. Currently a global variable in place of database
-    storage
+    storage.
+    Call just /savedmolecules.
 
     :return: List of tuples, containing the R Group IDs as a json dict.
     Access list with 'saved_mols' key.
@@ -262,6 +310,7 @@ def return_saved_molecules():
 def rgroup_img(r_group_id):
     """Returns image and stats R group specified by ID as a bytestream and dict
     to be rendered in a browser.
+    Pass R Group ID as query: /r-group-A01
 
     :param r_group_id: ID number of R Group, eg. 'B26'
     :type r_group_id: String
@@ -281,8 +330,8 @@ def molecule_img():
     """Returns bytestream image  and drug properties of compund molecule
     consisting of scaffold and up to two R Groups, if these are specified in
     the query parameters.
-    Pass R group IDs as queries: /molecule?r1=A01&r2=B10
-    If no R groups are specified this returns the scaffold.
+    Pass R Group IDs as queries: /molecule?r1=A01&r2=B10
+    If no R Groups are specified this returns the scaffold.
 
     :return: JSON containing image of compound molecule as bytestream.
     :rtype: json dict
@@ -321,10 +370,16 @@ def molecule_img():
 
 @app.route("/getplotdata")
 def return_assayed_data():
+    """Returns molecule_info in a restructured format, to facilatate easier
+    plotting.
+    Call just /getplotdata.
+
+    :returns: A json dictionary, with a key 'assay_dict' and a list as a value.
+    :rtype: json dict
+    """
     data = {}
-    for k,v in molecule_info.items():
+    for k, v in molecule_info.items():
         data[k] = v['assays']
-    for k,v in data.items():
+    for k, v in data.items():
         v['--'] = 0
-    print (data)
     return jsonify({'assay_dict': [data]})
