@@ -144,7 +144,7 @@ def run_assays():
                   'pampa']:
         if request.args.get(label) == "Yes":
             assay_list.append(label)
-
+    print (assay_list)
     drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
     drug_properties = {label: drug_mol.drug_properties()[
         label] for label in assay_list}
@@ -365,3 +365,14 @@ def molecule_img():
         drug_property_dict = drug_mol.drug_properties()
     return jsonify({'img_html': f"data:;base64,{bytestream}",
                     'drug_props': drug_property_dict})
+
+
+@app.route("/getplotdata")
+def return_assayed_data():
+    data = {}
+    for k,v in molecule_info.items():
+        data[k] = v['assays']
+    for k,v in data.items():
+        v['--'] = 0
+    print (data)
+    return jsonify({'assay_dict': [data]})
