@@ -379,15 +379,29 @@ def return_assayed_data():
     """
     data = {}
     for k, v in molecule_info.items():
-        data[k] = v['assays']
+        assay_dict = v['assays']
+        descriptor_dict = v['descriptors']
+        metric_dict = {**assay_dict, **descriptor_dict}
+        data[k] = metric_dict
     for k, v in data.items():
         v['--'] = 0
+    print (data)
     return jsonify({'assay_dict': [data]})
 
 
 
 @app.route("/getspiderdata")
 def return_spider_data():
+    """Takes final chosen molecule (chosen_mol) and calls FinalMolecule()
+     from Molecule.py to return quantitative assay parameters of the chosen
+     molecule and the reference drug
+     Calls /getspiderdata + FinalMolecule() + numerise_params()
+     
+     :returns: A json dictionary containing a list of 2 dictionaries, one
+     containing chosen mol.parameters and the other containing reference 
+     drug parameters
+     rtype: json dict
+     """
 
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human', 
                   'logd', 'pampa']
@@ -417,6 +431,12 @@ def return_spider_data():
 
 
 def numerise_params(prop_dict):
+    """ Returns drug properties with all qualitative values transformed into
+    numeric values
+
+    returns: numerically transformed property dictionaries
+    rtype: dict
+    """
     clearance_dict = {
                 'low (< 5.6)': 1,
                 'medium (5.6-30.5)': 4,
