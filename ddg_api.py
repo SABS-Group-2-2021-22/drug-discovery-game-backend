@@ -26,7 +26,7 @@ time = [30.0]
 
 @app.route("/")
 def hello_world():
-    return "<p>Hello, World!</p>"
+    return "<p>Hello, World again!</p>"
 
 
 # e.g. http://127.0.0.1:5000/get_all_mol_info
