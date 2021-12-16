@@ -54,7 +54,6 @@ class TestAPI(unittest.TestCase):
             result = [90230.0, 26.5]
             self.assertEqual(json_data, result)
 
-
     def test_reset(self):
         with ddg_api.app.test_client() as c:
             rv = c.get('/reset')
