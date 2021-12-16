@@ -464,3 +464,14 @@ def numerise_params(prop_dict):
         if k == drug_properties['pampa']:
             drug_properties['pampa'] = v
     return (drug_properties)
+
+
+@app.route("/reset")
+def reset():
+    molecule_info.clear()
+    chosen_mol.clear()
+    money.clear()
+    money.append(100000.0)
+    time.clear()
+    time.append(30.0)
+    return
