@@ -12,7 +12,7 @@ global molecule_info
 molecule_info = {}
 
 global chosen_mol
-chosen_mol = []
+chosen_mol = [None, None]
 
 global money
 money = [100000.0]
@@ -247,13 +247,17 @@ def choose_molecule():
     :rtype: json dict
     """
     # Prevents overwrite if a molecule has already been chosen
-    if len(chosen_mol) > 0:
-        return jsonify({'chosen_mol': chosen_mol})
-    else:
-        r_group_1_id = request.args.get('r1')
-        r_group_2_id = request.args.get('r2')
-        chosen_mol.append((r_group_1_id, r_group_2_id))
-        return jsonify({'chosen_mol': chosen_mol})
+    # if len(chosen_mol) > 0:
+    #     return jsonify({'chosen_mol': chosen_mol})
+    # else:
+    #     r_group_1_id = request.args.get('r1')
+    #     r_group_2_id = request.args.get('r2')
+    #     chosen_mol.append((r_group_1_id, r_group_2_id))
+    # r_group_1_id = request.args.get('r1')
+    # r_group_2_id = request.args.get('r2')
+    chosen_mol[0] = request.args.get('r1')
+    chosen_mol[1] = request.args.get('r2')
+    return jsonify({'chosen_mol': chosen_mol})
 
 
 @app.route("/chosenmolecule")
@@ -379,15 +383,19 @@ def return_assayed_data():
     """
     data = {}
     for k, v in molecule_info.items():
-        assay_dict = v['assays']
-        descriptor_dict = v['descriptors']
+        try:
+            assay_dict = v['assays']
+        except Exception:
+            assay_dict = {}
+        try:
+            descriptor_dict = v['descriptors']
+        except Exception:
+            descriptor_dict = {}
         metric_dict = {**assay_dict, **descriptor_dict}
         data[k] = metric_dict
     for k, v in data.items():
         v['--'] = 0
-    print (data)
     return jsonify({'assay_dict': [data]})
-
 
 
 @app.route("/getspiderdata")
@@ -396,36 +404,43 @@ def return_spider_data():
      from Molecule.py to return quantitative assay parameters of the chosen
      molecule and the reference drug
      Calls /getspiderdata + FinalMolecule() + numerise_params()
-     
+
      :returns: A json dictionary containing a list of 2 dictionaries, one
-     containing chosen mol.parameters and the other containing reference 
+     containing chosen mol.parameters and the other containing reference
      drug parameters
      rtype: json dict
      """
 
-    assay_list = ['pic50', 'clearance_mouse', 'clearance_human', 
+    assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
                   'logd', 'pampa']
-    
-    if int(chosen_mol[0][0]) < 10:
-        r_group_1_id = 'A' + '0' + str(chosen_mol[0][0])
+
+    # if int(chosen_mol[0][0]) < 10:
+    #     r_group_1_id = 'A' + '0' + str(chosen_mol[0][0])
+    # else:
+    #     r_group_1_id = 'A' + str(chosen_mol[0][0])
+    # if int(chosen_mol[0][1]) < 10:
+    #     r_group_2_id = 'B' + '0' + str(chosen_mol[0][1])
+    # else:
+    #     r_group_2_id = 'B' + str(chosen_mol[0][1])
+
+    if chosen_mol[0] is not None and chosen_mol[1] is not None:
+        r_group_1_id = chosen_mol[0]
+        r_group_2_id = chosen_mol[1]
     else:
-        r_group_1_id = 'A' + str(chosen_mol[0][0])
-    if int(chosen_mol[0][1]) < 10:
-        r_group_2_id = 'B' + '0' + str(chosen_mol[0][1])
-    else:
-        r_group_2_id = 'B' + str(chosen_mol[0][1])
+        r_group_1_id = 'A01'
+        r_group_2_id = 'B01'
 
     drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
     drug_properties = {label: drug_mol.drug_properties()[
-    label] for label in assay_list}
+        label] for label in assay_list}
 
     ref_mol = FinalMolecule('A05', 'B07')
     ref_properties = {label: ref_mol.drug_properties()[
-    label] for label in assay_list}
+        label] for label in assay_list}
 
     drug_properties = numerise_params(drug_properties)
     ref_properties = numerise_params(ref_properties)
-    
+
     property_arr = [drug_properties, ref_properties]
     return jsonify({'param_dict': property_arr})
 
@@ -438,38 +453,36 @@ def numerise_params(prop_dict):
     rtype: dict
     """
     clearance_dict = {
-                'low (< 5.6)': 1,
-                'medium (5.6-30.5)': 4,
-                'low (< 3.7)': 1, 
-                'good':1,
-                'high (> 30.5)': 7,
-                'fair': 4,
-                'poor': 7,
-                'low (< 12)': 1,
-                'medium (12-44)': 4,
-                'medium (5.6-30.5)':4
+        'low (< 5.6)': 1,
+        'medium (5.6-30.5)': 4,
+        'low (< 3.7)': 1,
+        'good': 1,
+        'high (> 30.5)': 7,
+        'fair': 4,
+        'poor': 7,
+        'low (< 12)': 1,
+        'medium (12-44)': 4,
+        'medium (5.6-30.5)': 4
     }
     pampa_dict = {
-                'neg':0,
-                'poor':1,
-                'low': 2.5,
-                'fair':5.5,
-                'med2high':5.5,
-                'good':6.5,
-                'best':8
+        'neg': 0,
+        'poor': 1,
+        'low': 2.5,
+        'fair': 5.5,
+        'med2high': 5.5,
+        'good': 6.5,
+        'best': 8
     }
 
     drug_properties = prop_dict
 
-    for k,v in clearance_dict.items():
+    for k, v in clearance_dict.items():
         if k == drug_properties['clearance_mouse']:
             drug_properties['clearance_mouse'] = v
         if k == drug_properties['clearance_human']:
             drug_properties['clearance_human'] = v
-    for k,v in pampa_dict.items():
+    for k, v in pampa_dict.items():
         if k == drug_properties['pampa']:
             drug_properties['pampa'] = v
-    
+
     return (drug_properties)
-
-
