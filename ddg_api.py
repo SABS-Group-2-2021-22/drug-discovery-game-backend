@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 from src.Molecule import R_group, Molecule, FinalMolecule
 
@@ -7,6 +7,8 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*":
                             # {"origins": "http://localhost:3000"}})
                             {"origins": "*"}})
+
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Temporary storage of data
 global molecule_info
@@ -317,6 +319,7 @@ def return_saved_molecules():
 
 
 @app.route("/r-group-<string:r_group_id>")
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def rgroup_img(r_group_id):
     """Returns image and stats R group specified by ID as a bytestream and dict
     to be rendered in a browser.
