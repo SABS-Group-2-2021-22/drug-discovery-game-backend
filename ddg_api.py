@@ -4,8 +4,8 @@ from flask_cors import CORS
 from src.Molecule import R_group, Molecule, FinalMolecule
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*":
-                            {"origins": "http://localhost:3000"}})
+# cors = CORS(app, resources={r"/*":
+#                             {"origins": "http://localhost:3000"}})
 
 # Temporary storage of data
 global molecule_info
