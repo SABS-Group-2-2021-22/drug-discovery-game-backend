@@ -8,6 +8,7 @@ rdkit-pypi = "*"
 flask = "*"
 pandas = "*"
 gunicorn = "*"
+flask-cors = "*"
 
 [dev-packages]
 
