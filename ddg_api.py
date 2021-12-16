@@ -495,3 +495,19 @@ def numerise_params(prop_dict):
             drug_properties['pampa'] = v
 
     return (drug_properties)
+
+
+@app.route("/reset")
+def reset():
+    """ Resets values and so restarts the game
+
+    returns: The new empty molecule_info dictionary as a json dict
+    rtype: json dict
+    """
+    molecule_info.clear()
+    chosen_mol.clear()
+    money.clear()
+    money.append(100000.0)
+    time.clear()
+    time.append(30.0)
+    return jsonify({"new_info": molecule_info})
