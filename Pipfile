@@ -9,6 +9,7 @@ flask = "*"
 pandas = "*"
 gunicorn = "*"
 flask-cors = "*"
+pillow = "*"
 
 [dev-packages]
 
