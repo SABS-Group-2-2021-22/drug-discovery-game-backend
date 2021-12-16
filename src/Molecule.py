@@ -211,29 +211,6 @@ class R_group(Molecule):
         return Molecule(new_mol)
 
 
-class Scaffold_and_Rgroups(Molecule):
-    # Can I also make this have R-group???
-    """Add a R group to the old molecule (either the scaffold with R1 attached
-    or just the scaffold).
-    """
-
-    def ___init___(self, old_molecule, rgroup, number):
-
-        self.old_molecule = old_molecule
-        self.rgroup = rgroup
-        self.number = number
-        self.new_molecule = None
-        self.add_r_group()
-
-    # def add_r_group(self, new_mol):
-    def add_r_group(self):
-        """ Add R group to molecule"""
-        new_mol = Chem.MolToSmiles(self.old_molecule) + '.' + self.rgroup
-        new_mol = new_mol.replace(f'[*:{self.number}]', '9')
-        new_mol = new_mol.replace('(9)', '9')
-        self.new_molecule = new_mol
-
-
 class FinalMolecule(Molecule):
     """Final molecule with scaffold and two R groups.
     """
@@ -252,7 +229,8 @@ class FinalMolecule(Molecule):
             Molecule('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
             )
         final_mol = r_group_mol_2.add_r_group(intermediate_mol)
-        return(final_mol.get_smile_string)
+        final_mol_smiles = final_mol.get_smile_string
+        return(final_mol_smiles)
 
     def drug_properties(self):
         """Selects properties of the final drug from the data.
