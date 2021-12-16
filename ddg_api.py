@@ -431,16 +431,16 @@ def return_spider_data():
         r_group_2_id = 'B01'
 
     drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
-    drug_properties = {label: drug_mol.drug_properties()[
-        label] for label in assay_list}
 
+    drug_properties = {
+        label: drug_mol.drug_properties()[label] for label in assay_list
+        }
     ref_mol = FinalMolecule('A05', 'B07')
-    ref_properties = {label: ref_mol.drug_properties()[
-        label] for label in assay_list}
-
+    ref_properties = {
+        label: ref_mol.drug_properties()[label] for label in assay_list
+        }
     drug_properties = numerise_params(drug_properties)
     ref_properties = numerise_params(ref_properties)
-
     property_arr = [drug_properties, ref_properties]
     return jsonify({'param_dict': property_arr})
 
@@ -453,27 +453,26 @@ def numerise_params(prop_dict):
     rtype: dict
     """
     clearance_dict = {
-        'low (< 5.6)': 1,
-        'medium (5.6-30.5)': 4,
-        'low (< 3.7)': 1,
-        'good': 1,
-        'high (> 30.5)': 7,
-        'fair': 4,
-        'poor': 7,
-        'low (< 12)': 1,
-        'medium (12-44)': 4,
-        'medium (5.6-30.5)': 4
+                'low (< 5.6)': 1,
+                'medium (5.6-30.5)': 4,
+                'low (< 3.7)': 1,
+                'good': 1,
+                'high (> 30.5)': 7,
+                'fair': 4,
+                'poor': 7,
+                'low (< 12)': 1,
+                'medium (12-44)': 4,
+                'medium (5.6-30.5)': 4
     }
     pampa_dict = {
-        'neg': 0,
-        'poor': 1,
-        'low': 2.5,
-        'fair': 5.5,
-        'med2high': 5.5,
-        'good': 6.5,
-        'best': 8
+                'neg': 0,
+                'poor': 1,
+                'low': 2.5,
+                'fair': 5.5,
+                'med2high': 5.5,
+                'good': 6.5,
+                'best': 8
     }
-
     drug_properties = prop_dict
 
     for k, v in clearance_dict.items():
