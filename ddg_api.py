@@ -8,7 +8,6 @@ cors = CORS(app, resources={r"/*":
                             # {"origins": "http://localhost:3000"}})
                             {"origins": "*"}})
 
-# app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Temporary storage of data
 global molecule_info
