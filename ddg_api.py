@@ -8,7 +8,7 @@ cors = CORS(app, resources={r"/*":
                             # {"origins": "http://localhost:3000"}})
                             {"origins": "*"}})
 
-app.config['CORS_HEADERS'] = 'Content-Type'
+# app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Temporary storage of data
 global molecule_info
@@ -319,7 +319,7 @@ def return_saved_molecules():
 
 
 @app.route("/r-group-<string:r_group_id>")
-@cross_origin(origin='*',headers=['Content-Type','Authorization'])
+# @cross_origin(origin='*', headers=['Content-Type','Authorization'])
 def rgroup_img(r_group_id):
     """Returns image and stats R group specified by ID as a bytestream and dict
     to be rendered in a browser.
@@ -334,9 +334,10 @@ def rgroup_img(r_group_id):
     mol = R_group(r_group_id)
     bytestream = mol.drawMoleculeAsByteStream()
     stats_dict = mol.descriptors()
-    return jsonify({'img_html': f"data:;base64,{bytestream}",
+    response = jsonify({'img_html': f"data:;base64,{bytestream}",
                     'stats': stats_dict})
-
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
 
 @app.route("/molecule")
 def molecule_img():
