@@ -1,4 +1,4 @@
-import ddg_api
+from ddg_api import app
 
 if __name__ == "__main__":
-    ddg_api.run()
+    app.run()
