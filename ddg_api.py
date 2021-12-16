@@ -151,16 +151,18 @@ def run_assays():
     molecule_key = tuple2str((r_group_1_id, r_group_2_id))
     assay_dict = {}
     assay_dict[molecule_key] = {}
+
     for label in assay_list:
-        if "assays" in molecule_info[molecule_key].keys():
-            pass
-        else:
-            molecule_info[molecule_key]["assays"] = {}
-        molecule_info[molecule_key]["assays"][label] = drug_properties[label]
+        if molecule_key in molecule_info.keys():
+            if "assays" in molecule_info[molecule_key].keys():
+                pass
+            else:
+                molecule_info[molecule_key]["assays"] = {}
+            molecule_info[molecule_key]["assays"][label] = drug_properties[label]
         assay_dict[molecule_key][label] = drug_properties[label]
     # Ensures that if run assay button is pressed, this code is not run and
     # so no crash occurs
-    if len(assay_list) > 0:
+    if molecule_key in molecule_info.keys() and len(assay_list) > 0:
         if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
             pass
         else:
@@ -270,7 +272,10 @@ def return_chosen_molecules():
     'chosen_mol' key.
     :rtype: json dict
     """
-    return jsonify({'chosen_mol': chosen_mol})
+    if chosen_mol[0] is not None and chosen_mol[1] is not None:
+        return jsonify({'chosen_mol': chosen_mol})
+    else:
+        return jsonify({})
 
 
 # http://127.0.0.1:5000/save?r1=A01&r2=B01
