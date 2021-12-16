@@ -1,1 +1,1 @@
-web: gunicorn wsgi:ddg_api
+web: gunicorn wsgi:app
