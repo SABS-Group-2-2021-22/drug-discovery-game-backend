@@ -119,7 +119,7 @@ class TestMolecule(unittest.TestCase):
                                ".Oc1ccc(C8)cc1.c1ccc9cc1")
         passing_mol.draw_molecule("tests/test_file", orient_with_scaffold=True)
         imgByteArray = io.BytesIO()
-        with Image.open("test_file.png") as im:
+        with Image.open("tests/test_file.png") as im:
             im.save(imgByteArray, format='png')
         imgByteArray = imgByteArray.getvalue()
         imgByteArray = base64.b64encode(imgByteArray).decode("utf-8")
