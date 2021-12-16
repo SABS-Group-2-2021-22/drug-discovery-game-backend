@@ -493,6 +493,12 @@ def numerise_params(prop_dict):
 
 @app.route("/comparisontxt")
 def comparison_txt():
+    """ Returns comparison text depending on pic50, logd, and 
+    clearance_human of chosen molecule
+
+    returns: json dict with text in value depending on metrix
+    rtype: json dict
+    """
 
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
                   'logd', 'pampa']
