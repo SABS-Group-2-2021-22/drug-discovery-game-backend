@@ -26,7 +26,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        $CONDA/bin/conda install pandas numpy matplotlib flask flake8
+        $CONDA/bin/conda install pandas flask flask_cors flake8
         $CONDA/bin/conda install -c conda-forge rdkit
     - name: Lint with flake8
       run: |

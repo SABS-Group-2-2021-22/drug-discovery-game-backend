@@ -158,7 +158,9 @@ def run_assays():
                 pass
             else:
                 molecule_info[molecule_key]["assays"] = {}
-            molecule_info[molecule_key]["assays"][label] = drug_properties[label]
+            molecule_info[molecule_key]["assays"][label] = drug_properties[
+                label
+                ]
         assay_dict[molecule_key][label] = drug_properties[label]
     # Ensures that if run assay button is pressed, this code is not run and
     # so no crash occurs
@@ -491,15 +493,15 @@ def numerise_params(prop_dict):
 
     return (drug_properties)
 
+
 @app.route("/comparisontxt")
 def comparison_txt():
-    """ Returns comparison text depending on pic50, logd, and 
+    """ Returns comparison text depending on pic50, logd, and
     clearance_human of chosen molecule
 
     returns: json dict with text in value depending on metrix
     rtype: json dict
     """
-
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
                   'logd', 'pampa']
 
@@ -510,8 +512,7 @@ def comparison_txt():
     drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
     drug_properties = {
         label: drug_mol.drug_properties()[label] for label in assay_list
-        } 
-
+        }
     comp_dict = {}
     with open('./src/comparison.txt', 'r') as f:
         lines = f.readlines()
@@ -527,9 +528,9 @@ def comparison_txt():
             comp_dict['logd'] = str(lines[4])
         if drug_properties['clearance_human'] != str(1):
             comp_dict['clearance_human'] = str(lines[5])
-        else: 
+        else:
             comp_dict['clearance_human'] = str(lines[6])
-    print (comp_dict)
+    print(comp_dict)
     return jsonify({'comparison': comp_dict})
 
 
