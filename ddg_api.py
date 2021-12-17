@@ -491,6 +491,47 @@ def numerise_params(prop_dict):
 
     return (drug_properties)
 
+@app.route("/comparisontxt")
+def comparison_txt():
+    """ Returns comparison text depending on pic50, logd, and 
+    clearance_human of chosen molecule
+
+    returns: json dict with text in value depending on metrix
+    rtype: json dict
+    """
+
+    assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
+                  'logd', 'pampa']
+
+    if chosen_mol[0] is not None and chosen_mol[1] is not None:
+        r_group_1_id, r_group_2_id = chosen_mol[0], chosen_mol[1]
+    else:
+        r_group_1_id, r_group_2_id = 'A01', 'B01'
+    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+    drug_properties = {
+        label: drug_mol.drug_properties()[label] for label in assay_list
+        } 
+
+    comp_dict = {}
+    with open('./src/comparison.txt', 'r') as f:
+        lines = f.readlines()
+        if float(drug_properties['pic50']) < 6.5:
+            comp_dict['pic50'] = str(lines[0])
+        else:
+            comp_dict['pic50'] = str(lines[1])
+        if float(drug_properties['logd']) < 0.95:
+            comp_dict['logd'] = str(lines[2])
+        elif 0.95 < float(drug_properties['logd']) < 1.15:
+            comp_dict['logd'] = str(lines[3])
+        else:
+            comp_dict['logd'] = str(lines[4])
+        if drug_properties['clearance_human'] != str(1):
+            comp_dict['clearance_human'] = str(lines[5])
+        else: 
+            comp_dict['clearance_human'] = str(lines[6])
+    print (comp_dict)
+    return jsonify({'comparison': comp_dict})
+
 
 @app.route("/reset")
 def reset():
