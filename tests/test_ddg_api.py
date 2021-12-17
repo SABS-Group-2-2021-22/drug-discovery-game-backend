@@ -110,7 +110,7 @@ class TestAPI(unittest.TestCase):
                 'pampa': 'low',
                 'pic50': '6.5'}}}
             self.assertEqual(json_data, result)
- 
+
     def test_run_descriptors(self):
         with ddg_api.app.test_client() as c:
             c.get('/reset')
