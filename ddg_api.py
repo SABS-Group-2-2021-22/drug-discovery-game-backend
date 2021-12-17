@@ -543,6 +543,8 @@ def reset():
     """
     molecule_info.clear()
     chosen_mol.clear()
+    chosen_mol.append(None)
+    chosen_mol.append(None)
     money.clear()
     money.append(100000.0)
     time.clear()

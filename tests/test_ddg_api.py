@@ -110,6 +110,84 @@ class TestAPI(unittest.TestCase):
                 'pampa': 'low',
                 'pic50': '6.5'}}}
             self.assertEqual(json_data, result)
+ 
+    def test_run_descriptors(self):
+        with ddg_api.app.test_client() as c:
+            c.get('/reset')
+            c.post('/save?r1=A01&r2=B01')
+            rv = c.get('/descriptors?r1=A01&r2=B01')
+            json_data = rv.get_json()
+            result = {'descriptors': {'A01B01': {
+                'HA': 28,
+                'MW': 397.09839370800006,
+                'TPSA': 103.7,
+                'h_acc': 4,
+                'h_don': 3,
+                'logP': 3.033400000000001,
+                'rings': 3
+                }}}
+            self.assertEqual(json_data, result)
+            rv = c.get('/descriptors?r1=A01&r2=B01')
+            json_data = rv.get_json()
+            self.assertEqual(json_data, result)
+
+    def test_run_filters(self):
+        with ddg_api.app.test_client() as c:
+            c.get('/reset')
+            c.post('/save?r1=A01&r2=B01')
+            rv = c.get('/filters?r1=A01&r2=B01')
+            json_data = rv.get_json()
+            result = {'filter_dict': {'A01B01': {
+                'BRENK': 'passing',
+                'NIH': 'passing',
+                'PAINS': 'passing',
+                'ZINC': 'passing'
+                }}}
+            self.assertEqual(json_data, result)
+            rv = c.get('/filters?r1=A01&r2=B01')
+            json_data = rv.get_json()
+            self.assertEqual(json_data, result)
+
+    def test_choose_molecule(self):
+        with ddg_api.app.test_client() as c:
+            c.get('/reset')
+            c.get('/filters?r1=A01&r2=B10')
+            c.post('/save?r1=A01&r2=B10')
+            rv = c.post('/choose?r1=A01&r2=B10')
+            json_data = rv.get_json()
+            result = {'chosen_mol': ['A01', 'B10']}
+            self.assertEqual(json_data, result)
+
+    def test_return_chosen_molecules(self):
+        with ddg_api.app.test_client() as c:
+            c.get('/reset')
+            c.post('/choose?r1=A01&r2=B10')
+            rv = c.get('chosenmolecule')
+            json_data = rv.get_json()
+            result = {'chosen_mol': ['A01', 'B10']}
+            self.assertEqual(json_data, result)
+            c.get('/reset')
+            rv = c.get('chosenmolecule')
+            json_data = rv.get_json()
+            result = {}
+            self.assertEqual(json_data, result)
+
+    def test_save_molecule(self):
+        with ddg_api.app.test_client() as c:
+            c.get('/reset')
+            rv = c.post('/save?r1=A04&r2=B05')
+            json_data = rv.get_json()
+            result = {'saved_mols': [['A04', 'B05']]}
+            self.assertEqual(json_data, result)
+
+    def test_return_saved_molecules(self):
+        with ddg_api.app.test_client() as c:
+            c.get('/reset')
+            c.post('/save?r1=A04&r2=B05')
+            rv = c.get('/savedmolecules')
+            json_data = rv.get_json()
+            result = {'saved_mols': [['A04', 'B05']]}
+            self.assertEqual(json_data, result)
 
     def test_reset(self):
         with ddg_api.app.test_client() as c:
