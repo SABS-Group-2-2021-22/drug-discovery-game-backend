@@ -12,7 +12,7 @@ global molecule_info
 molecule_info = {}
 
 global chosen_mol
-chosen_mol = []
+chosen_mol = [None, None]
 
 global money
 money = [100000.0]
@@ -151,16 +151,18 @@ def run_assays():
     molecule_key = tuple2str((r_group_1_id, r_group_2_id))
     assay_dict = {}
     assay_dict[molecule_key] = {}
+
     for label in assay_list:
-        if "assays" in molecule_info[molecule_key].keys():
-            pass
-        else:
-            molecule_info[molecule_key]["assays"] = {}
-        molecule_info[molecule_key]["assays"][label] = drug_properties[label]
+        if molecule_key in molecule_info.keys():
+            if "assays" in molecule_info[molecule_key].keys():
+                pass
+            else:
+                molecule_info[molecule_key]["assays"] = {}
+            molecule_info[molecule_key]["assays"][label] = drug_properties[label]
         assay_dict[molecule_key][label] = drug_properties[label]
     # Ensures that if run assay button is pressed, this code is not run and
     # so no crash occurs
-    if len(assay_list) > 0:
+    if molecule_key in molecule_info.keys() and len(assay_list) > 0:
         if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
             pass
         else:
@@ -247,13 +249,17 @@ def choose_molecule():
     :rtype: json dict
     """
     # Prevents overwrite if a molecule has already been chosen
-    if len(chosen_mol) > 0:
-        return jsonify({'chosen_mol': chosen_mol})
-    else:
-        r_group_1_id = request.args.get('r1')
-        r_group_2_id = request.args.get('r2')
-        chosen_mol.append((r_group_1_id, r_group_2_id))
-        return jsonify({'chosen_mol': chosen_mol})
+    # if len(chosen_mol) > 0:
+    #     return jsonify({'chosen_mol': chosen_mol})
+    # else:
+    #     r_group_1_id = request.args.get('r1')
+    #     r_group_2_id = request.args.get('r2')
+    #     chosen_mol.append((r_group_1_id, r_group_2_id))
+    # r_group_1_id = request.args.get('r1')
+    # r_group_2_id = request.args.get('r2')
+    chosen_mol[0] = request.args.get('r1')
+    chosen_mol[1] = request.args.get('r2')
+    return jsonify({'chosen_mol': chosen_mol})
 
 
 @app.route("/chosenmolecule")
@@ -266,7 +272,10 @@ def return_chosen_molecules():
     'chosen_mol' key.
     :rtype: json dict
     """
-    return jsonify({'chosen_mol': chosen_mol})
+    if chosen_mol[0] is not None and chosen_mol[1] is not None:
+        return jsonify({'chosen_mol': chosen_mol})
+    else:
+        return jsonify({})
 
 
 # http://127.0.0.1:5000/save?r1=A01&r2=B01
@@ -379,13 +388,18 @@ def return_assayed_data():
     """
     data = {}
     for k, v in molecule_info.items():
-        assay_dict = v['assays']
-        descriptor_dict = v['descriptors']
+        try:
+            assay_dict = v['assays']
+        except Exception:
+            assay_dict = {}
+        try:
+            descriptor_dict = v['descriptors']
+        except Exception:
+            descriptor_dict = {}
         metric_dict = {**assay_dict, **descriptor_dict}
         data[k] = metric_dict
     for k, v in data.items():
         v['--'] = 0
-    print(data)
     return jsonify({'assay_dict': [data]})
 
 
@@ -401,18 +415,28 @@ def return_spider_data():
      drug parameters
      rtype: json dict
      """
+
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
                   'logd', 'pampa']
-    if int(chosen_mol[0][0]) < 10:
-        r_group_1_id = 'A' + '0' + str(chosen_mol[0][0])
+
+    # if int(chosen_mol[0][0]) < 10:
+    #     r_group_1_id = 'A' + '0' + str(chosen_mol[0][0])
+    # else:
+    #     r_group_1_id = 'A' + str(chosen_mol[0][0])
+    # if int(chosen_mol[0][1]) < 10:
+    #     r_group_2_id = 'B' + '0' + str(chosen_mol[0][1])
+    # else:
+    #     r_group_2_id = 'B' + str(chosen_mol[0][1])
+
+    if chosen_mol[0] is not None and chosen_mol[1] is not None:
+        r_group_1_id = chosen_mol[0]
+        r_group_2_id = chosen_mol[1]
     else:
-        r_group_1_id = 'A' + str(chosen_mol[0][0])
-    if int(chosen_mol[0][1]) < 10:
-        r_group_2_id = 'B' + '0' + str(chosen_mol[0][1])
-    else:
-        r_group_2_id = 'B' + str(chosen_mol[0][1])
+        r_group_1_id = 'A01'
+        r_group_2_id = 'B01'
 
     drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+
     drug_properties = {
         label: drug_mol.drug_properties()[label] for label in assay_list
         }
@@ -455,6 +479,7 @@ def numerise_params(prop_dict):
                 'best': 8
     }
     drug_properties = prop_dict
+
     for k, v in clearance_dict.items():
         if k == drug_properties['clearance_mouse']:
             drug_properties['clearance_mouse'] = v
@@ -463,7 +488,49 @@ def numerise_params(prop_dict):
     for k, v in pampa_dict.items():
         if k == drug_properties['pampa']:
             drug_properties['pampa'] = v
+
     return (drug_properties)
+
+@app.route("/comparisontxt")
+def comparison_txt():
+    """ Returns comparison text depending on pic50, logd, and 
+    clearance_human of chosen molecule
+
+    returns: json dict with text in value depending on metrix
+    rtype: json dict
+    """
+
+    assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
+                  'logd', 'pampa']
+
+    if chosen_mol[0] is not None and chosen_mol[1] is not None:
+        r_group_1_id, r_group_2_id = chosen_mol[0], chosen_mol[1]
+    else:
+        r_group_1_id, r_group_2_id = 'A01', 'B01'
+    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
+    drug_properties = {
+        label: drug_mol.drug_properties()[label] for label in assay_list
+        } 
+
+    comp_dict = {}
+    with open('./src/comparison.txt', 'r') as f:
+        lines = f.readlines()
+        if float(drug_properties['pic50']) < 6.5:
+            comp_dict['pic50'] = str(lines[0])
+        else:
+            comp_dict['pic50'] = str(lines[1])
+        if float(drug_properties['logd']) < 0.95:
+            comp_dict['logd'] = str(lines[2])
+        elif 0.95 < float(drug_properties['logd']) < 1.15:
+            comp_dict['logd'] = str(lines[3])
+        else:
+            comp_dict['logd'] = str(lines[4])
+        if drug_properties['clearance_human'] != str(1):
+            comp_dict['clearance_human'] = str(lines[5])
+        else: 
+            comp_dict['clearance_human'] = str(lines[6])
+    print (comp_dict)
+    return jsonify({'comparison': comp_dict})
 
 
 @app.route("/reset")
