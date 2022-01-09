@@ -341,7 +341,7 @@ def molecule_img():
     """Returns bytestream image  and drug properties of compund molecule
     consisting of scaffold and up to two R Groups, if these are specified in
     the query parameters.
-    Pass R Group IDs as queries: /molecule?r1=A01&r2=B10
+    Pass R Group IDs and image size as queries: /molecule?r1=A01&r2=B10&size=800,800
     If no R Groups are specified this returns the scaffold.
 
     :return: JSON containing image of compound molecule as bytestream.
@@ -349,6 +349,8 @@ def molecule_img():
     """
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
+    size = eval(request.args.get('size'))
+
 
     r_group_1 = None
     r_group_2 = None
@@ -370,7 +372,7 @@ def molecule_img():
             base_molecule = r_group_2.add_r_group(base_molecule)
 
     bytestream = base_molecule.drawMoleculeAsByteStream(
-        orient_with_scaffold=True, size=(800, 800)
+        orient_with_scaffold=True, size=size
     )
     if r_group_1_id is not None and r_group_2_id is not None:
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
@@ -420,15 +422,6 @@ def return_spider_data():
 
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
                   'logd', 'pampa']
-
-    # if int(chosen_mol[0][0]) < 10:
-    #     r_group_1_id = 'A' + '0' + str(chosen_mol[0][0])
-    # else:
-    #     r_group_1_id = 'A' + str(chosen_mol[0][0])
-    # if int(chosen_mol[0][1]) < 10:
-    #     r_group_2_id = 'B' + '0' + str(chosen_mol[0][1])
-    # else:
-    #     r_group_2_id = 'B' + str(chosen_mol[0][1])
 
     if chosen_mol[0] is not None and chosen_mol[1] is not None:
         r_group_1_id = chosen_mol[0]
@@ -490,7 +483,9 @@ def numerise_params(prop_dict):
     for k, v in pampa_dict.items():
         if k == drug_properties['pampa']:
             drug_properties['pampa'] = v
-
+        if k == drug_properties['logd']:
+            drug_properties['logd'] = v
+    
     return (drug_properties)
 
 
@@ -513,6 +508,9 @@ def comparison_txt():
     drug_properties = {
         label: drug_mol.drug_properties()[label] for label in assay_list
         }
+    #some properties for logd are strings ('best' or 'good') (no idea why)
+    drug_properties = numerise_params(drug_properties)
+    
     comp_dict = {}
     with open('./src/comparison.txt', 'r') as f:
         lines = f.readlines()
