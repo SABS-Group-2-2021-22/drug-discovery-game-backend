@@ -195,3 +195,65 @@ class TestAPI(unittest.TestCase):
             json_data = rv.get_json()
             result = {"new_info": {}}
             self.assertEqual(json_data, result)
+
+    def test_return_assayed_data(self):
+        with ddg_api.app.test_client() as c:
+            c.get('/reset')
+            c.post('/save?r1=A01&r2=B01')
+            c.get('/descriptors?r1=A01&r2=B01')
+            c.get('/assays?r1=A01&r2=B01&pic50=Yes&clearance_mouse=Yes&'
+                    'clearance_human=Yes&logd=Yes&pampa=Yes')
+            rv = c.get('/getplotdata')
+            json_data = rv.get_json()
+            result = {"assay_dict": [{'A01B01': {
+                        '--': 0,
+                        'HA': 28,
+                        'MW': 397.09839370800006,
+                        'TPSA': 103.7,
+                        'clearance_human': "low (< 12)",
+                        'clearance_mouse': "medium (5.6-30.5)",
+                        'h_acc': 4,
+                        'h_don': 3,
+                        'logP': 3.033400000000001,
+                        'logd': "0.3",
+                        'pampa': "low",
+                        'pic50': "6.5",
+                        'rings': 3
+            }}]}
+            self.assertDictEqual(json_data, result)
+
+    def test_numerise_params(self):
+        with ddg_api.app.test_client() as c:
+            c.get('/reset')
+            c.post('/choose?r1=A02&r2=B02')
+            rv = c.get('/getspiderdata')
+            json_data = rv.get_json()
+            result = {'param_dict': [{
+                'clearance_human': 1,
+                'clearance_mouse': 1,
+                'logd': "0.54",
+                'pampa': 5.5,
+                'pic50': "Not Made"
+            },
+            {
+                'clearance_human': 1,
+                'clearance_mouse': 1,
+                'logd': "1.08",
+                'pampa': 5.5,
+                'pic50': "7.7"
+            }]}
+            self.assertDictEqual(json_data, result)
+
+    def test_comparison_txt(self):
+        with ddg_api.app.test_client() as c:
+            c.get('/reset')
+            c.post('/choose?r1=A03&r2=B03')
+            rv = c.get('/comparisontxt')
+            json_data = rv.get_json()
+            self.assertIsNotNone(json_data)
+            comp_dict = json_data['comparison']
+            with open('./tests/comp_txt_test.txt', 'r') as f:
+                lines = f.readlines()
+                self.assertEqual(str(lines[0]), comp_dict['pic50'])
+                self.assertEqual(str(lines[1]), comp_dict['logd'])
+                self.assertEqual(str(lines[2]), comp_dict['clearance_human'])
