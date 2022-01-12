@@ -198,6 +198,7 @@ class TestAPI(unittest.TestCase):
 
     def test_molecule_img(self):
         with ddg_api.app.test_client() as c:
+            c.get('/reset')
             rv = c.get('/molecule?r1=A04&r2=B04')
             json_data = rv.get_json()
             with open('tests/test_molecule_full.txt') as true_file:
