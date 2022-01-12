@@ -4,6 +4,9 @@ import json
 
 
 class TestAPI(unittest.TestCase):
+    def __init__(self):
+        self.maxDiff = None
+
     def test_hello_world(self):
         with ddg_api.app.test_client() as c:
             rv = c.get('/')
