@@ -187,7 +187,7 @@ class TestAPI(unittest.TestCase):
             json_data = rv.get_json()
             result = {'saved_mols': [['A04', 'B05']]}
             self.assertEqual(json_data, result)
-        
+
     def test_rgroup_img(self):
         with ddg_api.app.test_client() as c:
             rv = c.get('/r-group-B10')
@@ -195,7 +195,7 @@ class TestAPI(unittest.TestCase):
             with open('tests/test_rgroup_img.txt') as true_file:
                 true_data = json.load(true_file)
             self.assertEqual(json_data, true_data)
-    
+
     def test_molecule_img(self):
         with ddg_api.app.test_client() as c:
             rv = c.get('/molecule?r1=A04&r2=B04')
@@ -203,7 +203,6 @@ class TestAPI(unittest.TestCase):
             with open('tests/test_molecule_full.txt') as true_file:
                 true_data = json.load(true_file)
             self.assertEqual(json_data, true_data)
-            rv = c.get('/molecule?r1=None&r2=None')
 
     def test_reset(self):
         with ddg_api.app.test_client() as c:
@@ -218,7 +217,7 @@ class TestAPI(unittest.TestCase):
             c.post('/save?r1=A01&r2=B01')
             c.get('/descriptors?r1=A01&r2=B01')
             c.get('/assays?r1=A01&r2=B01&pic50=Yes&clearance_mouse=Yes&'
-                    'clearance_human=Yes&logd=Yes&pampa=Yes')
+                  'clearance_human=Yes&logd=Yes&pampa=Yes')
             rv = c.get('/getplotdata')
             json_data = rv.get_json()
             result = {"assay_dict": [{'A01B01': {
@@ -251,7 +250,7 @@ class TestAPI(unittest.TestCase):
                 'pampa': 5.5,
                 'pic50': "Not Made"
             },
-            {
+                {
                 'clearance_human': 1,
                 'clearance_mouse': 1,
                 'logd': "1.08",

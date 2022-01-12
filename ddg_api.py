@@ -341,7 +341,8 @@ def molecule_img():
     """Returns bytestream image  and drug properties of compund molecule
     consisting of scaffold and up to two R Groups, if these are specified in
     the query parameters.
-    Pass R Group IDs and image size as queries: /molecule?r1=A01&r2=B10&size=800,800
+    Pass R Group IDs and image size as queries:
+    /molecule?r1=A01&r2=B10&size=800,800
     If no R Groups are specified this returns the scaffold.
 
     :return: JSON containing image of compound molecule as bytestream.
@@ -350,7 +351,6 @@ def molecule_img():
     r_group_1_id = request.args.get('r1')
     r_group_2_id = request.args.get('r2')
     size = eval(request.args.get('size'))
-
 
     r_group_1 = None
     r_group_2 = None
@@ -485,7 +485,6 @@ def numerise_params(prop_dict):
             drug_properties['pampa'] = v
         if k == drug_properties['logd']:
             drug_properties['logd'] = v
-    
     return (drug_properties)
 
 
@@ -508,9 +507,9 @@ def comparison_txt():
     drug_properties = {
         label: drug_mol.drug_properties()[label] for label in assay_list
         }
-    #some properties for logd are strings ('best' or 'good') (no idea why)
+    # some properties for logd are strings ('best' or 'good') (no idea why)
     drug_properties = numerise_params(drug_properties)
-    
+
     comp_dict = {}
     with open('./src/comparison.txt', 'r') as f:
         lines = f.readlines()
