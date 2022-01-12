@@ -1,5 +1,6 @@
 import unittest
 import ddg_api
+import json
 
 
 class TestAPI(unittest.TestCase):
@@ -151,8 +152,6 @@ class TestAPI(unittest.TestCase):
     def test_choose_molecule(self):
         with ddg_api.app.test_client() as c:
             c.get('/reset')
-            c.get('/filters?r1=A01&r2=B10')
-            c.post('/save?r1=A01&r2=B10')
             rv = c.post('/choose?r1=A01&r2=B10')
             json_data = rv.get_json()
             result = {'chosen_mol': ['A01', 'B10']}
@@ -188,6 +187,23 @@ class TestAPI(unittest.TestCase):
             json_data = rv.get_json()
             result = {'saved_mols': [['A04', 'B05']]}
             self.assertEqual(json_data, result)
+        
+    def test_rgroup_img(self):
+        with ddg_api.app.test_client() as c:
+            rv = c.get('/r-group-B10')
+            json_data = rv.get_json()
+            with open('tests/test_rgroup_img.txt') as true_file:
+                true_data = json.load(true_file)
+            self.assertEqual(json_data, true_data)
+    
+    def test_molecule_img(self):
+        with ddg_api.app.test_client() as c:
+            rv = c.get('/molecule?r1=A04&r2=B04')
+            json_data = rv.get_json()
+            with open('tests/test_molecule_full.txt') as true_file:
+                true_data = json.load(true_file)
+            self.assertEqual(json_data, true_data)
+            rv = c.get('/molecule?r1=None&r2=None')
 
     def test_reset(self):
         with ddg_api.app.test_client() as c:
