@@ -127,17 +127,18 @@ class TestMolecule(unittest.TestCase):
         trueimgByteArray = f.read()
         self.assertEqual(imgByteArray, trueimgByteArray)
 
-    # def test_drawMoleculeAsByteStream(self):
-    #     """Tests function by comparing bytestreams produced
-    #     """
-    #     passing_mol = Molecule("O=C(O)C(NS(=O)(=O)c1ccc9cc1)8"
-    #                            ".Oc1ccc(C8)cc1.c1ccc9cc1")
-    #     test_byte_stream = passing_mol.drawMoleculeAsByteStream(
-    #         orient_with_scaffold=True
-    #         )
-    #     f = open("tests/test_draw_molecule_bytes_2.txt", "r")
-    #     true_byte_stream = f.read()
-    #     self.assertEqual(test_byte_stream, true_byte_stream)
+    def test_drawMoleculeAsByteStream(self):
+        """Tests function by comparing bytestreams produced
+        """
+        passing_mol = Molecule("O=C(O)C(NS(=O)(=O)c1ccc9cc1)8"
+                               ".Oc1ccc(C8)cc1.c1ccc9cc1")
+        test_byte_stream = passing_mol.drawMoleculeAsByteStream(
+            orient_with_scaffold=True
+            )
+        f = open("tests/test_draw_molecule_bytes_2.txt", "r")
+        true_byte_stream = f.read()
+        print(test_byte_stream)
+        self.assertEqual(test_byte_stream, true_byte_stream)
 
     def test_extract_smilefromcsv(self):
         """Tests R_group function by comparing values extracted from the csv
