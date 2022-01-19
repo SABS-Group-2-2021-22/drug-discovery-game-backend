@@ -140,6 +140,16 @@ class TestMolecule(unittest.TestCase):
         print(test_byte_stream)
         self.assertEqual(test_byte_stream, true_byte_stream)
 
+    def test_init_R_group(self):
+        """Tests that when a non-valid R-group id is included,
+        an Exception is raised"""
+        with self.assertRaises(Exception) as context:
+            R_group("A65")
+        self.assertTrue('R group ID not valid' in context.exception)
+        with self.assertRaises(Exception) as context:
+            R_group("C01")
+        self.assertTrue('R group ID not valid' in context.exception)
+
     def test_extract_smilefromcsv(self):
         """Tests R_group function by comparing values extracted from the csv
         """

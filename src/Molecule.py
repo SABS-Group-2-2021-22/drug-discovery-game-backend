@@ -179,10 +179,14 @@ class R_group(Molecule):
     def __init__(self, name, number=None):
         self.name = name
         if number is None:
-            if name[0] == 'A':
-                number = 1
-            elif name[0] == 'B':
-                number = 2
+            number_key = int(name[1]+name[2])
+            if number_key <= 50:
+                if name[0] == 'A':
+                    number = 1
+                elif name[0] == 'B':
+                    number = 2
+                else:
+                    raise ValueError('R group ID not valid')
             else:
                 raise ValueError('R group ID not valid')
         self.number = number
