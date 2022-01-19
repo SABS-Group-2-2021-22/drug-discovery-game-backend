@@ -143,7 +143,7 @@ class TestMolecule(unittest.TestCase):
     def test_init_R_group(self):
         """Tests that when a non-valid R-group id is included,
         an Exception is raised"""
-        self.assertRaises(R_group("A65"), 'R group ID not valid')
+        self.assertRaises('R group ID not valid', R_group("A65"))
         # with self.assertRaises(Exception) as context:
         #     R_group("C01")
         # self.assertTrue('R group ID not valid' in context.exception)
