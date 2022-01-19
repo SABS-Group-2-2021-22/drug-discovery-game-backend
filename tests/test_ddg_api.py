@@ -193,6 +193,7 @@ class TestAPI(unittest.TestCase):
         with ddg_api.app.test_client() as c:
             rv = c.get('/r-group-B10')
             json_data = rv.get_json()
+            print(json_data)
             with open('tests/test_rgroup_img.txt') as true_file:
                 true_data = json.load(true_file)
             self.assertEqual(json_data, true_data)
@@ -202,7 +203,6 @@ class TestAPI(unittest.TestCase):
             c.get('/reset')
             rv = c.get('/molecule?r1=A04&r2=B04&size=800,800')
             json_data = rv.get_json()
-            print(json_data)
             with open('tests/test_molecule_full.txt') as true_file:
                 true_data = json.load(true_file)
             self.assertEqual(json_data, true_data)
