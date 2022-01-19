@@ -145,9 +145,8 @@ class TestMolecule(unittest.TestCase):
         an Exception is raised"""
         with self.assertRaises(ValueError):
             R_group("A65")
-        # with self.assertRaises(Exception) as context:
-        #     R_group("C01")
-        # self.assertTrue('R group ID not valid' in context.exception)
+        with self.assertRaises(ValueError):
+            R_group("C01")
 
     def test_extract_smilefromcsv(self):
         """Tests R_group function by comparing values extracted from the csv

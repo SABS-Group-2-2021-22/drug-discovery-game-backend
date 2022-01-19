@@ -196,15 +196,12 @@ class R_group(Molecule):
     def extract_smilefromcsv(self):
         """Extracts the SMILE for the R group
         """
-        try:
-            if self.number == 1:
-                rgroup_smiles = csv_file[csv_file['atag'] ==
-                                         self.name]['R1'].iloc[0]
-            if self.number == 2:
-                rgroup_smiles = csv_file[csv_file['btag'] ==
-                                         self.name]['R2'].iloc[0]
-        except ValueError('Invalid R Group ID'):
-            raise ValueError('Invalid R Group ID')
+        if self.number == 1:
+            rgroup_smiles = csv_file[csv_file['atag'] ==
+                                     self.name]['R1'].iloc[0]
+        if self.number == 2:
+            rgroup_smiles = csv_file[csv_file['btag'] ==
+                                     self.name]['R2'].iloc[0]
         return(rgroup_smiles)
 
     def add_r_group(self, base_molecule):
