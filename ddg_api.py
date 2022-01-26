@@ -547,3 +547,10 @@ def reset():
     time.clear()
     time.append(30.0)
     return jsonify({"new_info": molecule_info})
+
+
+@app.route("/users/authenticate", methods=['POST'])
+def authenticate_login():
+    request_data = request.get_json()
+    print(request_data)
+    return jsonify(request_data)
