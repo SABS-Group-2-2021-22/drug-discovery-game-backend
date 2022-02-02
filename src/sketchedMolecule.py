@@ -11,9 +11,6 @@ class sketchedMolecule:
         self.mol_block = mol_block
         self.mol = Chem.rdmolfiles.MolFromMolBlock(self.mol_block)
 
-    def return_mol(self):
-        return self.mol
-
     def drawMoleculeAsByteStream(self, size=None):
         """Returns png image of molecule as bytestream
 
