@@ -1,5 +1,5 @@
 import unittest
-import ddg_api
+import api.ddg_api as ddg_api
 import json
 
 
