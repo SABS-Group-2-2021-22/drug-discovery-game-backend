@@ -2,10 +2,14 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from src.Molecule import R_group, Molecule, FinalMolecule
+from src.sketchedMolecule import sketchedMolecule
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*":
                             {"origins": "http://localhost:3000"}})
+
+
+import base64                       
 
 # Temporary storage of data
 global molecule_info
@@ -37,6 +41,26 @@ def get_all_mol_info():
     :rtype: json dict
     """
     return jsonify(molecule_info)
+
+# e.g. http://127.0.0.1:5000/sketcher_save_molecule?mol=<MOl block>
+@app.route("/sketcher_save_molecule")
+def sketcher_save_molecule():
+    '''Receives Mol block of sketched molecules and returns descriptors,
+    filters and Lipinski rules and image of the molecule
+
+    :returns: A json dictionary of the bytestream, descriptors, filters and
+    Lipinksi rules for the molecule
+    :rtypes: json dict
+    '''
+    mol_block = base64.b64decode(request.args.get('mol'))
+    new_mol = sketchedMolecule(mol_block)
+    return jsonify({new_mol.smiles: {
+                    'img_html': new_mol.drawMoleculeAsByteStream(),
+                    'descriptors': new_mol.descriptors(),
+                    'filters': new_mol.filter_properties(),
+                    'lipinski': new_mol.lipinski(),
+                    'assays_run': {}
+                    }})
 
 
 # e.g. http://127.0.0.1:5000/update_time_money
