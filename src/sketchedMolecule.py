@@ -1,5 +1,6 @@
 from rdkit import Chem
-from rdkit.Chem import Lipinski, Descriptors, rdMolDescriptors, Crippen
+from rdkit.Chem import Lipinski,\
+    Descriptors, rdMolDescriptors, Crippen, rdDepictor
 from rdkit.Chem.FilterCatalog import FilterCatalog, FilterCatalogParams
 
 import io
@@ -10,9 +11,17 @@ class sketchedMolecule:
     def __init__(self, mol_block):
         self.mol_block = mol_block
         self.mol = Chem.rdmolfiles.MolFromMolBlock(self.mol_block)
+        old_mol = Chem.rdmolfiles.MolFromMolBlock(self.mol_block)
+        rdDepictor.Compute2DCoords(self.mol, clearConfs=True)
+        Chem.rdMolAlign.AlignMol(self.mol, old_mol)
 
     @property
     def smiles(self):
+        '''Returns smile string for the molecule
+
+        :return: smiles string
+        :type: str
+        '''
         return Chem.MolToSmiles(self.mol)
 
     def drawMoleculeAsByteStream(self, size=None):
@@ -109,5 +118,3 @@ class sketchedMolecule:
                       'h_don': desc_dict['h_don'] <= 5,
                       'logP': desc_dict['logP'] < 5}
         return violations
-
-    
