@@ -1,15 +1,11 @@
-from api.backend.backend_api import Backend
-from src.SketchedMolecule import sketchedMolecule
+# from src.SketchedMolecule import sketchedMolecule
 from rdkit import Chem
 
-class sketched_molecule(Backend):
+
+class sketched_molecule():
     def __init__(self):
-        
+        pass
 
-    def run_lipinski(mol):
-        drug_mol = sketchedMolecule(mol)
-        return drug_mol.lipinski()
-    
-    def 
-
-        
+    # def run_lipinski(mol):
+    #     drug_mol = sketchedMolecule(mol)
+    #     return drug_mol.lipinski()
