@@ -21,7 +21,7 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 
-def get_all_mol_info(db_connection):
+def get_all_mol_info(molecule_info):
     """Returns all assay, lipinski, filters and descriptor values for those run,
     for all molecules saved.
     Call just /get_all_mol_info
@@ -29,18 +29,17 @@ def get_all_mol_info(db_connection):
     :returns: Json dictionary of all saved information during a game
     :rtype: json dict
     """
-    # return jsonify(molecule_info)
-    print('CP1: ', db_connection.keys())
-    return jsonify(db_connection.get('molecule_info'))
+    return jsonify(molecule_info)
 
 
-def update_time_and_money():
+def update_time_and_money(user):
     """Updates the time and money values.
     Call just /update_time_money.
 
     :returns: A json tuple of the latest money and time value.
     :rtype: json tuple
     """
+    user.update_time_and_money()
     return jsonify((money[-1], time[-1]))
 
 
@@ -102,7 +101,7 @@ def save_molecule(mol_dict):
     return jsonify({'saved_mols': list_saved_mols}), mol_dict
 
 
-def return_saved_molecules():
+def return_saved_molecules(molecule_info):
     """Returns the list of saved molecules as json dict of a list, containing
     tuples of the R Group IDs. Currently a global variable in place of database
     storage.

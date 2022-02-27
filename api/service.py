@@ -21,14 +21,21 @@ def hello_world():
     return api.hello_world()
 
 
-@app.route("/get_all_mol_info")
+@app.route("/get_all_mol_info", methods=['GET', 'POST'])
 def get_all_mol_info():
-    return api.get_all_mol_info()
+    username = request.get_json()['username']
+    session_molecule_info = sessions[username].get_molecule_info()
+    response = api.get_all_mol_info(session_molecule_info)
+    return response
 
 
-@app.route("/update_time_money")
+@app.route("/update_time_money", methods=['GET', 'POST'])
 def update_time_and_money():
-    return api.update_time_and_money()
+    username = request.get_json()['username']
+    user = sessions[username]
+    response, user = api.update_time_and_money(user)
+    sessions[username] = user
+    return response
 
 
 # TODO: refactor query passing here, direct via function args
@@ -71,9 +78,12 @@ def save_molecule():
     return response
 
 
-@app.route("/savedmolecules")
+@app.route("/savedmolecules", methods=['GET', 'POST'])
 def return_saved_molecules():
-    return api.return_saved_molecules()
+    username = request.get_json()['username']
+    session_molecule_info = sessions[username].get_molecule_info()
+    response = api.return_saved_molecules(session_molecule_info)
+    return response
 
 
 @app.route("/r-group-<string:r_group_id>")
