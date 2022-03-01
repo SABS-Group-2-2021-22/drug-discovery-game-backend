@@ -402,7 +402,18 @@ def molecule_img():
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()
     return jsonify({'img_html': f"data:;base64,{bytestream}",
-                    'drug_props': drug_property_dict})
+                    'drug_props': drug_property_dict,
+                    'descriptors': {},
+                    'filters': {},
+                    'assays_run': {
+                       # 'pic50': 'N',
+                       # 'clearance_mouse': 'N',
+                       # 'clearance_human': 'N',
+                       # 'logd': 'N',
+                       # 'pampa': 'N',
+                       # 'filters': 'N',
+                       # 'descriptors': 'N'
+                    }})
 
 
 @app.route("/getplotdata")
