@@ -3,14 +3,13 @@ from flask_cors import CORS
 
 from src.Molecule import R_group, Molecule, FinalMolecule
 from src.sketchedMolecule import sketchedMolecule
+import base64    
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*":
                             {"origins": "http://localhost:3000"}})
 
-
-import base64                       
-
+                   
 # Temporary storage of data
 global molecule_info
 molecule_info = {}
@@ -41,6 +40,7 @@ def get_all_mol_info():
     :rtype: json dict
     """
     return jsonify(molecule_info)
+
 
 # e.g. http://127.0.0.1:5000/sketcher_save_molecule?mol=<MOl block>
 @app.route("/sketcher_save_molecule")
