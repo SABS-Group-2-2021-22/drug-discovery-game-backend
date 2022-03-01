@@ -38,7 +38,7 @@ class sketchedMolecule:
         img.save(imgByteArray, format='png')
         imgByteArray = imgByteArray.getvalue()
         imgByteArray = base64.b64encode(imgByteArray).decode("utf-8")
-        return imgByteArray
+        return "data:;base64, "+ imgByteArray
 
     def filter_properties(self):
         """See whether molecule passes or fails FILTERS
