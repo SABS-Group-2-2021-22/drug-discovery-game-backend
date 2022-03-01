@@ -54,13 +54,13 @@ def sketcher_save_molecule():
     '''
     mol_block = base64.b64decode(request.args.get('mol'))
     new_mol = sketchedMolecule(mol_block)
-    return jsonify({new_mol.smiles: {
+    return jsonify({'smiles': new_mol.smiles,
                     'img_html': new_mol.drawMoleculeAsByteStream(),
                     'descriptors': new_mol.descriptors(),
                     'filters': new_mol.filter_properties(),
                     'lipinski': new_mol.lipinski(),
                     'assays_run': {}
-                    }})
+                    })
 
 
 # e.g. http://127.0.0.1:5000/update_time_money
