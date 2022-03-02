@@ -59,7 +59,8 @@ def sketcher_save_molecule():
                     'descriptors': new_mol.descriptors(),
                     'filters': new_mol.filter_properties(),
                     'lipinski': new_mol.lipinski(),
-                    'assays_run': {}
+                    'assays_run': {},
+                    'tanimoto': new_mol.get_tanimoto_similarity()
                     })
 
 
