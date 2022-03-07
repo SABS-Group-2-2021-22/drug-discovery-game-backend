@@ -27,7 +27,7 @@ def hello_world():
 
 
 # e.g. http://127.0.0.1:5000/get_all_mol_info
-@app.route("/get_all_mol_info")
+@app.route("/get_all_mol_info", methods=['POST'])
 def get_all_mol_info():
     """Returns all assay, lipinski, filters and descriptor values for those run,
     for all molecules saved.
@@ -302,7 +302,7 @@ def save_molecule():
 
 
 # http://127.0.0.1:5000/savedmolecules
-@app.route("/savedmolecules")
+@app.route("/savedmolecules", methods=['POST'])
 def return_saved_molecules():
     """Returns the list of saved molecules as json dict of a list, containing
     tuples of the R Group IDs. Currently a global variable in place of database
