@@ -141,16 +141,16 @@ class sketchedMolecule:
             'pampa'
         ]
         descriptors = {d[0]: d[1] for d in Descriptors.descList}
-        rdkit_features = pd.read_csv('r_group_rdkit_features.csv')
+        rdkit_features = pd.read_csv('r_group_rdkit_features.csv', index_col=0)
         rdkit_desc_dict = {}
         rdkit_desc_dict[0] = \
-            {d: descriptors[d](self.mol) for d in rdkit_features.columns}
+            {r: descriptors[r](self.mol) for r in rdkit_features.columns}
         desc_df = pd.DataFrame.from_dict(rdkit_desc_dict)
         desc_df = desc_df.T
         for d in drug_properties:
             model = pickle.load(
                 open(f'assay_ml_models/automl_{d}_model.pkl', 'rb'))
-            drug_property_dict[d] = model.predict(desc_df)
+            drug_property_dict[d] = str(model.predict(desc_df)[0])
         return drug_property_dict
 
     def get_morgan_fingerprint_r_4_bits_2048(self, mol):
