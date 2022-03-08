@@ -140,8 +140,8 @@ class sketchedMolecule:
             'logd',
             'pampa'
         ]
-        descriptors = {d[0]: d[1] for d in Descriptors.descList}   
-        rdkit_features = pd.read_csv('r_group_rdkit_features')
+        descriptors = {d[0]: d[1] for d in Descriptors.descList}
+        rdkit_features = pd.read_csv('r_group_rdkit_features.csv')
         rdkit_desc_dict = {}
         rdkit_desc_dict[0] = \
             {d: descriptors[d](self.mol) for d in rdkit_features.columns}
