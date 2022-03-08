@@ -1,15 +1,15 @@
+from argparse import ArgumentError
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from src.Molecule import R_group, Molecule, FinalMolecule
 from src.sketchedMolecule import sketchedMolecule
-import base64    
+import base64
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*":
                             {"origins": "http://localhost:3000"}})
 
-                   
 # Temporary storage of data
 global molecule_info
 molecule_info = {}
@@ -53,15 +53,19 @@ def sketcher_save_molecule():
     :rtypes: json dict
     '''
     mol_block = base64.b64decode(request.args.get('mol'))
-    new_mol = sketchedMolecule(mol_block)
-    return jsonify({'smiles': new_mol.smiles,
-                    'img_html': new_mol.drawMoleculeAsByteStream(),
-                    'descriptors': new_mol.descriptors(),
-                    'filters': new_mol.filter_properties(),
-                    'lipinski': new_mol.lipinski(),
-                    'assays_run': {},
-                    'tanimoto': new_mol.get_tanimoto_similarity()
-                    })
+    try:
+        new_mol = sketchedMolecule(mol_block)
+        return jsonify({'smiles': new_mol.smiles,
+                        'img_html': new_mol.drawMoleculeAsByteStream(),
+                        'descriptors': new_mol.descriptors(),
+                        'filters': new_mol.filter_properties(),
+                        'lipinski': new_mol.lipinski(),
+                        'assays_run': {},
+                        'tanimoto': new_mol.get_tanimoto_similarity(),
+                        'assays': new_mol.drug_properties(),
+                        })
+    except:
+        return jsonify('failure')
 
 
 # e.g. http://127.0.0.1:5000/update_time_money

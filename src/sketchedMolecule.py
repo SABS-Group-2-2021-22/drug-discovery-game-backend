@@ -2,18 +2,23 @@ from rdkit import Chem, DataStructs
 from rdkit.Chem import Lipinski,\
     Descriptors, rdMolDescriptors, Crippen, rdDepictor
 from rdkit.Chem.FilterCatalog import FilterCatalog, FilterCatalogParams
-
+import pandas as pd
 import io
 import base64
+import pickle
 
 
 class sketchedMolecule:
     def __init__(self, mol_block):
         self.mol_block = mol_block
-        self.mol = Chem.rdmolfiles.MolFromMolBlock(self.mol_block)
-        old_mol = Chem.rdmolfiles.MolFromMolBlock(self.mol_block)
-        rdDepictor.Compute2DCoords(self.mol, clearConfs=True)
-        Chem.rdMolAlign.AlignMol(self.mol, old_mol)
+        try:
+            self.mol = Chem.rdmolfiles.MolFromMolBlock(self.mol_block)
+            old_mol = Chem.rdmolfiles.MolFromMolBlock(self.mol_block)
+            rdDepictor.Compute2DCoords(self.mol, clearConfs=True)
+            Chem.rdMolAlign.AlignMol(self.mol, old_mol)
+        except:
+            print('The MOL block is either incorrectly structured or the compound cannot be \
+                processed by RDKit')
 
     @property
     def smiles(self):
@@ -106,10 +111,10 @@ class sketchedMolecule:
         return desc_dict
 
     def lipinski(self):
-        """Calculate Lipinski from the descriptor dictionary. Returns the
-        number of rules broken and whether the molecule passes.
+        """Calculate Lipinski from the descriptor dictionary. Returns a boolean
+        for whether it passes each rule.
 
-        :return: violations
+        :return: dictionary for each rule as a key and the boolean as the value
         :rtype: dict
         """
         desc_dict = self.descriptors()
@@ -118,6 +123,35 @@ class sketchedMolecule:
                       'h_don': desc_dict['h_don'] <= 5,
                       'logP': desc_dict['logP'] < 5}
         return violations
+
+    def drug_properties(self):
+        """Predicts properties of the final drug from the models trained on the
+        MMP12 dataset (assay_ml_models). See assays_models.ipynb.
+
+        :return: dictionary with each property as a key and the predicted value
+        from the ML models as the value
+        :rtype: dict
+        """
+        drug_property_dict = {}
+        drug_properties = [
+            'pic50',
+            'clearance_mouse',
+            'clearance_human',
+            'logd',
+            'pampa'
+        ]
+        descriptors = {d[0]: d[1] for d in Descriptors.descList}   
+        rdkit_features = pd.read_csv('r_group_rdkit_features')
+        rdkit_desc_dict = {}
+        rdkit_desc_dict[0] = \
+            {d: descriptors[d](self.mol) for d in rdkit_features.columns}
+        desc_df = pd.DataFrame.from_dict(rdkit_desc_dict)
+        desc_df = desc_df.T
+        for d in drug_properties:
+            model = pickle.load(
+                open(f'assay_ml_models/automl_{d}_model.pkl', 'rb'))
+            drug_property_dict[d] = model.predict(desc_df)
+        return drug_property_dict
 
     def get_morgan_fingerprint_r_4_bits_2048(self, mol):
         """Calculates the Morgan fingerprint with radius 4 and 2048 bits for a
