@@ -378,7 +378,11 @@ def molecule_img():
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()
     return jsonify({'img_html': f"data:;base64,{bytestream}",
-                    'drug_props': drug_property_dict})
+                    'drug_props': drug_property_dict,
+                    'descriptors': {},
+                    'filters': {},
+                    'assays_run': {
+                    }})
 
 
 @app.route("/getplotdata")
@@ -513,20 +517,26 @@ def comparison_txt():
     comp_dict = {}
     with open('./src/comparison.txt', 'r') as f:
         lines = f.readlines()
-        if float(drug_properties['pic50']) < 6.5:
+        if str(drug_properties['pic50']) == 'Not Made':
+            comp_dict['pic50'] = str(lines[2])
+        elif str(drug_properties['pic50']) == 'Inactive':
+            comp_dict['pic50'] = str(lines[3])
+        elif str(drug_properties['pic50']) == 'Assay Failed':
+            comp_dict['pic50'] = str(lines[4])
+        elif float(drug_properties['pic50']) < 6.5:
             comp_dict['pic50'] = str(lines[0])
         else:
             comp_dict['pic50'] = str(lines[1])
         if float(drug_properties['logd']) < 0.95:
-            comp_dict['logd'] = str(lines[2])
+            comp_dict['logd'] = str(lines[5])
         elif 0.95 < float(drug_properties['logd']) < 1.15:
-            comp_dict['logd'] = str(lines[3])
+            comp_dict['logd'] = str(lines[6])
         else:
-            comp_dict['logd'] = str(lines[4])
+            comp_dict['logd'] = str(lines[7])
         if drug_properties['clearance_human'] != str(1):
-            comp_dict['clearance_human'] = str(lines[5])
+            comp_dict['clearance_human'] = str(lines[8])
         else:
-            comp_dict['clearance_human'] = str(lines[6])
+            comp_dict['clearance_human'] = str(lines[9])
     print(comp_dict)
     return jsonify({'comparison': comp_dict})
 
