@@ -365,7 +365,7 @@ def molecule_img():
         if r_group_1 is not None:       # Check R1 id was valid
             base_molecule = r_group_1.add_r_group(base_molecule)
 
-    # Add R group one
+    # Add R group two
     if r_group_2_id is not None:        # Check R2 was included in query
         r_group_2 = R_group(r_group_2_id)
         if r_group_2 is not None:       # Check R2 id was valid
