@@ -371,8 +371,11 @@ def molecule_img():
         if r_group_2 is not None:       # Check R2 id was valid
             base_molecule = r_group_2.add_r_group(base_molecule)
 
-    bytestream = base_molecule.drawMoleculeAsByteStream(
-        orient_with_scaffold=True, size=size
+    # bytestream = base_molecule.drawMoleculeAsByteStream(
+    #     orient_with_scaffold=True, size=size
+    # )
+
+    bytestream = base_molecule.drawMoleculeAsByteStream(size=size
     )
     if r_group_1_id is not None and r_group_2_id is not None:
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
