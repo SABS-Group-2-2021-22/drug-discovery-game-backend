@@ -186,26 +186,6 @@ class Molecule:
         imgByteArray = base64.b64encode(b.read()).decode("utf-8")
         return imgByteArray
 
-        # if orient_with_scaffold is True:
-        #     AllChem.Compute2DCoords(orient_scaffold)
-        #     AllChem.Compute2DCoords(drawn_mol)
-        #     # TODO: test if _ assignment is needed or if fn call wo./
-        #     # assignment is sufficient
-        #     _ = AllChem.GenerateDepictionMatching2DStructure(drawn_mol,
-        #                                                      orient_scaffold)
-        # if size is not None:
-        #     img = Chem.Draw.MolToImage(drawn_mol, size=size)
-        # else:
-        #     img = Chem.Draw.MolToImage(drawn_mol)
-        #     d.DrawMolecule(drawn_mol, highlightAtoms=hit_ats,
-        #                    highlightAtomColors=atom_cols)
-
-        # imgByteArray = io.BytesIO()
-        # img.save(imgByteArray, format='png')
-        # imgByteArray = imgByteArray.getvalue()
-        # imgByteArray = base64.b64encode(imgByteArray).decode("utf-8")
-        # return imgByteArray
-
     # def drawMoleculeAsByteStream(self, orient_with_scaffold=False,
     # size=None):
     #     """Returns png image of molecule as bytestream
