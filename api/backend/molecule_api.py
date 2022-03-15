@@ -6,8 +6,8 @@ from src.Molecule import R_group, Molecule, FinalMolecule
 
 from .utils import tuple2str, numerise_params
 
-global molecule_info
-molecule_info = {}
+# global molecule_info
+# molecule_info = {}
 
 global chosen_mol
 chosen_mol = [None, None]
@@ -20,7 +20,7 @@ time = [30.0]
 
 
 # TODO: refactor query passing here, direct via function args
-def run_lipinski():
+def run_lipinski(molecule_info):
     """Checks if molecule passes Lipinski's Rule of 5:
         MW < 500.0
         h_acc <= 10
@@ -48,7 +48,7 @@ def run_lipinski():
         else:
             molecule_info[molecule_key]["lipinski"] = {}
         molecule_info[molecule_key]["lipinski"][label] = drug_lipinski[label]
-    return jsonify({"lipinski": lipinski_dict})
+    return jsonify({"lipinski": lipinski_dict}), molecule_info
 
 
 def run_assays():
@@ -128,7 +128,7 @@ def run_assays():
     return jsonify({"assays": assay_dict})
 
 
-def run_descriptors():
+def run_descriptors(molecule_info):
     """Runs descriptors ('MW', 'logP', 'TPSA', 'HA', 'h_acc', 'h_don', 'rings')
     for molecule selected.
     Saves the information to the global molecule_info dict and returns the
@@ -156,7 +156,7 @@ def run_descriptors():
             molecule_info[molecule_key]["descriptors"] = {}
         molecule_info[molecule_key]["descriptors"][label] = drug_desc[label]
         desc_dict[molecule_key][label] = drug_desc[label]
-    return jsonify({"descriptors": desc_dict})
+    return jsonify({"descriptors": desc_dict}), molecule_info
 
 
 def run_filters():
@@ -229,7 +229,11 @@ def molecule_img():
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()
     return jsonify({'img_html': f"data:;base64,{bytestream}",
-                    'drug_props': drug_property_dict})
+                    'drug_props': drug_property_dict,
+                    'descriptors': {},
+                    'filters': {},
+                    'assays_run': {}
+                    })
 
 
 def rgroup_img(r_group_id):

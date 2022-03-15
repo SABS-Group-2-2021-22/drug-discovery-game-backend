@@ -1,7 +1,10 @@
+from src.Molecule import FinalMolecule
+from .utils import numerise_params
+
+from flask import jsonify
 
 
-
-def return_spider_data():
+def return_spider_data(chosen_mol):
     """Takes final chosen molecule (chosen_mol) and calls FinalMolecule()
     from Molecule.py to return quantitative assay parameters of the chosen
     molecule and the reference drug

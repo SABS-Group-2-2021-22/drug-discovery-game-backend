@@ -63,7 +63,7 @@ def choose_molecule():
     # r_group_2_id = request.args.get('r2')
     chosen_mol[0] = request.args.get('r1')
     chosen_mol[1] = request.args.get('r2')
-    return jsonify({'chosen_mol': chosen_mol})
+    return jsonify({'chosen_mol': chosen_mol}), chosen_mol
 
 
 def return_chosen_molecules():

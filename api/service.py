@@ -1,5 +1,8 @@
+from tkinter import CURRENT
 from flask import Flask, jsonify, request, render_template_string
 from flask_cors import CORS
+
+import json
 
 
 # import api.backend.backend_api as api
@@ -41,7 +44,12 @@ def update_time_and_money():
 # TODO: refactor query passing here, direct via function args
 @app.route("/lipinski")
 def run_lipinski():
-    return api.run_lipinski()
+    username = json.loads(request.headers['username'])['username']
+    session_molecule_info = sessions[username].get_molecule_info()
+    response, updated_mol_dict = api.run_lipinski(session_molecule_info)
+    sessions[username].update_molecule_info(updated_mol_dict)
+    return response
+    # return api.run_lipinski()
 
 
 @app.route("/assays")
@@ -51,7 +59,12 @@ def run_assays():
 
 @app.route("/descriptors")
 def run_descriptors():
-    return api.run_descriptors()
+    username = json.loads(request.headers['username'])['username']
+    session_molecule_info = sessions[username].get_molecule_info()
+    response, updated_mol_dict = api.run_descriptors(session_molecule_info)
+    sessions[username].update_molecule_info(updated_mol_dict)
+    return response
+    # return api.run_descriptors()
 
 
 @app.route("/filters")
@@ -61,7 +74,10 @@ def run_filters():
 
 @app.route("/choose", methods=['GET', 'POST'])
 def choose_molecule():
-    return api.choose_molecule()
+    username = json.loads(request.headers['username'])['username']
+    response, new_chosen_molecule = api.choose_molecule()
+    sessions[username].set_chosen_molecule(new_chosen_molecule)
+    return response
 
 
 @app.route("/chosenmolecule")
@@ -71,7 +87,7 @@ def return_chosen_molecules():
 
 @app.route("/save", methods=['GET', 'POST'])
 def save_molecule():
-    username = request.get_json()['username']
+    username = json.loads(request.headers['username'])['username']
     session_molecule_info = sessions[username].get_molecule_info()
     response, updated_mol_dict = api.save_molecule(session_molecule_info)
     sessions[username].update_molecule_info(updated_mol_dict)
@@ -103,7 +119,9 @@ def return_assayed_data():
 
 @app.route("/getspiderdata")
 def return_spider_data():
-    return api.return_spider_data()
+    username = json.loads(request.headers['username'])['username']
+    session_chosen_mol = sessions[username].get_chosen_molecule()
+    return api.return_spider_data(session_chosen_mol)
 
 
 @app.route("/comparisontxt")
