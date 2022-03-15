@@ -173,7 +173,7 @@ class Molecule:
         if size is not None:
             d = rdMolDraw2D.MolDraw2DCairo(size[0], size[1])
         else:
-            size = d = rdMolDraw2D.MolDraw2DCairo(500, 500)
+            d = rdMolDraw2D.MolDraw2DCairo(500, 500)
 
         # Add the highlighting
         d.DrawMolecule(mol_draw, highlightAtoms=hit_ats,
