@@ -157,6 +157,13 @@ class Molecule:
         # and replace with C atoms
         smi_draw = smiles.replace('[Xe]', 'C')
         smi_draw = smi_draw.replace('[Ne]', 'C')
+
+        # Ensuring the case A11 = '[H][*:1]' diplays as H not CH4
+        if smi_draw == '[H]C':
+            smi_draw = '[H]'
+        else:
+            pass
+
         mol_draw = Chem.MolFromSmiles(smi_draw)
 
         d = rdMolDraw2D.MolDraw2DCairo(500, 500)
@@ -171,7 +178,7 @@ class Molecule:
         #                    highlightAtomColors=atom_cols, size=size)
         # else:
         #     d.DrawMolecule(mol_draw, highlightAtoms=hit_ats,
-        #                    highlightAtomColors=atom_cols)             
+        #                    highlightAtomColors=atom_cols)          
 
         # Add the highlighting
         d.FinishDrawing()
