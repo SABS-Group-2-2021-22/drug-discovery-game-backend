@@ -111,22 +111,6 @@ class TestMolecule(unittest.TestCase):
         descriptors = one_violation_molecule.descriptors()
         self.assertEqual(one_violation_molecule.lipinski(descriptors), message)
 
-    def test_draw_molecule(self):
-        """Tests draw function works by comparing bytestreams of produced image
-        and true image
-        """
-        passing_mol = Molecule("O=C(O)C(NS(=O)(=O)c1ccc9cc1)8"
-                               ".Oc1ccc(C8)cc1.c1ccc9cc1")
-        passing_mol.draw_molecule("tests/test_file", orient_with_scaffold=True)
-        imgByteArray = io.BytesIO()
-        with Image.open("tests/test_file.png") as im:
-            im.save(imgByteArray, format='png')
-        imgByteArray = imgByteArray.getvalue()
-        imgByteArray = base64.b64encode(imgByteArray).decode("utf-8")
-        f = open("tests/test_draw_molecule_bytes.txt", "r")
-        trueimgByteArray = f.read()
-        self.assertEqual(imgByteArray, trueimgByteArray)
-
     def test_drawMoleculeAsByteStream(self):
         """Tests function by comparing bytestreams produced
         """
