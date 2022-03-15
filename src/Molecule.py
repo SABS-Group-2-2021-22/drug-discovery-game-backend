@@ -5,7 +5,7 @@ from rdkit.Chem import Descriptors
 from rdkit.Chem import rdMolDescriptors
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import Crippen
-from rdkit.Chem import AllChem
+# from rdkit.Chem import AllChem
 from rdkit.Chem.FilterCatalog import FilterCatalog, FilterCatalogParams
 
 import io
@@ -178,7 +178,7 @@ class Molecule:
         #                    highlightAtomColors=atom_cols, size=size)
         # else:
         #     d.DrawMolecule(mol_draw, highlightAtoms=hit_ats,
-        #                    highlightAtomColors=atom_cols)          
+        #                    highlightAtomColors=atom_cols)
 
         # Add the highlighting
         d.FinishDrawing()
@@ -206,7 +206,8 @@ class Molecule:
         # imgByteArray = base64.b64encode(imgByteArray).decode("utf-8")
         # return imgByteArray
 
-    # def drawMoleculeAsByteStream(self, orient_with_scaffold=False, size=None):
+    # def drawMoleculeAsByteStream(self, orient_with_scaffold=False,
+    # size=None):
     #     """Returns png image of molecule as bytestream
     #     :return: base64 png image bytestream
     #     :rtype: String
