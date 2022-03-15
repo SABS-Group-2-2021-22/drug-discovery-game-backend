@@ -175,7 +175,7 @@ class Molecule:
             _ = AllChem.GenerateDepictionMatching2DStructure(mol_draw,
                                                              orient_scaffold)
 
-        if size is not None:                                       
+        if size is not None:
             d = rdMolDraw2D.MolDraw2DCairo(size[0], size[1])
         else:
             size = d = rdMolDraw2D.MolDraw2DCairo(500, 500)
