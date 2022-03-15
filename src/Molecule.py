@@ -5,7 +5,7 @@ from rdkit.Chem import Descriptors
 from rdkit.Chem import rdMolDescriptors
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import Crippen
-# from rdkit.Chem import AllChem
+from rdkit.Chem import AllChem
 from rdkit.Chem.FilterCatalog import FilterCatalog, FilterCatalogParams
 
 import io
@@ -165,6 +165,14 @@ class Molecule:
             pass
 
         mol_draw = Chem.MolFromSmiles(smi_draw)
+
+        if orient_with_scaffold is True:
+            AllChem.Compute2DCoords(orient_scaffold)
+            AllChem.Compute2DCoords(mol_draw)
+            # TODO: test if _ assignment is needed or if fn call wo./
+            # assignment is sufficient
+            _ = AllChem.GenerateDepictionMatching2DStructure(mol_draw,
+                                                             orient_scaffold)
 
         d = rdMolDraw2D.MolDraw2DCairo(500, 500)
 
