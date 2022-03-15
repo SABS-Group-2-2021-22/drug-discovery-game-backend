@@ -111,7 +111,6 @@ class Molecule:
         else:
             R2 = False
 
-        # drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
         smiles = self.__mol_smiles
         colours = [(0.8, 0.0, 0.8), (0.8, 0.8, 0)]
 
@@ -122,9 +121,6 @@ class Molecule:
         if R2 is True:
             # Replace the R2 group tag with Ne
             smiles = smiles.replace('*:2', 'Ne')
-
-        # if R1 != True and R2 != True:
-        #     raise ValueError('Neither R1 nor R2 is True')
 
         mol = Chem.MolFromSmiles(smiles)
 
