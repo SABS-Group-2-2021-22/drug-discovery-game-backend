@@ -7,7 +7,6 @@ from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import Crippen
 from rdkit.Chem import AllChem
 from rdkit.Chem.FilterCatalog import FilterCatalog, FilterCatalogParams
-import ast
 
 import io
 import base64
