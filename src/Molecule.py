@@ -298,3 +298,59 @@ class FinalMolecule(Molecule):
             value_two = value[csv_file['btag'] == self.rgroup2][d].iloc[0]
             drug_property_dict[d] = value_two
         return drug_property_dict
+
+    def indices(self, desc_dict, drug_property_dict):
+        """Calculate indices as dict:
+        | LLE - Ligand lipophilicity efficiency index (LLE)
+        | LEI - Ligand efficiency index (LEI)
+        | LE - Ligand efficiency (LE)
+
+        :param desc_dict: molecule descriptor metrics
+        :type desc_dict: dict
+        :param drug_properties_dict: drug properties
+        :type drug_properties_dict: dict
+        :return: indices_dict
+        :rtype: dict
+        """
+
+        LLE = drug_property_dict['pic50'] - desc_dict['logP']
+        LEI = drug_property_dict['pic50'] / desc_dict['HA']
+        LE = 1.37 * LEI
+        indices_dict = {'LLE': LLE, 'LEI': LEI, 'LE': LE}
+        return indices_dict
+
+    def astrazeneca(self, indices_dict):
+        """Calculates whether the molecule passes the rule LLE > 5
+        using the indices dictionary.
+        :param indices_dict: indices
+        :type indices_dict: dict
+        :return: passes (True if and only if the molecule passes the rule)
+        :rtype: boolean
+        """
+        passes = indices_dict['LLE'] > 5
+        return passes
+
+    def pfizer(self, desc_dict):
+        """Calculates whether the molecule passes the rule clogP < 3 and TPSA > 75
+        using the descriptors dictionary.
+        :param desc_dict: molecule descriptor metrics
+        :type desc_dict: dict
+        :return: passes
+        :rtype: dict
+        """
+        passes = {'clogP': desc_dict['logP'] < 3,
+                  'TPSA': desc_dict['TPSA'] > 75}
+        return passes
+
+    # Only relevant for drugs that act on the brain - do not use for MMP-12
+    def gsk(self, desc_dict):
+        """Calculates whether the molecule passes the rule MW < 400 and clogP <4
+        using the descriptors dictionary.
+        :param desc_dict: molecule descriptor metrics
+        :type desc_dict: dict
+        :return: passes
+        :rtype: dict
+        """
+        passes = {'clogP': desc_dict['logP'] < 4,
+                  'MW': desc_dict['MW'] < 400}
+        return passes
