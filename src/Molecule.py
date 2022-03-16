@@ -93,47 +93,96 @@ class Molecule:
                       'logP': desc_dict['logP'] < 5}
         return violations
 
-# csv_file = pd.read_csv('r_group_decomp.csv')
-    def draw_molecule(self, drawn_file_name, orient_with_scaffold):
-        """Draws the molecule.
-
-        :param drawn_file_name: filename to save drawn molecule
-        :type orient_with_scaffold: bool
-        """
-        drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
-        # Align molecule with scaffold if the molecule contains the scaffold.
-        if orient_with_scaffold is True:
-            AllChem.Compute2DCoords(orient_scaffold)
-            # TODO: test if _ assignment is needed or if fn call wo./
-            # assignment is sufficient
-            _ = AllChem.GenerateDepictionMatching2DStructure(drawn_mol,
-                                                             orient_scaffold)
-        d = rdMolDraw2D.MolDraw2DCairo(250, 200)
-        d.FinishDrawing()
-        d.WriteDrawingText(f'{drawn_file_name}.png')
-
     def drawMoleculeAsByteStream(self, orient_with_scaffold=False, size=None):
         """Returns png image of molecule as bytestream
 
         :return: base64 png image bytestream
         :rtype: String
         """
-        drawn_mol = Chem.MolFromSmiles(self.__mol_smiles)
+
+        # Determine R1, R2
+        if '[*:1]' in self.__mol_smiles:
+            R1 = True
+        else:
+            R1 = False
+
+        if '[*:2]' in self.__mol_smiles:
+            R2 = True
+        else:
+            R2 = False
+
+        smiles = self.__mol_smiles
+        colours = [(0.8, 0.0, 0.8), (0.8, 0.8, 0)]
+
+        if R1 is True:
+            # Replace the R1 group tag with Xe
+            smiles = smiles.replace('*:1', 'Xe')
+
+        if R2 is True:
+            # Replace the R2 group tag with Ne
+            smiles = smiles.replace('*:2', 'Ne')
+
+        mol = Chem.MolFromSmiles(smiles)
+
+        patt1 = Chem.MolFromSmarts('[Xe]')
+        patt2 = Chem.MolFromSmarts('[Ne]')
+
+        # This will be populated with the (former) locations of the R1 and R2
+        # group tags, and corresponding colours
+        atom_cols = {}
+
+        if R1:
+            # Finds the location of the R1 group
+            hit_ats1 = [mol.GetSubstructMatch(patt1)[0]]
+            # Assigns colour[0] to this R1 group for labelling
+            atom_cols[hit_ats1[0]] = colours[0]
+
+        else:
+            hit_ats1 = []
+
+        if R2:                      # Similarly to R1
+            hit_ats2 = [mol.GetSubstructMatch(patt2)[0]]
+            atom_cols[hit_ats2[0]] = colours[1]
+
+        else:
+            hit_ats2 = []
+
+        hit_ats = hit_ats1 + hit_ats2  # List of R group locations
+
+        # Remove the Xe and Ne atoms marking the R group locations
+        # and replace with C atoms
+        smi_draw = smiles.replace('[Xe]', 'C')
+        smi_draw = smi_draw.replace('[Ne]', 'C')
+
+        # Ensuring the case A11 = '[H][*:1]' diplays as H not CH4
+        if smi_draw == '[H]C':
+            smi_draw = '[H]'
+        else:
+            pass
+
+        mol_draw = Chem.MolFromSmiles(smi_draw)
+
         if orient_with_scaffold is True:
             AllChem.Compute2DCoords(orient_scaffold)
-            AllChem.Compute2DCoords(drawn_mol)
+            AllChem.Compute2DCoords(mol_draw)
             # TODO: test if _ assignment is needed or if fn call wo./
             # assignment is sufficient
-            _ = AllChem.GenerateDepictionMatching2DStructure(drawn_mol,
+            _ = AllChem.GenerateDepictionMatching2DStructure(mol_draw,
                                                              orient_scaffold)
+
         if size is not None:
-            img = Chem.Draw.MolToImage(drawn_mol, size=size)
+            d = rdMolDraw2D.MolDraw2DCairo(size[0], size[1])
         else:
-            img = Chem.Draw.MolToImage(drawn_mol)
-        imgByteArray = io.BytesIO()
-        img.save(imgByteArray, format='png')
-        imgByteArray = imgByteArray.getvalue()
-        imgByteArray = base64.b64encode(imgByteArray).decode("utf-8")
+            d = rdMolDraw2D.MolDraw2DCairo(500, 500)
+
+        # Add the highlighting
+        d.DrawMolecule(mol_draw, highlightAtoms=hit_ats,
+                       highlightAtomColors=atom_cols)
+
+        # Add the highlighting
+        d.FinishDrawing()
+        b = io.BytesIO(d.GetDrawingText())
+        imgByteArray = base64.b64encode(b.read()).decode("utf-8")
         return imgByteArray
 
     def filter_properties(self):
