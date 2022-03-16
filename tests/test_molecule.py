@@ -2,9 +2,6 @@ import unittest
 from src.Molecule import Molecule, R_group, FinalMolecule
 import pandas as pd
 from rdkit import Chem
-import io
-import base64
-from PIL import Image
 
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
 try:
