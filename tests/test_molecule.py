@@ -116,7 +116,7 @@ class TestMolecule(unittest.TestCase):
         test_byte_stream = passing_mol.drawMoleculeAsByteStream(
             orient_with_scaffold=True
             )
-        f = open("tests/test_draw_molecule_bytes_2.txt", "r")
+        f = open("tests/test_draw_molecule_bytes.txt", "r")
         true_byte_stream = f.read()
         print(test_byte_stream)
         self.assertEqual(test_byte_stream, true_byte_stream)
