@@ -460,23 +460,13 @@ def numerise_params(prop_dict):
     clearance_dict = {
                 'low (< 5.6)': 1,
                 'medium (5.6-30.5)': 4,
-                'low (< 3.7)': 1,
-                'good': 1,
                 'high (> 30.5)': 7,
-                'fair': 4,
-                'poor': 7,
                 'low (< 12)': 1,
-                'medium (12-44)': 4,
-                'medium (5.6-30.5)': 4
+                'medium (12-44)': 4
     }
     pampa_dict = {
-                'neg': 0,
-                'poor': 1,
                 'low': 2.5,
-                'fair': 5.5,
-                'med2high': 5.5,
-                'good': 6.5,
-                'best': 8
+                'med2high': 5.5
     }
     drug_properties = prop_dict
 
@@ -512,7 +502,6 @@ def comparison_txt():
     drug_properties = {
         label: drug_mol.drug_properties()[label] for label in assay_list
         }
-    # some properties for logd are strings ('best' or 'good') (no idea why)
     drug_properties = numerise_params(drug_properties)
 
     comp_dict = {}
