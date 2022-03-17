@@ -132,3 +132,6 @@ dmypy.json
 .vscode/*
 # scratch files
 scratch.py
+
+# output files
+out
