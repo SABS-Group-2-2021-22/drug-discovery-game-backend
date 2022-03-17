@@ -1,4 +1,3 @@
-from tkinter import CURRENT
 from flask import Flask, jsonify, request, render_template_string
 from flask_cors import CORS
 
@@ -19,27 +18,6 @@ cors = CORS(app,
 global sessions
 sessions = {}
 
-@app.route("/")
-def hello_world():
-    return api.hello_world()
-
-
-@app.route("/get_all_mol_info", methods=['GET', 'POST'])
-def get_all_mol_info():
-    username = request.get_json()['username']
-    session_molecule_info = sessions[username].get_molecule_info()
-    response = api.get_all_mol_info(session_molecule_info)
-    return response
-
-
-@app.route("/update_time_money", methods=['GET', 'POST'])
-def update_time_and_money():
-    username = request.get_json()['username']
-    user = sessions[username]
-    response, user = api.update_time_and_money(user)
-    sessions[username] = user
-    return response
-
 
 # TODO: refactor query passing here, direct via function args
 @app.route("/lipinski")
@@ -49,12 +27,6 @@ def run_lipinski():
     response, updated_mol_dict = api.run_lipinski(session_molecule_info)
     sessions[username].update_molecule_info(updated_mol_dict)
     return response
-    # return api.run_lipinski()
-
-
-@app.route("/assays")
-def run_assays():
-    return api.run_assays()
 
 
 @app.route("/descriptors")
@@ -64,12 +36,6 @@ def run_descriptors():
     response, updated_mol_dict = api.run_descriptors(session_molecule_info)
     sessions[username].update_molecule_info(updated_mol_dict)
     return response
-    # return api.run_descriptors()
-
-
-@app.route("/filters")
-def run_filters():
-    return api.run_filters()
 
 
 @app.route("/choose", methods=['GET', 'POST'])
@@ -78,11 +44,6 @@ def choose_molecule():
     response, new_chosen_molecule = api.choose_molecule()
     sessions[username].set_chosen_molecule(new_chosen_molecule)
     return response
-
-
-@app.route("/chosenmolecule")
-def return_chosen_molecules():
-    return api.return_chosen_molecules()
 
 
 @app.route("/save", methods=['GET', 'POST'])
@@ -94,14 +55,6 @@ def save_molecule():
     return response
 
 
-@app.route("/savedmolecules", methods=['GET', 'POST'])
-def return_saved_molecules():
-    username = request.get_json()['username']
-    session_molecule_info = sessions[username].get_molecule_info()
-    response = api.return_saved_molecules(session_molecule_info)
-    return response
-
-
 @app.route("/r-group-<string:r_group_id>")
 def rgroup_img(r_group_id):
     return api.rgroup_img(r_group_id)
@@ -110,11 +63,6 @@ def rgroup_img(r_group_id):
 @app.route("/molecule")
 def molecule_img():
     return api.molecule_img()
-
-
-@app.route("/getplotdata")
-def return_assayed_data():
-    return api.return_assayed_data()
 
 
 @app.route("/getspiderdata")
@@ -140,3 +88,10 @@ def authenticate_login():
     if user.username not in sessions:
         sessions[user.username] = user
     return auth_response
+
+
+@app.route("/save_game_data", methods=['GET'])
+def save_game_data():
+    username = json.loads(request.headers['username'])['username']
+    sessions[username].save_game()
+    return api.save_game_data()

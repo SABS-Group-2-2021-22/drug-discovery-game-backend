@@ -1,5 +1,6 @@
 
-
+import json
+import datetime
 class User(object):
     def __init__(self, username):
         self.username = username
@@ -30,3 +31,16 @@ class User(object):
     def update_molecule_info(self, update_dict):
         self.molecule_info = update_dict
         return None
+
+    def save_game(self):
+        user_as_dict = {self.username: {
+           'money': self.money,
+           'time': self.time,
+           'chosen_mol': self.chosen_mol,
+           'molecule_info': self.molecule_info
+       }}
+        filename = 'out/' + self.username + '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M') + '.json'
+        with open(filename, 'w+') as fp:
+            json.dump(user_as_dict, fp)
+
+
