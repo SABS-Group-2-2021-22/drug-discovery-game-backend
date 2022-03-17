@@ -365,7 +365,7 @@ def molecule_img():
         if r_group_1 is not None:       # Check R1 id was valid
             base_molecule = r_group_1.add_r_group(base_molecule)
 
-    # Add R group one
+    # Add R group two
     if r_group_2_id is not None:        # Check R2 was included in query
         r_group_2 = R_group(r_group_2_id)
         if r_group_2 is not None:       # Check R2 id was valid
@@ -374,6 +374,7 @@ def molecule_img():
     bytestream = base_molecule.drawMoleculeAsByteStream(
         orient_with_scaffold=True, size=size
     )
+
     if r_group_1_id is not None and r_group_2_id is not None:
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()
@@ -459,23 +460,13 @@ def numerise_params(prop_dict):
     clearance_dict = {
                 'low (< 5.6)': 1,
                 'medium (5.6-30.5)': 4,
-                'low (< 3.7)': 1,
-                'good': 1,
                 'high (> 30.5)': 7,
-                'fair': 4,
-                'poor': 7,
                 'low (< 12)': 1,
-                'medium (12-44)': 4,
-                'medium (5.6-30.5)': 4
+                'medium (12-44)': 4
     }
     pampa_dict = {
-                'neg': 0,
-                'poor': 1,
                 'low': 2.5,
-                'fair': 5.5,
-                'med2high': 5.5,
-                'good': 6.5,
-                'best': 8
+                'med2high': 5.5
     }
     drug_properties = prop_dict
 
@@ -511,7 +502,6 @@ def comparison_txt():
     drug_properties = {
         label: drug_mol.drug_properties()[label] for label in assay_list
         }
-    # some properties for logd are strings ('best' or 'good') (no idea why)
     drug_properties = numerise_params(drug_properties)
 
     comp_dict = {}
