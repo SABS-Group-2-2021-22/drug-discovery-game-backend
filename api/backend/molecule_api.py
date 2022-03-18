@@ -51,7 +51,8 @@ def run_lipinski(molecule_info):
     return jsonify({"lipinski": lipinski_dict}), molecule_info
 
 
-def run_assays():
+# REDUNDANT
+def run_assays(molecule_info):
     """Runs assays selected for a specific molecule, tracking the reduction of
     time and money as a result.
     The longest time of the assays being run is taken from the total amount of
@@ -159,7 +160,8 @@ def run_descriptors(molecule_info):
     return jsonify({"descriptors": desc_dict}), molecule_info
 
 
-def run_filters():
+# NEEDS TO BE IMPLEMENTED INTO THE GAME
+def run_filters(molecule_info):
     """Runs filters ('PAINS', 'ZINC', 'BRENK', 'NIH')for molecule selected.
     Saves the information to the global molecule_info dict and returns the
     information as its own dict.
@@ -254,7 +256,7 @@ def rgroup_img(r_group_id):
                     'stats': stats_dict})
 
 
-def comparison_txt():
+def comparison_txt(chosen_mol):
     """ Returns comparison text depending on pic50, logd, and
     clearance_human of chosen molecule
 

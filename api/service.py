@@ -1,18 +1,16 @@
-from flask import Flask, jsonify, request, render_template_string
+from flask import Flask, request
 from flask_cors import CORS
-
+import base64
 import json
 
 
 # import api.backend.backend_api as api
 import api.backend as api
 
-from src.user import User
-
 app = Flask(__name__)
 
-cors = CORS(app, 
-            resources={r"/*":{"origins": "http://localhost:3000"}},
+cors = CORS(app,
+            resources={r"/*": {"origins": "http://localhost:3000"}},
             )
 
 global sessions
@@ -74,7 +72,9 @@ def return_spider_data():
 
 @app.route("/comparisontxt")
 def comparison_txt():
-    return api.comparison_txt()
+    username = json.loads(request.headers['username'])['username']
+    session_chosen_mol = sessions[username].get_chosen_molecule()
+    return api.comparison_txt(session_chosen_mol)
 
 
 @app.route("/reset")
@@ -95,3 +95,36 @@ def save_game_data():
     username = json.loads(request.headers['username'])['username']
     sessions[username].save_game()
     return api.save_game_data()
+
+
+@app.route("/sketcher_save_molecule")
+def sketcher_save_molecule():
+    username = json.loads(request.headers['username'])['username']
+    session_molecule_info = sessions[username].get_molecule_info()
+    mol_block = base64.b64decode(request.args.get('mol'))
+    response, updated_mol_dict = api.sketcher_save_molecule(mol_block, session_molecule_info)
+    sessions[username].update_molecule_info(updated_mol_dict)
+    print(response)
+    return response
+
+
+@app.route("/sketcher_choose", methods=['POST'])
+def sketcher_choose():
+    username = json.loads(request.headers['username'])['username']
+    response, new_chosen_molecule = api.choose_molecule()
+    sessions[username].set_chosen_molecule(new_chosen_molecule)
+    return response
+
+
+@app.route("/sketcher_comparisontxt")
+def sketcher_comparisontxt():
+    username = json.loads(request.headers['username'])['username']
+    session_chosen_mol = sessions[username].get_chosen_molecule()
+    return api.sketcher_comparison_txt(session_chosen_mol)
+
+
+@app.route("/sketcher_getspiderdata")
+def sketcher_getspiderdata():
+    username = json.loads(request.headers['username'])['username']
+    session_chosen_mol = sessions[username].get_chosen_molecule()
+    return api.sketcher_return_spider_data(session_chosen_mol)
