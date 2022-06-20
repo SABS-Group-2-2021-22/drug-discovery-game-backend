@@ -166,7 +166,7 @@ class TestMolecule(unittest.TestCase):
             'pic50': '5.2',
             'clearance_mouse': 'medium (5.6-30.5)',
             'clearance_human': 'low (< 12)',
-            'logd': '1.51',
+            'logd': 1.51,
             'pampa': 'med2high'
             }
         self.assertEqual(test_dict, true_dict)
