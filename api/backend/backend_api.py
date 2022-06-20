@@ -1,7 +1,6 @@
 
 from flask import jsonify, request
-
-from .utils import tuple2str, numerise_params
+from .utils import tuple2str
 
 # Temporary storage of data
 global molecule_info
@@ -61,8 +60,7 @@ def choose_molecule():
     #     chosen_mol.append((r_group_1_id, r_group_2_id))
     # r_group_1_id = request.args.get('r1')
     # r_group_2_id = request.args.get('r2')
-    chosen_mol[0] = request.args.get('r1')
-    chosen_mol[1] = request.args.get('r2')
+    chosen_mol = [request.args.get('r1'), request.args.get('r2')]
     return jsonify({'chosen_mol': chosen_mol}), chosen_mol
 
 
