@@ -56,13 +56,12 @@ def sketcher_comparison_txt(chosen_mol):
     """
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
                   'logd', 'pampa']
-
     mol = rdkit.Chem.MolFromSmiles(chosen_mol[1])
     mol_block = rdkit.Chem.rdmolfiles.MolToMolBlock(mol)
     drug_mol = sketchedMolecule(mol_block)
     drug_properties = {
         label: drug_mol.drug_properties()[label] for label in assay_list
-        }
+    }
     # some properties for logd are strings ('best' or 'good') (no idea why)
     drug_properties = numerise_params(drug_properties)
 
@@ -106,11 +105,11 @@ def sketcher_return_spider_data(chosen_mol):
 
     drug_properties = {
         label: drug_mol.drug_properties()[label] for label in assay_list
-        }
+    }
     ref_mol = FinalMolecule('A05', 'B07')
     ref_properties = {
         label: ref_mol.drug_properties()[label] for label in assay_list
-        }
+    }
     drug_properties = numerise_params(drug_properties)
     ref_properties = numerise_params(ref_properties)
     property_arr = [drug_properties, ref_properties]

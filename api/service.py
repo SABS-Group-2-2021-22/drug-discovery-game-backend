@@ -102,7 +102,8 @@ def sketcher_save_molecule():
     username = json.loads(request.headers['username'])['username']
     session_molecule_info = sessions[username].get_molecule_info()
     mol_block = base64.b64decode(request.args.get('mol'))
-    response, updated_mol_dict = api.sketcher_save_molecule(mol_block, session_molecule_info)
+    response, updated_mol_dict = api.sketcher_save_molecule(
+        mol_block, session_molecule_info)
     sessions[username].update_molecule_info(updated_mol_dict)
     print(response)
     return response
@@ -111,7 +112,7 @@ def sketcher_save_molecule():
 @app.route("/sketcher_choose", methods=['POST'])
 def sketcher_choose():
     username = json.loads(request.headers['username'])['username']
-    response, new_chosen_molecule = api.choose_molecule()
+    response, new_chosen_molecule = api.sketcher_choose_molecule()
     sessions[username].set_chosen_molecule(new_chosen_molecule)
     return response
 
