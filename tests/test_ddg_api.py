@@ -249,14 +249,14 @@ class TestAPI(unittest.TestCase):
             result = {'param_dict': [{
                 'clearance_human': 1,
                 'clearance_mouse': 1,
-                'logd': "0.54",
+                'logd': 0.54,
                 'pampa': 5.5,
                 'pic50': "Not Made"
             },
                 {
                 'clearance_human': 1,
                 'clearance_mouse': 1,
-                'logd': "1.08",
+                'logd': 1.08,
                 'pampa': 5.5,
                 'pic50': "7.7"
             }]}
