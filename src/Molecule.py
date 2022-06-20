@@ -22,7 +22,7 @@ except FileNotFoundError:
 
 class Molecule:
     """ A molecule. In particular, either the R1 or R2 group, or the scaffold
-    and one or two groups.
+    and one or two R groups.
     There are methods which tell you the properties of the molecule and if it
     passes the Lipsinki test
     """
