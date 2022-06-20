@@ -233,7 +233,7 @@ class TestAPI(unittest.TestCase):
                         'h_acc': 4,
                         'h_don': 3,
                         'logP': 3.033400000000001,
-                        'logd': "0.3",
+                        'logd': 0.3,
                         'pampa': "low",
                         'pic50': "6.5",
                         'rings': 3
