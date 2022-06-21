@@ -23,7 +23,6 @@ def sketcher_save_molecule(mol_block, mol_dict):
                     'filters': new_mol.filter_properties(),
                     'lipinski': new_mol.lipinski(),
                     'assays_run': {},
-                    'tanimoto': new_mol.get_tanimoto_similarity(),
                     'drug_props': new_mol.drug_properties(),
                     }
         if molecule_key not in mol_dict:
