@@ -17,7 +17,7 @@ def return_spider_data(chosen_mol):
     """
 
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
-                    'logd', 'pampa']
+                  'logd', 'pampa']
 
     if chosen_mol[0] is not None and chosen_mol[1] is not None:
         r_group_1_id = chosen_mol[0]
