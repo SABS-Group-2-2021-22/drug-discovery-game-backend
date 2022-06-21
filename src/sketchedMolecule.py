@@ -136,7 +136,7 @@ class sketchedMolecule:
         drug_properties = [
             'pic50',
             'clearance_mouse',
-            'clearance_human',
+            # 'clearance_human', # No ML model needed for this
             'logd',
             'pampa'
         ]
@@ -151,4 +151,5 @@ class sketchedMolecule:
             model = pickle.load(
                 open(f'assay_ml_models/automl_{d}_model.pkl', 'rb'))
             drug_property_dict[d] = str(model.predict(desc_df)[0])
+        drug_property_dict['clearance_human'] = 'low (< 12)'
         return drug_property_dict
