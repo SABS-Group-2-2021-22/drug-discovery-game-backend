@@ -1,4 +1,3 @@
-# TODO: move this into backend function
 def tuple2str(tuple_in):
     """Converts a tuple into a string.
 

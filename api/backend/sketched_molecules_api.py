@@ -6,14 +6,22 @@ from .utils import numerise_params
 
 
 def sketcher_save_molecule(mol_block, mol_dict):
-    '''Receives Mol block of sketched molecules and returns descriptors,
-    filters, lipinski rules,  assay information, smiles, tanimoto similarity
-    to Roche's drug and Lipinski rules and image of the molecule
+    """Receives Mol block of sketched molecules and returns descriptors,
+    filters, lipinski rules,  assay information and smiles
+    and Lipinski rules and image of the molecule.
 
-    :returns: A json dictionary of the bytestream, descriptors, filters and
-    Lipinksi rules for the molecule
-    :rtypes: json dict
-    '''
+    If the mol_block is not valid or cannot be processed by RDKit, returns
+    jsonified 'failiure'.
+
+    :param mol_block: Mol block of ligand
+    :type mol_block: str
+    :param mol_dict: All the information about the current state of the game
+    :type mol_dict: dict
+    :return: A json dictionary of the bytestream, descriptors, filters and
+    Lipinksi rules for the molecule. Also returns mol_dict. Also
+    returns updated mol_dict.
+    :rtype: json dict, dict
+    """
     try:
         new_mol = sketchedMolecule(mol_block)
         molecule_key = new_mol.smiles
@@ -34,24 +42,25 @@ def sketcher_save_molecule(mol_block, mol_dict):
 
 
 def sketcher_choose_molecule():
-    """Saves the final choice of molecule for the end of the game as a tuple of
-    the final molecule's R Group IDs.
-    Pass R group IDs as queries: /choose?r1=A01&r2=B10
+    """Saves the final choice of molecule for the end of the game as a list of
+    the molecules ID and its smiles string.
 
-    :returns: Tuple of the R Group IDs as a json dict. Access tuple with
-    'chosen_mol' key.
-    :rtype: json dict
+    :returns: List of the ID and smiles of the chosen molecule as a json dict.
+    Access list with 'chosen_mol' key. Also returns the chosen_mol list itself.
+    :rtype: json dict, list
     """
     chosen_mol = [request.args.get('id'), request.args.get('smiles')]
     return jsonify({'chosen_mol': chosen_mol}), chosen_mol
 
 
 def sketcher_comparison_txt(chosen_mol):
-    """ Returns comparison text depending on pic50, logd, and
-    clearance_human of chosen molecule
+    """Returns comparison text depending on pic50, logd, and
+    clearance_human of the chosen molecule.
 
-    returns: json dict with text in value depending on metric
-    rtype: json dict
+    :param chosen_mol: List of the ID and smiles of the chosen molecule.
+    :type chosen_mol: list
+    :return: json dict with text in value depending on metric.
+    :rtype: json dict
     """
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
                   'logd', 'pampa']
@@ -63,7 +72,6 @@ def sketcher_comparison_txt(chosen_mol):
     }
     # some properties for logd are strings ('best' or 'good') (no idea why)
     drug_properties = numerise_params(drug_properties)
-
     comp_dict = {}
     with open('./src/comparison.txt', 'r') as f:
         lines = f.readlines()
@@ -88,14 +96,14 @@ def sketcher_return_spider_data(chosen_mol):
     """Takes final chosen molecule (chosen_mol) and calls FinalMolecule()
      from Molecule.py to return quantitative assay parameters of the chosen
      molecule and the reference drug
-     Calls /getspiderdata + FinalMolecule() + numerise_params()
 
-     :returns: A json dictionary containing a list of 2 dictionaries, one
+    :param chosen_mol: List of the ID and smiles of the chosen molecule.
+    :type chosen_mol: list
+    :return: A json dictionary containing a list of 2 dictionaries, one
      containing chosen mol.parameters and the other containing reference
      drug parameters
-     rtype: json dict
-     """
-
+    :rtype: json dict
+    """
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
                   'logd', 'pampa']
     mol = rdkit.Chem.MolFromSmiles(chosen_mol[1])

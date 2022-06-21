@@ -8,7 +8,7 @@ def authenticate_login():
 
     :return: The request data and the new User object
     :rtype: json dict, User object
-    """    
+    """
     request_data = request.get_json()
     user = User(request_data['username'])
     return jsonify(request_data), user
