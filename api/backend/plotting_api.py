@@ -12,7 +12,7 @@ def return_spider_data(chosen_mol):
     :param chosen_mol: R Group IDs for final chosen molecule
     :type chosen_mol: list
     :return: A json dictionary containing a list of 2 dictionaries, one
-    containing chosen mol.parameters and the other containing reference
+    containing chosen mol parameters and the other containing reference
     drug parameters.
     :rtype: json dict
     """

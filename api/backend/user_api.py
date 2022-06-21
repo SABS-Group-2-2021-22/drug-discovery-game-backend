@@ -3,7 +3,7 @@ from src.user import User
 
 
 def authenticate_login():
-    """ Creates new instance of User object using user sent from the frontend
+    """ Creates new instance of User object using username sent from the frontend
     as API call.
 
     :return: The request data and the new User object

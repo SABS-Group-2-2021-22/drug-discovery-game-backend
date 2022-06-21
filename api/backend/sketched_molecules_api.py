@@ -18,7 +18,7 @@ def sketcher_save_molecule(mol_block, mol_dict):
     :param mol_dict: All the information about the current state of the game
     :type mol_dict: dict
     :return: A json dictionary of the bytestream, descriptors, filters and
-    Lipinksi rules for the molecule. Also returns mol_dict. Also
+    Lipinksi rules for the sketched molecule. Also returns mol_dict. Also
     returns updated mol_dict.
     :rtype: json dict, dict
     """
@@ -45,8 +45,9 @@ def sketcher_choose_molecule():
     """Saves the final choice of molecule for the end of the game as a list of
     the molecules ID and its smiles string.
 
-    :returns: List of the ID and smiles of the chosen molecule as a json dict.
-    Access list with 'chosen_mol' key. Also returns the chosen_mol list itself.
+    :returns: List of the ID and smiles of the chosen sketcher molecule as a
+    json dict. Access list with 'chosen_mol' key. Also returns the chosen_mol
+    list itself.
     :rtype: json dict, list
     """
     chosen_mol = [request.args.get('id'), request.args.get('smiles')]
@@ -59,7 +60,7 @@ def sketcher_comparison_txt(chosen_mol):
 
     :param chosen_mol: List of the ID and smiles of the chosen molecule.
     :type chosen_mol: list
-    :return: json dict with text in value depending on metric.
+    :return: Json dict with comparison text with values for each metric.
     :rtype: json dict
     """
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',

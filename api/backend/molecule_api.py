@@ -173,7 +173,7 @@ def comparison_txt(chosen_mol):
 
     :param chosen_mol: R Group IDs for final chosen molecule
     :type chosen_mol: list
-    :return: json dict with text in value depending on metric
+    :return: Json dict with comparison text with values for each metric.
     :rtype: json dict
     """
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
