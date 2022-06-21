@@ -1,4 +1,4 @@
-from rdkit import Chem, DataStructs
+from rdkit import Chem
 from rdkit.Chem import Lipinski,\
     Descriptors, rdMolDescriptors, Crippen, rdDepictor
 from rdkit.Chem.FilterCatalog import FilterCatalog, FilterCatalogParams
@@ -16,7 +16,7 @@ class sketchedMolecule:
             old_mol = Chem.rdmolfiles.MolFromMolBlock(self.mol_block)
             rdDepictor.Compute2DCoords(self.mol, clearConfs=True)
             Chem.rdMolAlign.AlignMol(self.mol, old_mol)
-        except:
+        except:  # noqa: E722
             print('The MOL block is either incorrectly structured or the compound cannot be \
                 processed by RDKit')
 
