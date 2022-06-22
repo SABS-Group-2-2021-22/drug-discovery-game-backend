@@ -355,7 +355,7 @@ class FinalMolecule(Molecule):
         indices_dict = {'LLE': LLE, 'LEI': LEI, 'LE': LE}
         return indices_dict
 
-    def astrazeneca(self, indices_dict):  
+    def astrazeneca(self, indices_dict):
         """Calculates whether the molecule passes the rule LLE > 5
         using the indices dictionary
 
