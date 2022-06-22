@@ -15,16 +15,16 @@ import base64
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
 orient_scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccccc1)')
 try:
-    csv_file = pd.read_csv('src/r_group_decomp.csv')
-except FileNotFoundError:
     csv_file = pd.read_csv('r_group_decomp.csv')
+except FileNotFoundError:
+    pass
 
 
 class Molecule:
     """The base class representing a molecule. In particular, either the R1
     or R2 group, or the scaffold and one or two R groups.
     There are methods which tell you the properties of the molecule and if it
-    passes the Lipsinki test
+    passes the Lipsinki test.
     """
 
     def __init__(self, mol_smiles):
@@ -195,7 +195,7 @@ class Molecule:
         ZINC, BRENK, NIH).
 
         :returns: Dictionary of if it passes each type of PAINS filters for
-        each case.
+        each case
         :rtype: dict
         """
         pains_params = FilterCatalogParams()
@@ -357,18 +357,20 @@ class FinalMolecule(Molecule):
 
     def astrazeneca(self, indices_dict):
         """Calculates whether the molecule passes the rule LLE > 5
-        using the indices dictionary.
+        using the indices dictionary
+
         :param indices_dict: indices
         :type indices_dict: dict
         :return: passes (True if and only if the molecule passes the rule)
-        :rtype: boolean
+        :rtype: bool
         """
         passes = indices_dict['LLE'] > 5
         return passes
 
     def pfizer(self, desc_dict):
         """Calculates whether the molecule passes the rule clogP < 3 and TPSA > 75
-        using the descriptors dictionary.
+        using the descriptors dictionary
+
         :param desc_dict: molecule descriptor metrics
         :type desc_dict: dict
         :return: passes
@@ -381,7 +383,8 @@ class FinalMolecule(Molecule):
     # Only relevant for drugs that act on the brain - do not use for MMP-12
     def gsk(self, desc_dict):
         """Calculates whether the molecule passes the rule MW < 400 and clogP <4
-        using the descriptors dictionary.
+        using the descriptors dictionary
+
         :param desc_dict: molecule descriptor metrics
         :type desc_dict: dict
         :return: passes

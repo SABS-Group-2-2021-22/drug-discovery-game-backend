@@ -1,10 +1,11 @@
 [![codecov](https://codecov.io/gh/SABS-Group-2-2021-22/drug-discovery-game-backend/branch/main/graph/badge.svg?token=8521K2DNMB)](https://codecov.io/gh/SABS-Group-2-2021-22/drug-discovery-game-backend)
-[![Documentation Status](https://readthedocs.org/projects/drug-discovery-game-backend/badge/?version=latest)](https://drug-discovery-game-backend.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/drug-discovery-backend/badge/?version=latest)](https://drug-discovery-backend.readthedocs.io/en/latest/?badge=latest)
+
 # drug-discovery-game-backend
 
+## Running the backend locally
 
-## Running the backend locally 
-This assumes the conda environment has been created and necessary packages installed. 
+This assumes the conda environment has been created and necessary packages installed.
 
 ```
 conda activate dd_game

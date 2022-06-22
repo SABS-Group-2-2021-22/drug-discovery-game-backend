@@ -1,15 +1,10 @@
-Documentation
-===================================================================
+drug-discovery-game-backend
+===========================
 
-=====================================================
-Classes
-=====================================================
+.. toctree::
+   :maxdepth: 4
 
-.. autoclass:: src.Molecule.Molecule
-   :members:
-
-.. autoclass:: src.Molecule.R_group
-   :members:
-
-.. autoclass:: src.Molecule.FinalMolecule
-   :members:
+   api
+   setup
+   src
+   tests
