@@ -352,7 +352,7 @@ class FinalMolecule(Molecule):
         if type(drug_property_dict['pic50']) in pIC50_fails:
             return {'LLE': None, 'LEI': None, 'LE': None}
         else:
-            LLE = float(drug_property_dict['pic50']) - desc_dict['logP'] 
+            LLE = float(drug_property_dict['pic50']) - desc_dict['logP']
             LEI = float(drug_property_dict['pic50']) / desc_dict['HA']
             LE = 1.37 * LEI
             indices_dict = {'LLE': LLE, 'LEI': LEI, 'LE': LE}
