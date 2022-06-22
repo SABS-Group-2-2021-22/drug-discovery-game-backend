@@ -5,11 +5,11 @@ Documentation
 Classes
 =====================================================
 
-.. autoclass:: src.Molecule.Molecule
+.. automodule:: src.Molecule.Molecule
    :members:
 
-.. autoclass:: src.Molecule.R_group
+.. automodule:: src.Molecule.R_group
    :members:
 
-.. autoclass:: src.Molecule.FinalMolecule
+.. automodule:: src.Molecule.FinalMolecule
    :members:

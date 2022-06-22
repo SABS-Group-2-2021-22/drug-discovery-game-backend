@@ -48,6 +48,7 @@ def choose_molecule():
 
 @app.route("/save", methods=['GET', 'POST'])
 def save_molecule():
+    print(request.headers)
     username = json.loads(request.headers['username'])['username']
     session_molecule_info = sessions[username].get_molecule_info()
     response, updated_mol_dict = api.save_molecule(session_molecule_info)
