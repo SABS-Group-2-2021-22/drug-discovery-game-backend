@@ -24,7 +24,7 @@ class Molecule:
     """The base class representing a molecule. In particular, either the R1
     or R2 group, or the scaffold and one or two R groups.
     There are methods which tell you the properties of the molecule and if it
-    passes the Lipsinki test
+    passes the Lipsinki test.
     """
 
     def __init__(self, mol_smiles):
@@ -195,7 +195,7 @@ class Molecule:
         ZINC, BRENK, NIH).
 
         :returns: Dictionary of if it passes each type of PAINS filters for
-        each case.
+        each case
         :rtype: dict
         """
         pains_params = FilterCatalogParams()
@@ -355,20 +355,20 @@ class FinalMolecule(Molecule):
         indices_dict = {'LLE': LLE, 'LEI': LEI, 'LE': LE}
         return indices_dict
 
-    def astrazeneca(self, indices_dict):
+    def astrazeneca(self, indices_dict):  
         """Calculates whether the molecule passes the rule LLE > 5
-        using the indices dictionary.
+        using the indices dictionary
         :param indices_dict: indices
         :type indices_dict: dict
         :return: passes (True if and only if the molecule passes the rule)
-        :rtype: boolean
+        :rtype: bool
         """
         passes = indices_dict['LLE'] > 5
         return passes
 
     def pfizer(self, desc_dict):
         """Calculates whether the molecule passes the rule clogP < 3 and TPSA > 75
-        using the descriptors dictionary.
+        using the descriptors dictionary
         :param desc_dict: molecule descriptor metrics
         :type desc_dict: dict
         :return: passes
