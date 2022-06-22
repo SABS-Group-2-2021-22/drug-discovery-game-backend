@@ -10,6 +10,12 @@ import pickle
 
 class sketchedMolecule:
     def __init__(self, mol_block):
+        """Initialises sketchedMolecule class using Mol block. If Mol block is
+        not valid, will flag error.
+
+        :param mol_block: Mol Block of molecule
+        :type mol_block: str
+        """
         self.mol_block = mol_block
         try:
             self.mol = Chem.rdmolfiles.MolFromMolBlock(self.mol_block)
@@ -17,7 +23,7 @@ class sketchedMolecule:
             rdDepictor.Compute2DCoords(self.mol, clearConfs=True)
             Chem.rdMolAlign.AlignMol(self.mol, old_mol)
         except:  # noqa: E722
-            print('The MOL block is either incorrectly structured or the compound cannot be \
+            print('The Mol block is either incorrectly structured or the compound cannot be \
                 processed by RDKit')
 
     @property
@@ -33,7 +39,7 @@ class sketchedMolecule:
         """Returns png image of molecule as bytestream
 
         :return: base64 png image bytestream
-        :rtype: String
+        :rtype: str
         """
         if size is not None:
             img = Chem.Draw.MolToImage(self.mol, size=size)
@@ -46,7 +52,12 @@ class sketchedMolecule:
         return "data:;base64, " + imgByteArray
 
     def filter_properties(self):
-        """See whether molecule passes or fails FILTERS
+        """Calculates whether molecule passes or fails PAINS filters (PAINS,
+        ZINC, BRENK, NIH).
+
+        :returns: Dictionary of if it passes each type of PAINS filters for
+        each case.
+        :rtype: dict
         """
         pains_params = FilterCatalogParams()
         pains_params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_A)
@@ -111,10 +122,13 @@ class sketchedMolecule:
         return desc_dict
 
     def lipinski(self):
-        """Calculate Lipinski from the descriptor dictionary. Returns a boolean
-        for whether it passes each rule.
+        """Calculate Lipinski from the descriptor dictionary. Returns the
+        number of rules broken and whether the molecule passes.
 
-        :return: dictionary for each rule as a key and the boolean as the value
+        :param desc_dict: Molecule descriptor metrics calculated by
+        descriptors().
+        :type desc_dict: dict
+        :return: Dictionary of it passes the Lipinski Rules for each case.
         :rtype: dict
         """
         desc_dict = self.descriptors()
@@ -151,5 +165,6 @@ class sketchedMolecule:
             model = pickle.load(
                 open(f'assay_ml_models/automl_{d}_model.pkl', 'rb'))
             drug_property_dict[d] = str(model.predict(desc_df)[0])
+        # All values in the csv file are this so just set molecule as the same
         drug_property_dict['clearance_human'] = 'low (< 12)'
         return drug_property_dict

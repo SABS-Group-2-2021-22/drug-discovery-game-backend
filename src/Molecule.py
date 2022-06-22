@@ -21,8 +21,8 @@ except FileNotFoundError:
 
 
 class Molecule:
-    """ A molecule. In particular, either the R1 or R2 group, or the scaffold
-    and one or two R groups.
+    """The base class representing a molecule. In particular, either the R1
+    or R2 group, or the scaffold and one or two R groups.
     There are methods which tell you the properties of the molecule and if it
     passes the Lipsinki test
     """
@@ -31,8 +31,8 @@ class Molecule:
         """Constructor for Molecule class. Initialises Molecule instance from
         smile string.
 
-        :param mol_smiles: smile string of molecule
-        :type mol_smiles: String
+        :param mol_smiles: Smile string of molecule
+        :type mol_smiles: str
         """
         self.__mol_smiles = mol_smiles
 
@@ -40,8 +40,8 @@ class Molecule:
     def get_smile_string(self):
         """Returns molecule's smile string
 
-        :return: smile string of molecule
-        :rtype: String
+        :return: Smile string of molecule
+        :rtype: str
         """
         return self.__mol_smiles
 
@@ -82,9 +82,10 @@ class Molecule:
         """Calculate Lipinski from the descriptor dictionary. Returns the
         number of rules broken and whether the molecule passes.
 
-        :param desc_dict: molecule descriptor metrics
+        :param desc_dict: Molecule descriptor metrics calculated by
+        descriptors().
         :type desc_dict: dict
-        :return: violations
+        :return: Dictionary of it passes the Lipinski Rules for each case.
         :rtype: dict
         """
         violations = {'MW': desc_dict['MW'] < 500.0,
@@ -94,12 +95,16 @@ class Molecule:
         return violations
 
     def drawMoleculeAsByteStream(self, orient_with_scaffold=False, size=None):
-        """Returns png image of molecule as bytestream
+        """Returns PNG image of molecule as bytestream.
 
+        :param orient_with_scaffold: Whether to orient molecule to the
+        original scaffold, defaults to False
+        :type orient_with_scaffold: bool, optional
+        :param size: size of image, defaults to None
+        :type size: int, optional
         :return: base64 png image bytestream
-        :rtype: String
+        :rtype: str
         """
-
         # Determine R1, R2
         if '[*:1]' in self.__mol_smiles:
             R1 = True
@@ -186,7 +191,12 @@ class Molecule:
         return imgByteArray
 
     def filter_properties(self):
-        """See whether molecule passes or fails FILTERS
+        """Calculates whether molecule passes or fails PAINS filters (PAINS,
+        ZINC, BRENK, NIH).
+
+        :returns: Dictionary of if it passes each type of PAINS filters for
+        each case.
+        :rtype: dict
         """
         pains_params = FilterCatalogParams()
         pains_params.AddCatalog(FilterCatalogParams.FilterCatalogs.PAINS_A)
@@ -221,10 +231,10 @@ class Molecule:
 
 
 class R_group(Molecule):
-    """Name of R group is of the form 'Axy' or 'Bxy' e.g. A01 etc.
-    Number corresponds to whether it is an R1 or R2 group
+    """R Group Class. Name of R group is of the form 'Axy' or 'Bxy' e.g. A01 etc.
+    Number corresponds to whether it is an R1 or R2 group. Inherits from the
+    Molecule class.
     """
-
     def __init__(self, name, number=None):
         self.name = name
         if number is None:
@@ -243,7 +253,10 @@ class R_group(Molecule):
         super().__init__(mol_smiles)
 
     def extract_smilefromcsv(self):
-        """Extracts the SMILE for the R group
+        """Extracts smiles from the r_group_decomp.csv file based on its R group ID
+
+        :return: SMILES of the R Group
+        :rtype: str
         """
         if self.number == 1:
             rgroup_smiles = csv_file[csv_file['atag'] ==
@@ -251,9 +264,16 @@ class R_group(Molecule):
         if self.number == 2:
             rgroup_smiles = csv_file[csv_file['btag'] ==
                                      self.name]['R2'].iloc[0]
-        return(rgroup_smiles)
+        return rgroup_smiles
 
     def add_r_group(self, base_molecule):
+        """Appends R Group to a scaffold
+
+        :param base_molecule: molecule to add R-group to
+        :type base_molecule: Molecule class
+        :return: Appended new molecule
+        :rtype: Molecule class
+        """
         new_mol = base_molecule.get_smile_string + '.' + self.get_smile_string
         connection_site = str(7+self.number)
         new_mol = new_mol.replace(f'[*:{self.number}]', connection_site)
@@ -262,17 +282,30 @@ class R_group(Molecule):
 
 
 class FinalMolecule(Molecule):
-    """Final molecule with scaffold and two R groups.
+    """Final molecule with scaffold combined with two R groups. Inherits from
+    Molecule class.
     """
 
     def __init__(self, rgroup1, rgroup2):
-        # Name of R groups should be in the form 'Axy' or 'Bxy' e.g. A01 etc.
+        """Constructor for FinalMolecule. Requires the two R groups to be defined.
+        Name of R groups should be in the form 'Axy' or 'Bxy' e.g. A01 etc.
+
+        :param rgroup1: R Group 1 ID
+        :type rgroup1: str
+        :param rgroup2: R Group 2 ID
+        :type rgroup2: str
+        """
         self.rgroup1 = rgroup1
         self.rgroup2 = rgroup2
         mol_smiles = self.build_final_smiles()
         super().__init__(mol_smiles)
 
     def build_final_smiles(self):
+        """Builds SMILES for the molecule based off the R Group IDs.
+
+        :return: SMILES of final molecule
+        :rtype: str
+        """
         r_group_mol_1 = R_group(self.rgroup1, 1)
         r_group_mol_2 = R_group(self.rgroup2, 2)
         intermediate_mol = r_group_mol_1.add_r_group(
@@ -280,10 +313,13 @@ class FinalMolecule(Molecule):
             )
         final_mol = r_group_mol_2.add_r_group(intermediate_mol)
         final_mol_smiles = final_mol.get_smile_string
-        return(final_mol_smiles)
+        return final_mol_smiles
 
     def drug_properties(self):
-        """Selects properties of the final drug from the data.
+        """Returns properties of the final drug from the r_group_decomp.csv.
+
+        :return: All the values for the drug properties
+        :rtype: dict
         """
         drug_properties = [
             'pic50',
