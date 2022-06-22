@@ -358,6 +358,7 @@ class FinalMolecule(Molecule):
     def astrazeneca(self, indices_dict):  
         """Calculates whether the molecule passes the rule LLE > 5
         using the indices dictionary
+
         :param indices_dict: indices
         :type indices_dict: dict
         :return: passes (True if and only if the molecule passes the rule)
@@ -369,6 +370,7 @@ class FinalMolecule(Molecule):
     def pfizer(self, desc_dict):
         """Calculates whether the molecule passes the rule clogP < 3 and TPSA > 75
         using the descriptors dictionary
+
         :param desc_dict: molecule descriptor metrics
         :type desc_dict: dict
         :return: passes
@@ -381,7 +383,8 @@ class FinalMolecule(Molecule):
     # Only relevant for drugs that act on the brain - do not use for MMP-12
     def gsk(self, desc_dict):
         """Calculates whether the molecule passes the rule MW < 400 and clogP <4
-        using the descriptors dictionary.
+        using the descriptors dictionary
+
         :param desc_dict: molecule descriptor metrics
         :type desc_dict: dict
         :return: passes
