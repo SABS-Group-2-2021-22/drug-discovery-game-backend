@@ -10,7 +10,9 @@ Welcome to Drug Discovery Game Backend's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-I hate documentation
+   src
+   api
+   api.backend
 
 
 Indices and tables
