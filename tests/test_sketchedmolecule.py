@@ -107,4 +107,12 @@ class TestSketcherMolecule(unittest.TestCase):
             'logd': '0.11891286727456941',
             'pampa': 'med2high',
         }
-        self.assertEqual(test_drug_props, true_drug_props)
+        for key in true_drug_props.keys():
+            if key in ['pic50', 'logd']:
+                self.assertAlmostEqual(
+                    float(test_drug_props[key]),
+                    float(true_drug_props[key]),
+                    4
+                    )
+            else:
+                self.assertEqual(test_drug_props[key], true_drug_props[key])
