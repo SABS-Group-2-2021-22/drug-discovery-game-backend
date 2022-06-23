@@ -348,15 +348,16 @@ class FinalMolecule(Molecule):
         :return: indices_dict
         :rtype: dict
         """
-        pIC50_fails = ['Assay failed', 'Inactive', 'Not Made', 'Not Assayed']
-        if type(drug_property_dict['pic50']) in pIC50_fails:
-            return {'LLE': None, 'LEI': None, 'LE': None}
-        else:
+        try:
             LLE = float(drug_property_dict['pic50']) - desc_dict['logP']
             LEI = float(drug_property_dict['pic50']) / desc_dict['HA']
             LE = 1.37 * LEI
-            indices_dict = {'LLE': LLE, 'LEI': LEI, 'LE': LE}
-            return indices_dict
+        except ValueError:
+            LLE = None
+            LEI = None
+            LE = None
+        indices_dict = {'LLE': LLE, 'LEI': LEI, 'LE': LE}
+        return indices_dict
 
     def astrazeneca(self, indices_dict):
         """Calculates whether the molecule passes the rule LLE > 5
@@ -367,7 +368,11 @@ class FinalMolecule(Molecule):
         :return: passes (True if and only if the molecule passes the rule)
         :rtype: bool
         """
-        passes = indices_dict['LLE'] > 5
+
+        # Check if the LLE is available
+        passes = None
+        if indices_dict['LLE'] != None:
+            passes = indices_dict['LLE'] > 5
         return passes
 
     def pfizer(self, desc_dict):
