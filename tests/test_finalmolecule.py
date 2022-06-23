@@ -1,4 +1,3 @@
-from ctypes.util import find_library
 import unittest
 from src.Molecule import FinalMolecule
 import pandas as pd

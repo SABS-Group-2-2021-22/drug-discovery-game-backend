@@ -371,7 +371,7 @@ class FinalMolecule(Molecule):
 
         # Check if the LLE is available
         passes = None
-        if indices_dict['LLE'] != None:
+        if indices_dict['LLE'] is not None:
             passes = indices_dict['LLE'] > 5
         return passes
 
