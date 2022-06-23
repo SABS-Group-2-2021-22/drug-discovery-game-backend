@@ -17,4 +17,11 @@ class TestUser(unittest.TestCase):
             'Molecule Info: {} \n'
         self.assertEqual(test_repr, true_repr)
 
-    # def test_get_molecule_info(self):
+    def test_get_and_update_molecule_info(self):
+        test_user = User('test')
+        true_molecule_info = test_user.get_molecule_info()
+        self.assertEqual(true_molecule_info, {})
+        test_user.update_molecule_info({'test': 42})
+        new_molecule_info = test_user.get_molecule_info()
+        self.assertEqual(new_molecule_info, {'test': 42})
+
