@@ -24,4 +24,3 @@ class TestUser(unittest.TestCase):
         test_user.update_molecule_info({'test': 42})
         new_molecule_info = test_user.get_molecule_info()
         self.assertEqual(new_molecule_info, {'test': 42})
-
