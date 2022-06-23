@@ -29,7 +29,6 @@ def numerise_params(prop_dict):
         'poor': 7,
         'low (< 12)': 1,
         'medium (12-44)': 4,
-        'medium (5.6-30.5)': 4
     }
     pampa_dict = {
         'neg': 0,
