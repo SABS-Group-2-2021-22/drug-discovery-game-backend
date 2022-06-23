@@ -5,32 +5,31 @@ name: Run coverage test
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      run: |
-        $CONDA/bin/conda install -c conda-forge codecov
-        $CONDA/bin/conda install pandas flask flask-cors flake8
-        $CONDA/bin/conda install -c conda-forge rdkit
-    - name: Run coverage
-      run: |
-        $CONDA/bin/coverage run -m unittest
-    - name: Run codecov
-      if: success()
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN  }}
-      run: |
-        $CONDA/bin/codecov
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          $CONDA/bin/conda install -c conda-forge codecov
+          $CONDA/bin/conda install pandas flask flask-cors flake8 flaml
+          $CONDA/bin/conda install -c conda-forge rdkit
+      - name: Run coverage
+        run: |
+          $CONDA/bin/coverage run -m unittest
+      - name: Run codecov
+        if: success()
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN  }}
+        run: |
+          $CONDA/bin/codecov
