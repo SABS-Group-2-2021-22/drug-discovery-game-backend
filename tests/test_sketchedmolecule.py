@@ -46,7 +46,7 @@ class TestSketcherMolecule(unittest.TestCase):
         check image is correct though
         """
         test_molecule = sketchedMolecule(TEST_MOL_BLOCK)
-        for size in None, 100:
+        for size in None, [100, 100]:
             test_byte_stream =\
                  test_molecule.drawMoleculeAsByteStream(size=size)
             self.assertIsInstance(test_byte_stream, str)
