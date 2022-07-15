@@ -14,4 +14,3 @@ class TestUserAPI(unittest.TestCase):
         print(true_user)
         print(test_user)
         self.assertEqual(test_user, true_user)
-
