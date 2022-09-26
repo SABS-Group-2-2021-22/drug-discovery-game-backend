@@ -1,0 +1,3 @@
+Your molecule's pIC50 is lower than that of the target molecule. A lower binding affinity means that your drug will not bind to its target as strongly, and thus a higher dose will need to be taken for it to be effective.
+Your drug's lipophilicity is too low, thus it is likely to have poor ADMET properties. Adding alkyl chains or non-polar functional groups can increase a drug's lipophilicity.
+Your drug clearance is too high, which means it has a low metabolic stability. Patients will have to take large doses regularly in order to maintain a therapeutic concentration within their bloodstream, which is unpopular.

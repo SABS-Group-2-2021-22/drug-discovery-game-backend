@@ -1,20 +1,17 @@
 import unittest
-from src.Molecule import Molecule, R_group, FinalMolecule
+from src.Molecule import Molecule
 import pandas as pd
 from rdkit import Chem
-import io
-import base64
-from PIL import Image
 
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
 try:
-    csv_file = pd.read_csv('src/r_group_decomp.csv')
+    csv_file = pd.read_csv('r_group_decomp.csv')
 except FileNotFoundError:
-    csv_file = pd.read_csv('tests/r_group_decomp.csv')
+    pass
 
 
 class TestMolecule(unittest.TestCase):
-    """Tests for getting descriptors for molecules and ranking them"""
+    """Tests for Molecule class"""
     def test_get_smile_string(self):
         mol = Molecule('Oc1ccc(C[*:1])cc1')
         true_case = 'Oc1ccc(C[*:1])cc1'
@@ -111,72 +108,16 @@ class TestMolecule(unittest.TestCase):
         descriptors = one_violation_molecule.descriptors()
         self.assertEqual(one_violation_molecule.lipinski(descriptors), message)
 
-    def test_draw_molecule(self):
-        """Tests draw function works by comparing bytestreams of produced image
-        and true image
+    def test_drawMoleculeAsByteStream(self):
+        """Tests function by comparing bytestreams produced
         """
-        passing_mol = Molecule("O=C(O)C(NS(=O)(=O)c1ccc9cc1)8"
-                               ".Oc1ccc(C8)cc1.c1ccc9cc1")
-        passing_mol.draw_molecule("tests/test_file", orient_with_scaffold=True)
-        imgByteArray = io.BytesIO()
-        with Image.open("tests/test_file.png") as im:
-            im.save(imgByteArray, format='png')
-        imgByteArray = imgByteArray.getvalue()
-        imgByteArray = base64.b64encode(imgByteArray).decode("utf-8")
-        f = open("tests/test_draw_molecule_bytes.txt", "r")
-        trueimgByteArray = f.read()
-        self.assertEqual(imgByteArray, trueimgByteArray)
-
-    # def test_drawMoleculeAsByteStream(self):
-    #     """Tests function by comparing bytestreams produced
-    #     """
-    #     passing_mol = Molecule("O=C(O)C(NS(=O)(=O)c1ccc9cc1)8"
-    #                            ".Oc1ccc(C8)cc1.c1ccc9cc1")
-    #     test_byte_stream = passing_mol.drawMoleculeAsByteStream(
-    #         orient_with_scaffold=True
-    #         )
-    #     f = open("tests/test_draw_molecule_bytes_2.txt", "r")
-    #     true_byte_stream = f.read()
-    #     self.assertEqual(test_byte_stream, true_byte_stream)
-
-    def test_extract_smilefromcsv(self):
-        """Tests R_group function by comparing values extracted from the csv
-        """
-        passing_mol = R_group("A01")
-        test_smiles = passing_mol.extract_smilefromcsv()
-        true_smiles = "Oc1ccc(C[*:1])cc1"
-        self.assertEqual(test_smiles, true_smiles)
-
-    def test_add_r_group(self):
-        """Test R_group function by comparing smiles string generated when
-        adding R group to a molecule
-        """
-        r_group_mol_1 = R_group("A01")
-        intermediate_mol = r_group_mol_1.add_r_group(
-            Molecule('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
-            )
-        true_smiles = 'O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)8.Oc1ccc(C8)cc1'
-        test_smiles = intermediate_mol.get_smile_string
-        self.assertEqual(test_smiles, true_smiles)
-
-    def test_build_final_smiles(self):
-        """Tests FinalMolecule function by comparing smiles strings
-        """
-        passing_mol = FinalMolecule("A01", "B01")
-        test_smiles = passing_mol.build_final_smiles()
-        true_smiles = "O=C(O)C(NS(=O)(=O)c1ccc9cc1)8.Oc1ccc(C8)cc1.c1ccc9cc1"
-        self.assertEqual(test_smiles, true_smiles)
-
-    def test_drug_properties(self):
-        """Tests that correct drug properties are returned for a molecule
-        """
-        passing_mol = FinalMolecule("A04", "B08")
-        test_dict = passing_mol.drug_properties()
-        true_dict = {
-            'pic50': '5.2',
-            'clearance_mouse': 'medium (5.6-30.5)',
-            'clearance_human': 'low (< 12)',
-            'logd': '1.51',
-            'pampa': 'med2high'
-            }
-        self.assertEqual(test_dict, true_dict)
+        test_smiles = ["O=C(O)C(NS(=O)(=O)c1ccc9cc1)8"
+                       ".Oc1ccc(C8)cc1.c1ccc9cc1",
+                       "O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]"]
+        for i in test_smiles:
+            passing_mol = Molecule(i)
+            test_byte_stream = passing_mol.drawMoleculeAsByteStream(
+                orient_with_scaffold=True
+                )
+            self.assertIsInstance(test_byte_stream, str)
+            self.assertGreater(len(test_byte_stream), 1000)

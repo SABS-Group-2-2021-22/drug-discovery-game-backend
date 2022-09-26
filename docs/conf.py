@@ -9,17 +9,17 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-# #
+#
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('./..'))
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'Drug Discovery Game Backend'
-copyright = '2021, Guy Durant, Nele Quast, Katherine Shepherd, Dylan Adlard'
-author = 'Guy Durant, Nele Quast, Katherine Shepherd, Dylan Adlard'
+copyright = '2022, Nele Quast, Guy Durant, Dylan Adlard, Katherine Shepherd'
+author = 'Nele Quast, Guy Durant, Dylan Adlard, Katherine Shepherd'
 
 
 # -- General configuration ---------------------------------------------------
