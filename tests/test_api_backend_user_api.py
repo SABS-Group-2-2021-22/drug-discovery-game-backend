@@ -1,4 +1,3 @@
-from re import A
 import unittest
 import api.backend as api
 from src.user import User
