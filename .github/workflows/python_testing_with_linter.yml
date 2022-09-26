@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           $CONDA/bin/conda install pandas flask flask_cors flake8
-          $CONDA/bin/conda install -c conda-forge rdkit flaml
+          $CONDA/bin/conda install -c conda-forge rdkit flaml==0.9.5
       - name: Lint with flake8
         run: |
           $CONDA/bin/flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics

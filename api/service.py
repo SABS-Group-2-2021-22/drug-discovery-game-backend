@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import base64
 import json
@@ -166,7 +166,9 @@ def authenticate_login():
     :return: The authentication response.
     :rtype: json dict
     """
-    auth_response, user = api.authenticate_login()
+    request_data = request.get_json()
+    non_jsonified_auth_response, user = api.authenticate_login(request_data)
+    auth_response = jsonify(non_jsonified_auth_response)
     if user.username not in sessions:
         sessions[user.username] = user
     return auth_response
