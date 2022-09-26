@@ -9,11 +9,11 @@ import api.backend as api
 
 app = Flask(__name__)
 
-cors = CORS(app,
-            resources={r"/*": {
-                "origins": "https://drug-discovery-game-backend.herokuapp.com"
-                }},
-            )
+# cors = CORS(app,
+#             resources={r"/*": {
+#                 "origins": "https://drug-discovery-game-backend.herokuapp.com"
+#                 }},
+#             )
 
 global sessions
 sessions = {}
