@@ -1,0 +1,10 @@
+name: dd_game
+dependencies:
+  - python==3.8
+  - codecov
+  - flask
+  - flake8
+  - flask-cors
+  - pandas
+  - flaml==0.9.5
+  - rdkit
