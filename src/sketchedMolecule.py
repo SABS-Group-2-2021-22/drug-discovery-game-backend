@@ -164,7 +164,10 @@ class sketchedMolecule:
         for d in drug_properties:
             model = pickle.load(
                 open(f'assay_ml_models/automl_{d}_model.pkl', 'rb'))
-            drug_property_dict[d] = str(model.predict(desc_df)[0])
+            value = model.predict(desc_df)[0]
+            if isinstance(value, float):
+                value = "{:.2f}".format(value)
+            drug_property_dict[d] = value
         # All values in the csv file are this so just set molecule as the same
         drug_property_dict['clearance_human'] = 'low (< 12)'
         return drug_property_dict
