@@ -101,10 +101,10 @@ class TestSketcherMolecule(unittest.TestCase):
         test_molecule = sketchedMolecule(TEST_MOL_BLOCK)
         test_drug_props = test_molecule.drug_properties()
         true_drug_props = {
-            'pic50': '4.6772484184733205',
+            'pic50': '4.68',
             'clearance_mouse': 'medium (5.6-30.5)',
             'clearance_human': 'low (< 12)',
-            'logd': '0.11891286727456941',
+            'logd': '0.12',
             'pampa': 'med2high',
         }
         for key in true_drug_props.keys():
