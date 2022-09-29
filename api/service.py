@@ -1,17 +1,18 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 import base64
 import json
 
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 # import api.backend.backend_api as api
 import api.backend as api
 
 app = Flask(__name__)
 
-cors = CORS(app,
-            resources={r"/*": {"origins": "http://localhost:3000"}},
-            )
+cors = CORS(
+    app,
+    resources={r"/*": {"origins": "http://localhost:3000"}},
+)
 
 global sessions
 sessions = {}
@@ -28,7 +29,7 @@ def run_lipinski():
     True or False for each descriptor relevant to Lipinski's Rule of 5.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     session_molecule_info = sessions[username].get_molecule_info()
     response, updated_mol_dict = api.run_lipinski(session_molecule_info)
     sessions[username].update_molecule_info(updated_mol_dict)
@@ -46,14 +47,14 @@ def run_descriptors():
     descriptor, with each key being its respective descriptor label.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     session_molecule_info = sessions[username].get_molecule_info()
     response, updated_mol_dict = api.run_descriptors(session_molecule_info)
     sessions[username].update_molecule_info(updated_mol_dict)
     return response
 
 
-@app.route("/choose", methods=['GET', 'POST'])
+@app.route("/choose", methods=["GET", "POST"])
 def choose_molecule():
     """API call for running choose_molecule() function.
 
@@ -63,20 +64,20 @@ def choose_molecule():
     own.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     response, new_chosen_molecule = api.choose_molecule()
     sessions[username].set_chosen_molecule(new_chosen_molecule)
     return response
 
 
-@app.route("/save", methods=['GET', 'POST'])
+@app.route("/save", methods=["GET", "POST"])
 def save_molecule():
     """API call for running save_molecule() function.
 
     :return: List of tuples, containing the R Group IDs as a json dict
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     session_molecule_info = sessions[username].get_molecule_info()
     response, updated_mol_dict = api.save_molecule(session_molecule_info)
     sessions[username].update_molecule_info(updated_mol_dict)
@@ -123,7 +124,7 @@ def return_spider_data():
     drug parameters.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.return_spider_data(session_chosen_mol)
 
@@ -137,9 +138,20 @@ def comparison_txt():
     :return: json dict with text in value depending on metric
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.comparison_txt(session_chosen_mol)
+
+@app.route("/infotxt")
+def info_text():
+    """API call for running info_text() function.
+
+    Call /infontxt.
+
+    :return: json dict with text in value depending on help button
+    :rtype: json dict
+    """
+    return api.info_text()
 
 
 @app.route("/reset")
@@ -151,13 +163,13 @@ def reset():
     :return: The new empty molecule_info dictionary as a json dict
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     sessions[username].update_molecule_info({})
     session_molecule_info = sessions[username].get_molecule_info()
     return api.reset(session_molecule_info)
 
 
-@app.route("/users/authenticate", methods=['POST'])
+@app.route("/users/authenticate", methods=["POST"])
 def authenticate_login():
     """API call for running authenticate_login() function.
 
@@ -176,7 +188,8 @@ def authenticate_login():
 
 # TODO api.save_game_data() does not exist so currently returning nothing
 
-@app.route("/save_game_data", methods=['GET'])
+
+@app.route("/save_game_data", methods=["GET"])
 def save_game_data():
     """API call for running save_game_data() (currently does not exist).
 
@@ -185,7 +198,7 @@ def save_game_data():
     :return: _description_
     :rtype: _type_
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     sessions[username].save_game()
     return api.save_game_data()
 
@@ -200,17 +213,18 @@ def sketcher_save_molecule():
     Lipinksi rules for the sketched molecule.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     session_molecule_info = sessions[username].get_molecule_info()
-    mol_block = base64.b64decode(request.args.get('mol'))
+    mol_block = base64.b64decode(request.args.get("mol"))
     response, updated_mol_dict = api.sketcher_save_molecule(
-        mol_block, session_molecule_info)
+        mol_block, session_molecule_info
+    )
     sessions[username].update_molecule_info(updated_mol_dict)
     print(response)
     return response
 
 
-@app.route("/sketcher_choose", methods=['POST'])
+@app.route("/sketcher_choose", methods=["POST"])
 def sketcher_choose():
     """API call for sketcher_choose_molecule() function.
 
@@ -220,7 +234,7 @@ def sketcher_choose():
     json dict. Access list with 'chosen_mol' key.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     response, new_chosen_molecule = api.sketcher_choose_molecule()
     sessions[username].set_chosen_molecule(new_chosen_molecule)
     return response
@@ -235,7 +249,7 @@ def sketcher_comparisontxt():
     :return: Json dict with comparison text with values for each metric.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.sketcher_comparison_txt(session_chosen_mol)
 
@@ -251,6 +265,6 @@ def sketcher_getspiderdata():
      drug parameters
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = json.loads(request.headers["username"])["username"]
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.sketcher_return_spider_data(session_chosen_mol)

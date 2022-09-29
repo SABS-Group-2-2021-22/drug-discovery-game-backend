@@ -1,0 +1,10 @@
+pCI50 is the negative log of IC50, the concentration of ligand required to inhibit the biochecmial functon of the protein by half. The higher the pIC50, the more potent the inhibitor.
+The time it takes for a drug to pass through a mouse is often a useful indicator for human clearance times, but at lower assay cost and time. 
+The time it takes for the drug to be metablised and clear the human body indicates the rate of administration required to to maintain a plateau drug conncentration.
+logD is the distribution co-efficient, a measure of lipophilicity. It's often determined by measuring the parition of a compound between an organic solvent and an aqueous buffer. This can influence multiple ADMET properties; high logD values correspond with poor aqeous solubility, which can limit intestinal absorption, for example.
+The parallel artificial membrane permeability assay (PAMPA) provides an in vitro measure of passive, transcellular drug permeability. The higher the PAMPA value, the greater the permeation.
+This assay simply determines whether the drug has passed or failed each Lipinski Rule of Five.
+The descriptors are those defined on the 'build' page, but here describe parameters of the whole drug (not individual R groups).
+Run the selected assays.
+The Lipinski Rule of Five defines property boundaries for the number of hydrogen bond donors and acceptors, the molecular weight, and logP (the octanol-water partition coefficient - a logD equivalent for ionisable compounds). The rulue states orally actives drugs have no more than one violation of: H-bond donors ≤ 5, H-bond acceptors ≤ 10, MW ≤ 500Da, logP ≤ 5
+These values (as well as the descriptors) provide quantitative measures of absorption, distribution, metabolism, excretion, and toxicity; a set of metrics known as ADMET properties, which play a significant role in drug discovery.
