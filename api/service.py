@@ -187,7 +187,7 @@ def save_game_data():
     """
     username = json.loads(request.headers['username'])['username']
     sessions[username].save_game()
-    return api.save_game_data()
+    return username
 
 
 @app.route("/sketcher_save_molecule")
