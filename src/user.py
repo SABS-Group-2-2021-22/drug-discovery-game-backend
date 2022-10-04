@@ -80,7 +80,7 @@ class User(object):
            'chosen_mol': self.chosen_mol,
            'molecule_info': self.molecule_info
                                     }}
-        filename = 'out/' + self.username + '_'\
+        filename = 'src/saved_data/' + self.username + '_'\
             + datetime.datetime.now().strftime('%Y%m%d_%H%M') + '.json'
         with open(filename, 'w+') as fp:
             json.dump(user_as_dict, fp)
