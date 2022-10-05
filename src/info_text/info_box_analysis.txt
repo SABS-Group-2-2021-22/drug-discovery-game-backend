@@ -1,2 +1,1 @@
 Click on the various metrics to change which properties of the compound are displayed on the plot.
-[ideal ranges]
