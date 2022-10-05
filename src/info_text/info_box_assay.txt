@@ -1,0 +1,10 @@
+pIC50 is the negative base-10 logarithm of IC50 (molar units), the concentration of ligand required to inhibit the enzyme response by half. The higher the pIC50, the more potent the inhibitor; pIC50 typically ranges from 2 (very weak inhibitors) to 12 (very potent inhibitors).
+The time it takes for a compound to pass through a mouse is often a useful indicator for human clearance times, but at lower assay cost and time. 
+The time it takes for a compound to be metabolised and clear the human body indicates the rate of administration required to maintain a stable drug concentration. In this case, an ideal clearance time would lie towards the lower end of the range.
+logD is the distribution coefficient, a measure of lipophilicity. It's often determined by measuring the partition of a compound between an organic solvent and an aqueous buffer. This can influence multiple ADMET properties; high logD values correspond with poor aqeous solubility, which can limit intestinal absorption, for example.
+The Parallel Artificial Membrane Permeability Assay (PAMPA) provides an in vitro measure of passive, transcellular permeability of a compound. The higher the PAMPA value, the greater the permeation, and the more desirable the compound's profile.
+This function indicates whether a compound has passed or failed each Lipinski "Rule" of Five test, which indicates whether a compound is bioavailable or not.
+The descriptors are those defined on the 'Build' page, but here describe parameters of the whole compound (not individual R groups).
+Run the selected assays.
+The Lipinski "Rule" of Five defines property boundaries for the number of hydrogen bond donors and acceptors, the molecular weight, and logP (P is the octanol-water partition coefficient). The rule states orally actives drugs should not violate more than one of these criteria: no. H-bond donors ≤ 5, no. H-bond acceptors ≤ 10, MW ≤ 500 Da, logP ≤ 5.
+These values (as well as the descriptors) provide quantitative measures of absorption, distribution, metabolism, excretion, and toxicity (ADMET or AMDE-Tox); all of which are important properties for a succesful drug.
