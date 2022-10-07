@@ -1,39 +1,25 @@
-
-
 from flask import jsonify, request
-
 from src.Molecule import R_group, Molecule, FinalMolecule
-
 from .utils import tuple2str, numerise_params
 
-# global molecule_info
-# molecule_info = {}
 
-global chosen_mol
-chosen_mol = [None, None]
-
-global money
-money = [100000.0]
-
-global time
-time = [30.0]
-
-
-# TODO: refactor query passing here, direct via function args
 def run_lipinski(molecule_info):
     """Checks if molecule passes Lipinski's Rule of 5:
         MW < 500.0
         h_acc <= 10
         h_don <= 5
         logP < 5
-    Saves the information to the global molecule_info dict and returns the
+    Saves the information to the molecule_info dict and returns the
     information as its own dict.
-    Pass R Group IDs as queries: /lipinski?r1=A01&r2=B01.
 
-    :returns: A json dictionary of the molecule, indexed
+    :param molecule_info: All the information about the current state of the
+    game
+    :type molecule_info: dict
+    :return: A json dictionary of the molecule, indexed
     by the concatenated string of its R Group IDs, with the values being
     True or False for each descriptor relevant to Lipinski's Rule of 5.
-    :rtype: json dict
+    Also returns updated molecule_info.
+    :rtype: json dict, dict
     """
     lipinski_list = ['MW', 'logP', 'h_acc', 'h_don']
     r_group_1_id = request.args.get('r1')
@@ -51,94 +37,20 @@ def run_lipinski(molecule_info):
     return jsonify({"lipinski": lipinski_dict}), molecule_info
 
 
-def run_assays():
-    """Runs assays selected for a specific molecule, tracking the reduction of
-    time and money as a result.
-    The longest time of the assays being run is taken from the total amount of
-    time.
-    The sum of the cost of the assays is taken from the total amount of money.
-    Pass R group IDs as queries: /assays?r1=A01&r2=B01... and Yes or No for
-    each assay,
-    ...&pic50=Yes&clearance_mouse=No&clearance_human=Yes&logd=No&pampa=Yes.
-
-    :returns: A json dictionary of the molecule assayed, indexed
-    by the concatenated string of its R Group IDs, with the values being
-    which assays have been run and their values.
-    :rtype: json dict
-    """
-
-    # The prices of each assay
-    assay_prices = {
-        "pic50": 70.0,
-        "clearance_mouse": 7000.0,
-        "clearance_human": 9000.0,
-        "logd": 1000.0,
-        "pampa": 700.0,
-    }
-    # How long each assay takes in weeks
-    assay_times = {
-        "pic50": 1.0,
-        "clearance_mouse": 3.0,
-        "clearance_human": 3.5,
-        "logd": 1.5,
-        "pampa": 1.0,
-    }
-    r_group_1_id = request.args.get('r1')
-    r_group_2_id = request.args.get('r2')
-    assay_list = []
-    # Make a list of the assays being run
-    for label in ['pic50',
-                  'clearance_mouse',
-                  'clearance_human',
-                  'logd',
-                  'pampa']:
-        if request.args.get(label) == "Yes":
-            assay_list.append(label)
-    print(assay_list)
-    drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
-    drug_properties = {label: drug_mol.drug_properties()[
-        label] for label in assay_list}
-    molecule_key = tuple2str((r_group_1_id, r_group_2_id))
-    assay_dict = {}
-    assay_dict[molecule_key] = {}
-
-    for label in assay_list:
-        if molecule_key in molecule_info.keys():
-            if "assays" in molecule_info[molecule_key].keys():
-                pass
-            else:
-                molecule_info[molecule_key]["assays"] = {}
-            molecule_info[molecule_key]["assays"][label] = drug_properties[
-                label
-            ]
-        assay_dict[molecule_key][label] = drug_properties[label]
-    # Ensures that if run assay button is pressed, this code is not run and
-    # so no crash occurs
-    if molecule_key in molecule_info.keys() and len(assay_list) > 0:
-        if money[-1] - sum([assay_prices[p] for p in assay_list]) < 0:
-            pass
-        else:
-            money.append(money[-1] - sum(
-                [assay_prices[p] for p in assay_list]))
-        if time[-1] - max([assay_times[p] for p in assay_list]) < 0:
-            pass
-        else:
-            time.append(time[-1] - max([assay_times[p]
-                        for p in assay_list]))
-    return jsonify({"assays": assay_dict})
-
-
 def run_descriptors(molecule_info):
     """Runs descriptors ('MW', 'logP', 'TPSA', 'HA', 'h_acc', 'h_don', 'rings')
     for molecule selected.
-    Saves the information to the global molecule_info dict and returns the
+    Saves the information to the molecule_info dict and returns the
     information as its own dict.
-    Pass R Group IDs as queries: /descriptors?r1=A01&r2=B01.
 
-    :returns: A json dictionary of the molecule, indexed
+    :param molecule_info: All the information about the current state of the
+    game
+    :type molecule_info: dict
+    :return: A json dictionary of the molecule, indexed
     by the concatenated string of its R Group IDs, with the values for each
-    descriptor, with each key being its respective descriptor label.
-    :rtype: json dict
+    descriptor, with each key being its respective descriptor label. Also
+    returns updated molecule_info.
+    :rtype: json dict, dict
     """
     desc_list = ['MW', 'logP', 'TPSA', 'HA', 'h_acc', 'h_don', 'rings']
     r_group_1_id = request.args.get('r1')
@@ -159,12 +71,15 @@ def run_descriptors(molecule_info):
     return jsonify({"descriptors": desc_dict}), molecule_info
 
 
-def run_filters():
+# NEEDS TO BE IMPLEMENTED INTO THE GAME
+def run_filters(molecule_info):
     """Runs filters ('PAINS', 'ZINC', 'BRENK', 'NIH')for molecule selected.
-    Saves the information to the global molecule_info dict and returns the
+    Saves the information to molecule_info dict and returns the
     information as its own dict.
-    Pass R Group IDs as queries: /filters?r1=A01&r2=B01
 
+    :param molecule_info: All the information about the current state of the
+    game
+    :type molecule_info: dict
     :returns: A json dictionary of the molecule, indexed
     by the concatenated string of its R Group IDs, with the values for each
     descriptor, with each key being its respective descriptor label.
@@ -192,11 +107,10 @@ def molecule_img():
     """Returns bytestream image  and drug properties of compund molecule
     consisting of scaffold and up to two R Groups, if these are specified in
     the query parameters.
-    Pass R Group IDs and image size as queries:
-    /molecule?r1=A01&r2=B10&size=800,800
-    If no R Groups are specified this returns the scaffold.
+    If no R Groups are specified, returns the scaffold.
 
-    :return: JSON containing image of compound molecule as bytestream.
+    :return: JSON containing image of compound molecule as bytestream, drug
+    properties and empty dictionaries for descriptors, filters and assays run.
     :rtype: json dict
     """
     r_group_1_id = request.args.get('r1')
@@ -239,7 +153,6 @@ def molecule_img():
 def rgroup_img(r_group_id):
     """Returns image and stats R group specified by ID as a bytestream and dict
     to be rendered in a browser.
-    Pass R Group ID as query: /r-group-A01
 
     :param r_group_id: ID number of R Group, eg. 'B26'
     :type r_group_id: String
@@ -254,12 +167,14 @@ def rgroup_img(r_group_id):
                     'stats': stats_dict})
 
 
-def comparison_txt():
-    """ Returns comparison text depending on pic50, logd, and
+def comparison_txt(chosen_mol):
+    """Returns comparison text depending on pic50, logd, and
     clearance_human of chosen molecule
 
-    returns: json dict with text in value depending on metrix
-    rtype: json dict
+    :param chosen_mol: R Group IDs for final chosen molecule
+    :type chosen_mol: list
+    :return: Json dict with comparison text with values for each metric.
+    :rtype: json dict
     """
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
                   'logd', 'pampa']
@@ -276,6 +191,10 @@ def comparison_txt():
     drug_properties = numerise_params(drug_properties)
 
     comp_dict = {}
+    try:
+        f = open('./src/comparison.txt', 'r')
+    except FileNotFoundError:
+        f = open('drug-discovery-game-backend/src/comparison.txt', 'r')
     with open('./src/comparison.txt', 'r') as f:
         lines = f.readlines()
         if float(drug_properties['pic50']) < 6.5:

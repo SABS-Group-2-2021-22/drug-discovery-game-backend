@@ -7,17 +7,17 @@ from flask import jsonify
 def return_spider_data(chosen_mol):
     """Takes final chosen molecule (chosen_mol) and calls FinalMolecule()
     from Molecule.py to return quantitative assay parameters of the chosen
-    molecule and the reference drug
-    Calls /getspiderdata + FinalMolecule() + numerise_params()
+    molecule and the reference drug to plot on a spider plot.
 
-    :returns: A json dictionary containing a list of 2 dictionaries, one
-    containing chosen mol.parameters and the other containing reference
-    drug parameters
-    rtype: json dict
+    :param chosen_mol: R Group IDs for final chosen molecule
+    :type chosen_mol: list
+    :return: A json dictionary containing a list of 2 dictionaries, one
+    containing chosen mol parameters and the other containing reference
+    drug parameters.
+    :rtype: json dict
     """
-
     assay_list = ['pic50', 'clearance_mouse', 'clearance_human',
-                    'logd', 'pampa']
+                  'logd', 'pampa']
 
     if chosen_mol[0] is not None and chosen_mol[1] is not None:
         r_group_1_id = chosen_mol[0]
