@@ -3,6 +3,14 @@
 
 # drug-discovery-game-backend
 
+## Installation
+You must have miniconda installed to create the python environment.
+After cloning the repository, install the dependencies with the following commands:
+```
+cd drug-discovery-game-backend
+conda env create -f environment.yml
+```
+
 ## Running the backend locally
 
 This assumes the conda environment has been created and necessary packages installed.
