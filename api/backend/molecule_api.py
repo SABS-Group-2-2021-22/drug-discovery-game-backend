@@ -3,7 +3,6 @@ from src.Molecule import R_group, Molecule, FinalMolecule
 from .utils import tuple2str, numerise_params
 
 
-
 def run_lipinski(molecule_info):
     """Checks if molecule passes Lipinski's Rule of 5:
         MW < 500.0
@@ -199,14 +198,14 @@ def comparison_txt(chosen_mol):
         else:
             comp_dict['pic50'] = str(lines[1])
         if float(drug_properties['logd']) < 0.95:
-            comp_dict['logd'] = str(lines[5])
+            comp_dict['logd'] = str(lines[2])
         elif 0.95 < float(drug_properties['logd']) < 1.15:
-            comp_dict['logd'] = str(lines[6])
+            comp_dict['logd'] = str(lines[3])
         else:
-            comp_dict['logd'] = str(lines[7])
+            comp_dict['logd'] = str(lines[4])
         if drug_properties['clearance_human'] != str(1):
-            comp_dict['clearance_human'] = str(lines[8])
+            comp_dict['clearance_human'] = str(lines[5])
         else:
-            comp_dict['clearance_human'] = str(lines[9])
+            comp_dict['clearance_human'] = str(lines[6])
     print(comp_dict)
     return jsonify({'comparison': comp_dict})
