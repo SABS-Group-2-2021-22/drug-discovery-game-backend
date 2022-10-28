@@ -135,3 +135,6 @@ scratch.py
 
 # output files
 out
+
+# saved data files with game status
+src/saved_data
