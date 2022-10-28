@@ -1,0 +1,1 @@
+{"james": {"money": 100000.0, "time": 30.0, "chosen_mol": ["A01", "B02"], "molecule_info": {"A01B02": {"keys": ["A01", "B02"], "descriptors": {"MW": 475.00890577600006, "logP": 3.7959000000000023, "TPSA": 103.7, "HA": 29, "h_acc": 4, "h_don": 3, "rings": 3}, "lipinski": {"MW": true, "logP": true, "h_acc": true, "h_don": true}}}}}

@@ -1,6 +1,8 @@
 from flask import jsonify, request
-from src.Molecule import R_group, Molecule, FinalMolecule
-from .utils import tuple2str, numerise_params
+
+from src.Molecule import FinalMolecule, Molecule, R_group
+
+from .utils import numerise_params, tuple2str
 
 
 def run_lipinski(molecule_info):
