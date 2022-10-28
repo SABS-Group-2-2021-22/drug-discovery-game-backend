@@ -1,0 +1,7 @@
+wheel
+codecov
+flask
+flake8
+flask-cors
+pandas
+rdkit
