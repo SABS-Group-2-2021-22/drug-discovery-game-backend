@@ -12,7 +12,8 @@ app = Flask(__name__)
 
 cors = CORS(
     app,
-    resources={r"/*": {"origins": "https://drug-discovery-game.onrender.com/"}},
+    # resources={r"/*": {"origins": "https://drug-discovery-game.onrender.com/"}},
+    resources={r"/*": {"origins": "http://localhost:3000/*"}},
 )
 
 global sessions
@@ -26,6 +27,9 @@ def check_user(username):
         sessions[username] = User(username)
     return None
 
+def get_user(request):
+    return json.loads(request.headers['username'])
+
 
 @app.route("/lipinski")
 def run_lipinski():
@@ -38,7 +42,7 @@ def run_lipinski():
     True or False for each descriptor relevant to Lipinski's Rule of 5.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     session_molecule_info = sessions[username].get_molecule_info()
     response, updated_mol_dict = api.run_lipinski(session_molecule_info)
@@ -57,7 +61,7 @@ def run_descriptors():
     descriptor, with each key being its respective descriptor label.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     session_molecule_info = sessions[username].get_molecule_info()
     response, updated_mol_dict = api.run_descriptors(session_molecule_info)
@@ -75,7 +79,7 @@ def choose_molecule():
     own.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     response, new_chosen_molecule = api.choose_molecule()
     sessions[username].set_chosen_molecule(new_chosen_molecule)
@@ -89,7 +93,7 @@ def save_molecule():
     :return: List of tuples, containing the R Group IDs as a json dict
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     session_molecule_info = sessions[username].get_molecule_info()
     response, updated_mol_dict = api.save_molecule(session_molecule_info)
@@ -137,7 +141,7 @@ def return_spider_data():
     drug parameters.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.return_spider_data(session_chosen_mol)
@@ -152,7 +156,7 @@ def comparison_txt():
     :return: json dict with text in value depending on metric
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.comparison_txt(session_chosen_mol)
@@ -178,7 +182,7 @@ def reset():
     :return: The new empty molecule_info dictionary as a json dict
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     sessions[username].update_molecule_info({})
     session_molecule_info = sessions[username].get_molecule_info()
@@ -214,7 +218,7 @@ def save_game_data():
     :return: _description_
     :rtype: _type_
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     sessions[username].save_game()
     return username
@@ -230,7 +234,7 @@ def sketcher_save_molecule():
     Lipinksi rules for the sketched molecule.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     session_molecule_info = sessions[username].get_molecule_info()
     mol_block = base64.b64decode(request.args.get("mol"))
@@ -251,7 +255,7 @@ def sketcher_choose():
     json dict. Access list with 'chosen_mol' key.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     response, new_chosen_molecule = api.sketcher_choose_molecule()
     sessions[username].set_chosen_molecule(new_chosen_molecule)
@@ -267,7 +271,7 @@ def sketcher_comparisontxt():
     :return: Json dict with comparison text with values for each metric.
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.sketcher_comparison_txt(session_chosen_mol)
@@ -284,7 +288,7 @@ def sketcher_getspiderdata():
      drug parameters
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
+    username = get_user(request)
     check_user(username)
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.sketcher_return_spider_data(session_chosen_mol)
