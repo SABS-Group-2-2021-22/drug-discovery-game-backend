@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 cors = CORS(
     app,
-    resources={r"/*": {"origins": "https://drug-discovery-game.onrender.com/"}},
+    resources={r"/*": {"origins": "https://drug-discovery-game.onrender.com/*"}},
 )
 
 global sessions
