@@ -5,6 +5,6 @@ With respect to pIC50, your molecule is completely inactive.
 With respect to pIC50, the assay unfortunately failed.
 Your drug's lipophilicity is too low, thus it is likely to have poor ADMET properties. Adding alkyl chains or non-polar functional groups can increase a drug's lipophilicity.
 Your drug's lipophilicity is good, thus it is likely to have good ADMET properties with minimal off-target effects.
-Your drug is too lipophilic. This can lead to a large number of off-target effects, increasing side effects and potential toxicity. Adding polar functional groups to your drug can help to reduce this.
+Your drug is too lipophilic. Adding polar functional groups to your drug can help to reduce this.
 Your drug clearance is too high, which means it has a low metabolic stability. Patients will have to take large doses regularly in order to maintain a therapeutic concentration within their bloodstream, which is unpopular.
 Your drug's metabolic stability is good, so it is not cleared from the body too quickly, thus very frequent dosing is not necessary.
