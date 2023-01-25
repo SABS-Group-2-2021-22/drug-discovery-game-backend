@@ -2,9 +2,7 @@ import base64
 import json
 from src.user import User
 
-from glob import glob
-
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 # import api.backend.backend_api as api
@@ -320,3 +318,25 @@ def sketcher_getspiderdata():
     check_user(username)
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.sketcher_return_spider_data(session_chosen_mol)
+
+
+@app.route("/docking-<path:filename>")
+def serve_pdb_file():
+    # def serve_pdb_file(pdb_filename):
+    """API call for running rgroup_img() function.
+
+    Pass R Group ID as query: /r-group-A01.
+
+    :param r_group_id: ID number of R Group, eg. 'B26'
+    :type r_group_id: String
+    :return: Image and stats of R Group in a json dict.
+    Access image bytestream with `img_html` key and stats with 'stats'
+    :rtype: json dict
+    """
+    # print(filename)
+    # filename = "tbl_dock7.pdb"
+    # with open(filename, 'r') as f:
+    #     pdb_file = f.read()
+    # return pdb_file
+    return send_from_directory('static', filename)
+    
