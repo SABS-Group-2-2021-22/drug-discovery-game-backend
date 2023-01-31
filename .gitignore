@@ -135,3 +135,5 @@ scratch.py
 
 # output files
 out
+
+src/saved_data/*

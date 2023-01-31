@@ -2,8 +2,9 @@ name: dd_game
 channels:
   - conda-forge
   - defaults
+  - rdkit
 dependencies:
-  - python==3.8
+  - python==3.7
   - codecov
   - flask
   - flake8
