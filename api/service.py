@@ -336,12 +336,6 @@ def serve_pdb_file(filename):
     Access image bytestream with `img_html` key and stats with 'stats'
     :rtype: json dict
     """
-    print(filename)
-    print(os.getcwd())
     filepath = '../static/' + filename
-    # with open(filepath, 'r') as f:
-    #     pdb_file = f.read()
-    # return pdb_file
     return send_file(filepath)
-    # return send_from_directory('static', filename)
     
