@@ -2,11 +2,13 @@ import base64
 import json
 from src.user import User
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, send_file
 from flask_cors import CORS
 
 # import api.backend.backend_api as api
 import api.backend as api
+
+import os
 
 app = Flask(__name__)
 
@@ -319,9 +321,10 @@ def sketcher_getspiderdata():
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.sketcher_return_spider_data(session_chosen_mol)
 
+# /Users/apunt/repos/drug-discovery-game-backend
 
 @app.route("/docking-<path:filename>")
-def serve_pdb_file():
+def serve_pdb_file(filename):
     # def serve_pdb_file(pdb_filename):
     """API call for running rgroup_img() function.
 
@@ -333,10 +336,12 @@ def serve_pdb_file():
     Access image bytestream with `img_html` key and stats with 'stats'
     :rtype: json dict
     """
-    # print(filename)
-    # filename = "tbl_dock7.pdb"
-    # with open(filename, 'r') as f:
+    print(filename)
+    print(os.getcwd())
+    filepath = '../static/' + filename
+    # with open(filepath, 'r') as f:
     #     pdb_file = f.read()
     # return pdb_file
-    return send_from_directory('static', filename)
+    return send_file(filepath)
+    # return send_from_directory('static', filename)
     
