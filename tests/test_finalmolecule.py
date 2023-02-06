@@ -5,7 +5,7 @@ from rdkit import Chem
 
 scaffold = Chem.MolFromSmiles('O=C(O)C(NS(=O)(=O)c1ccc([*:2])cc1)[*:1]')
 try:
-    csv_file = pd.read_csv('r_group_decomp.csv')
+    csv_file = pd.read_csv('drug-discovery-game-backend/tests/r_group_decomp.csv')
 except FileNotFoundError:
     pass
 
@@ -33,6 +33,24 @@ class TestFinalMolecule(unittest.TestCase):
             'pampa': 'med2high'
             }
         self.assertEqual(test_dict, true_dict)
+
+
+    def test_all_drug_properties_can_be_generated(self):
+        for i in range(1, 26):
+            if i < 10:
+                mol_i = 'A0'+ str(i)
+            else: 
+                mol_i = 'A' + str(i) 
+            for j in range(1, 26):
+                if j < 10:
+                    mol_j = 'B0'+ str(j)
+                else: 
+                    mol_j = 'B' + str(j) 
+                passing_mol = FinalMolecule(mol_i, mol_j)
+                test_dict = passing_mol.drug_properties()
+
+
+
 
     def test_indices(self):
         """Tests that ligand lipophilicity efficiency index (LLE), ligand
