@@ -1,18 +1,18 @@
 # import unittest
-# import api.ddg_api as ddg_api
+# import api.service
 # import json
 
 
 # class TestAPI(unittest.TestCase):
-#     def test_hello_world(self):
-#         with ddg_api.app.test_client() as c:
-#             rv = c.get('/')
-#             json_data = rv.get_data()
-#             result = b"<p>Hello, World!</p>"
-#             self.assertEqual(json_data, result)
+#     # def test_hello_world(self):
+#     #     with api.service.app.test_client() as c:
+#     #         rv = c.get('/')
+#     #         json_data = rv.get_data()
+#     #         result = b"<p>Hello, World!</p>"
+#     #         self.assertEqual(json_data, result)
 
 #     def test_get_all_mol_info_filled(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.service.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/save?r1=A01&r2=B01')
 #             c.get('/assays?r1=A01&r2=B01&pic50=Yes&clearance_mouse=No&'
@@ -29,7 +29,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_get_all_mol_info_empty(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/save?r1=A01&r2=B01')
 #             c.get('/assays?r1=A01&r2=B01&pic50=Yes&clearance_mouse=No&'
@@ -41,7 +41,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_get_all_mol_info_empty_again(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             rv = c.get('/get_all_mol_info')
 #             json_data = rv.get_json()
@@ -49,7 +49,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_update_time_money_changed(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/save?r1=A01&r2=B01')
 #             c.get('/assays?r1=A01&r2=B01&pic50=Yes&clearance_mouse=No&'
@@ -60,7 +60,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_update_time_money_unchanged(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             rv = c.get('/update_time_money')
 #             json_data = rv.get_json()
@@ -69,11 +69,11 @@
 
 #     def test_tuple2str(self):
 #         true_result = "AO1B01"
-#         test_result = ddg_api.tuple2str(("AO1", "B01"))
+#         test_result = api.tuple2str(("AO1", "B01"))
 #         self.assertEqual(true_result, test_result)
 
 #     def test_run_lipinski(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/save?r1=A01&r2=B01')
 #             rv = c.get('/lipinski?r1=A01&r2=B01')
@@ -90,7 +90,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_run_assays(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/save?r1=A01&r2=B01')
 #             rv = c.get('/assays?r1=A01&r2=B01&pic50=Yes&clearance_mouse=No&'
@@ -113,7 +113,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_run_descriptors(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/save?r1=A01&r2=B01')
 #             rv = c.get('/descriptors?r1=A01&r2=B01')
@@ -133,7 +133,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_run_filters(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/save?r1=A01&r2=B01')
 #             rv = c.get('/filters?r1=A01&r2=B01')
@@ -150,7 +150,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_choose_molecule(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             rv = c.post('/choose?r1=A01&r2=B10')
 #             json_data = rv.get_json()
@@ -158,7 +158,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_return_chosen_molecules(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/choose?r1=A01&r2=B10')
 #             rv = c.get('chosenmolecule')
@@ -172,7 +172,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_save_molecule(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             rv = c.post('/save?r1=A04&r2=B05')
 #             json_data = rv.get_json()
@@ -180,7 +180,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_return_saved_molecules(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/save?r1=A04&r2=B05')
 #             rv = c.get('/savedmolecules')
@@ -189,7 +189,7 @@
 #             self.assertEqual(json_data, result)
 
 #     def test_rgroup_img(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             rv = c.get('/r-group-B10')
 #             json_data = rv.get_json()
 #             print(json_data)
@@ -198,7 +198,7 @@
 #             self.assertEqual(json_data, true_data)
 
 #     def test_molecule_img(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             rv = c.get('/molecule?r1=A04&r2=B04&size=800,800')
 #             json_data = rv.get_json()
@@ -207,14 +207,14 @@
 #             self.assertEqual(json_data, true_data)
 
 #     def test_reset(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             rv = c.get('/reset')
 #             json_data = rv.get_json()
 #             result = {"new_info": {}}
 #             self.assertEqual(json_data, result)
 
 #     def test_return_assayed_data(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/save?r1=A01&r2=B01')
 #             c.get('/descriptors?r1=A01&r2=B01')
@@ -240,7 +240,7 @@
 #             self.assertDictEqual(json_data, result)
 
 #     def test_numerise_params(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/choose?r1=A02&r2=B02')
 #             rv = c.get('/getspiderdata')
@@ -262,7 +262,7 @@
 #             self.assertDictEqual(json_data, result)
 
 #     def test_comparison_txt(self):
-#         with ddg_api.app.test_client() as c:
+#         with api.app.test_client() as c:
 #             c.get('/reset')
 #             c.post('/choose?r1=A03&r2=B03')
 #             rv = c.get('/comparisontxt')
