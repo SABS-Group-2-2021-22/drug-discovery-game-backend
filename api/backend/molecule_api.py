@@ -119,6 +119,11 @@ def molecule_img():
     r_group_2_id = request.args.get('r2')
     size = eval(request.args.get('size'))
 
+    if r_group_1_id == 'A00':
+        r_group_1_id = None
+    if r_group_2_id == 'B00':
+        r_group_2_id = None
+
     r_group_1 = None
     r_group_2 = None
 
@@ -141,6 +146,7 @@ def molecule_img():
     bytestream = base_molecule.drawMoleculeAsByteStream(
         orient_with_scaffold=True, size=size
     )
+    drug_property_dict = {}
     if r_group_1_id is not None and r_group_2_id is not None:
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()
