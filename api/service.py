@@ -8,11 +8,17 @@ from flask_cors import CORS
 # import api.backend.backend_api as api
 import api.backend as api
 
+import os
+PERMITTED_ORIGIN = os.environ['PERMITTED_FRONTEND_ORIGIN']
+
 app = Flask(__name__)
+
+
 
 cors = CORS(
     app,
-    resources={r"/*": {"origins": "http://localhost:3000"}},
+    # resources={r"/*": {"origins": "http://localhost:3000"}},
+    resources={r"/*": {"origins": PERMITTED_ORIGIN}},
 )
 
 global sessions
