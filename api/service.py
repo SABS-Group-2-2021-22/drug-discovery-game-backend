@@ -321,16 +321,14 @@ def sketcher_getspiderdata():
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.sketcher_return_spider_data(session_chosen_mol)
 
-# /Users/apunt/repos/drug-discovery-game-backend
-
 @app.route("/docking-<path:filename>")
 def serve_pdb_file(filename):
     # def serve_pdb_file(pdb_filename):
-    """API call for running rgroup_img() function.
+    """API call for running serve_pdb_file() function.
 
-    Pass R Group ID as query: /r-group-A01.
+    Pass PDB filename as query: /docking-pdb_filename.
 
-    :param r_group_id: ID number of R Group, eg. 'B26'
+    :param pdb_filename: PDB file of docked molecule, eg. '6lu7.pdb'
     :type r_group_id: String
     :return: Image and stats of R Group in a json dict.
     Access image bytestream with `img_html` key and stats with 'stats'
