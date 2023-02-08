@@ -119,6 +119,11 @@ def molecule_img():
     r_group_2_id = request.args.get('r2')
     size = eval(request.args.get('size'))
 
+    if r_group_1_id == 'A00':
+        r_group_1_id = None
+    if r_group_2_id == 'B00':
+        r_group_2_id = None
+
     r_group_1 = None
     r_group_2 = None
 
@@ -141,6 +146,7 @@ def molecule_img():
     bytestream = base_molecule.drawMoleculeAsByteStream(
         orient_with_scaffold=True, size=size
     )
+    drug_property_dict = {}
     if r_group_1_id is not None and r_group_2_id is not None:
         drug_mol = FinalMolecule(r_group_1_id, r_group_2_id)
         drug_property_dict = drug_mol.drug_properties()
@@ -193,21 +199,30 @@ def comparison_txt(chosen_mol):
     drug_properties = numerise_params(drug_properties)
 
     comp_dict = {}
-    with open('./src/comparison.txt', 'r') as f:
-        lines = f.readlines()
-        if float(drug_properties['pic50']) < 6.5:
-            comp_dict['pic50'] = str(lines[0])
-        else:
-            comp_dict['pic50'] = str(lines[1])
-        if float(drug_properties['logd']) < 0.95:
-            comp_dict['logd'] = str(lines[5])
-        elif 0.95 < float(drug_properties['logd']) < 1.15:
-            comp_dict['logd'] = str(lines[6])
-        else:
-            comp_dict['logd'] = str(lines[7])
-        if drug_properties['clearance_human'] != str(1):
-            comp_dict['clearance_human'] = str(lines[8])
-        else:
-            comp_dict['clearance_human'] = str(lines[9])
-    print(comp_dict)
+    try:
+        f = open('./src/comparison.txt', 'r')
+    except:
+        f = open('drug-discovery-game-backend/src/comparison.txt', 'r')
+    lines = f.readlines()
+    f.close()
+    if drug_properties['pic50'] == 'Assay Failed':
+        comp_dict['pic50'] = str(lines[4])
+    elif drug_properties['pic50'] == 'Inactive':
+        comp_dict['pic50'] = str(lines[3])
+    elif drug_properties['pic50'] in ['Not Made', 'Not Assayed']:
+        comp_dict['pic50'] = str(lines[2])
+    elif float(drug_properties['pic50']) < 6.5:
+        comp_dict['pic50'] = str(lines[0])
+    else:
+        comp_dict['pic50'] = str(lines[1])
+    if float(drug_properties['logd']) < 0.95:
+        comp_dict['logd'] = str(lines[5])
+    elif 0.95 < float(drug_properties['logd']) < 1.15:
+        comp_dict['logd'] = str(lines[6])
+    else:
+        comp_dict['logd'] = str(lines[7])
+    if drug_properties['clearance_human'] != str(1):
+        comp_dict['clearance_human'] = str(lines[8])
+    else:
+        comp_dict['clearance_human'] = str(lines[9])
     return jsonify({'comparison': comp_dict})
