@@ -158,18 +158,23 @@ def molecule_img():
                     })
 
 
-def rgroup_img(r_group_id):
+def rgroup_img():
     """Returns image and stats R group specified by ID as a bytestream and dict
     to be rendered in a browser.
 
     :param r_group_id: ID number of R Group, eg. 'B26'
+            size: tuple specifying size of R group image
     :type r_group_id: String
     :return: Image and stats of R Group in a json dict.
     Access image bytestream with `img_html` key and stats with 'stats'
     :rtype: json dict
     """
+    r_group_id = request.args.get('rgroup')
+    size = eval(request.args.get('size'))
+
     mol = R_group(r_group_id)
-    bytestream = mol.drawMoleculeAsByteStream(size=(300,300)) # added size parameter
+    
+    bytestream = mol.drawMoleculeAsByteStream(size=size) # added size parameter
     stats_dict = mol.descriptors()
     return jsonify({'img_html': f"data:;base64,{bytestream}",
                     'stats': stats_dict})

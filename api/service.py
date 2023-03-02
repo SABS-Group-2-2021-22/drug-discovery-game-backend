@@ -96,9 +96,10 @@ def save_molecule():
     sessions[username].update_molecule_info(updated_mol_dict)
     return response
 
+@app.route("/r-group") # do i need to change this too?
 
-@app.route("/r-group-<string:r_group_id>")
-def rgroup_img(r_group_id):
+#@app.route("/r-group-<string:r_group_id>") # do i need to change this too?
+def rgroup_img():
     """API call for running rgroup_img() function.
 
     Pass R Group ID as query: /r-group-A01.
@@ -109,7 +110,7 @@ def rgroup_img(r_group_id):
     Access image bytestream with `img_html` key and stats with 'stats'
     :rtype: json dict
     """
-    return api.rgroup_img(r_group_id)
+    return api.rgroup_img()
 
 
 @app.route("/molecule")
