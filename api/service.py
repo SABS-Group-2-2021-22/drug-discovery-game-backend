@@ -96,9 +96,7 @@ def save_molecule():
     sessions[username].update_molecule_info(updated_mol_dict)
     return response
 
-@app.route("/r-group") # do i need to change this too?
-
-#@app.route("/r-group-<string:r_group_id>") # do i need to change this too?
+@app.route("/r-group")
 def rgroup_img():
     """API call for running rgroup_img() function.
 
