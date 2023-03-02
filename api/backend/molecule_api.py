@@ -169,7 +169,7 @@ def rgroup_img(r_group_id):
     :rtype: json dict
     """
     mol = R_group(r_group_id)
-    bytestream = mol.drawMoleculeAsByteStream()
+    bytestream = mol.drawMoleculeAsByteStream(size=(300,300)) # added size parameter
     stats_dict = mol.descriptors()
     return jsonify({'img_html': f"data:;base64,{bytestream}",
                     'stats': stats_dict})
