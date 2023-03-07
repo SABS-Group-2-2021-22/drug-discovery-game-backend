@@ -226,8 +226,13 @@ def comparison_txt(chosen_mol):
         comp_dict['logd'] = str(lines[6])
     else:
         comp_dict['logd'] = str(lines[7])
-    if drug_properties['clearance_human'] != str(1):
+    if str(drug_properties['clearance_human']) != '1':
         comp_dict['clearance_human'] = str(lines[8])
     else:
         comp_dict['clearance_human'] = str(lines[9])
+    if float(drug_properties['pampa']) < 5.5:
+        comp_dict['pampa'] = str(lines[10])
+    else:
+        comp_dict['pampa'] = str(lines[11])
+
     return jsonify({'comparison': comp_dict})
