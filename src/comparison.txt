@@ -8,3 +8,5 @@ Your drug's lipophilicity is good, thus it is likely to have good ADMET properti
 Your drug is too lipophilic. Adding polar functional groups to your drug can help to reduce this.
 Your drug clearance is too high, which means it has a low metabolic stability. Patients will have to take large doses regularly in order to maintain a therapeutic concentration within their bloodstream, which is unpopular.
 Your drug's metabolic stability is good, so it is not cleared from the body too quickly, thus very frequent dosing is not necessary.
+Your drug isn't permeable enough, and so will struggle to be absorbed across barriers in the body. 
+Your drug's permeability is close to the target value, so will be well absorbed in the body.
