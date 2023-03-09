@@ -2,8 +2,6 @@ import base64
 import json
 from src.user import User
 
-from glob import glob
-
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -20,22 +18,8 @@ cors = CORS(
 global sessions
 sessions = {}
 
-@app.route("/load_sessions")
-def load_sessions():
-    session_files = glob('src/saved_data/*.json')
-    for file in session_files:
-        username = file.split('/')[-1].split('_')[0]
-        with open(file) as f:
-            session_dict = json.load(f)
-            sessions[username] = User(username, session_dict[username])
-    return None
 
-@app.route("/reset_and_clear_sessions")
-def clear_sessions():
-    sessions = {}
-    return None
-
-
+# Function to add user if not existing on backend - can be moved/deleted
 # It is likely that Nele will hate this function
 def check_user(username):
     if username not in sessions:
@@ -200,7 +184,7 @@ def reset():
     return api.reset(session_molecule_info)
 
 
-@app.route("/authenticate", methods=["POST"])
+@app.route("/users/authenticate", methods=["POST"])
 def authenticate_login():
     """API call for running authenticate_login() function.
 
@@ -211,27 +195,10 @@ def authenticate_login():
     """
     request_data = request.get_json()
     non_jsonified_auth_response, user = api.authenticate_login(request_data)
-    # if user.username not in sessions:
-    #     sessions[user.username] = user
-    # else:
-    #     non_jsonified_auth_response['user_status'] = 'Exists'
-    sessions[user.username] = user
     auth_response = jsonify(non_jsonified_auth_response)
+    if user.username not in sessions:
+        sessions[user.username] = user
     return auth_response
-
-@app.route("/logout", methods=["POST"])
-def logout():
-    """API call for running authenticate_login() function.
-
-    Call /users/authenticate.
-
-    :return: The authentication response.
-    :rtype: json dict
-    """
-    username = json.loads(request.headers['username'])['username']
-    # check_user(username)
-    sessions[username].save_game()
-    return jsonify({})
 
 
 # TODO api.save_game_data() does not exist so currently returning nothing

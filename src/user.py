@@ -6,7 +6,7 @@ import datetime
 class User(object):
     """User class that defines the users of the game. Stores the game information.
     """
-    def __init__(self, username, session_data=None):
+    def __init__(self, username):
         """Initiliases User object using new username.
 
         :param username: Username
@@ -14,16 +14,10 @@ class User(object):
         """
         self.username = username
 
-        if session_data is not None:
-            self.money = session_data['money']
-            self.time = session_data['time']
-            self.chosen_mol = session_data['chosen_mol']
-            self.molecule_info = session_data['molecule_info']
-        else:
-            self.money = 100000.0
-            self.time = 30.0
-            self.chosen_mol = [None, None]
-            self.molecule_info = {}
+        self.money = 100000.0
+        self.time = 30.0
+        self.chosen_mol = [None, None]
+        self.molecule_info = {}
 
     def __repr__(self):
         """Represents User object and all its properties as a string
@@ -37,7 +31,6 @@ class User(object):
                f'Time: {self.time} \n' + \
                f'Chosen Mol: {str(self.chosen_mol)} \n' + \
                f'Molecule Info: {str(self.molecule_info)} \n'
-
 
     def get_molecule_info(self):
         """Returns molecules saved and their info during a game
@@ -87,8 +80,7 @@ class User(object):
            'chosen_mol': self.chosen_mol,
            'molecule_info': self.molecule_info
                                     }}
-        # filename = 'src/saved_data/' + self.username + '_'\
-        #     + datetime.datetime.now().strftime('%Y%m%d_%H%M') + '.json'
-        filename = 'src/saved_data/' + self.username + '.json'
+        filename = 'src/saved_data/' + self.username + '_'\
+            + datetime.datetime.now().strftime('%Y%m%d_%H%M') + '.json'
         with open(filename, 'w+') as fp:
             json.dump(user_as_dict, fp)
