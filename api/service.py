@@ -334,6 +334,6 @@ def serve_pdb_file(filename):
     Access image bytestream with `img_html` key and stats with 'stats'
     :rtype: json dict
     """
-    filepath = '../static/' + filename
+    filepath = '../static/ligand_docks/' + filename
     return send_file(filepath)
     
