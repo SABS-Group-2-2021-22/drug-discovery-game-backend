@@ -211,11 +211,11 @@ def authenticate_login():
     """
     request_data = request.get_json()
     non_jsonified_auth_response, user = api.authenticate_login(request_data)
-    # if user.username not in sessions:
-    #     sessions[user.username] = user
-    # else:
-    #     non_jsonified_auth_response['user_status'] = 'Exists'
-    sessions[user.username] = user
+    if user.username not in sessions:
+        sessions[user.username] = user
+    else:
+        non_jsonified_auth_response['user_status'] = 'Exists'
+    # sessions[user.username] = user
     auth_response = jsonify(non_jsonified_auth_response)
     return auth_response
 
