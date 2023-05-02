@@ -230,7 +230,7 @@ def logout():
     """
     username = json.loads(request.headers['username'])['username']
     # check_user(username)
-    sessions[username].save_game()
+    # sessions[username].save_game()
     return jsonify({})
 
 @app.route("/loadgamestate", methods=["GET"])
@@ -252,7 +252,7 @@ def loadgamestate():
 # TODO api.save_game_data() does not exist so currently returning nothing
 
 
-@app.route("/save_game_data", methods=["GET"])
+@app.route("/save_game_data", methods=["GET", "POST"])
 def save_game_data():
     """API call for running save_game_data() (currently does not exist).
 
@@ -262,8 +262,9 @@ def save_game_data():
     :rtype: _type_
     """
     username = json.loads(request.headers['username'])['username']
+    game_data = request.json
     check_user(username)
-    sessions[username].save_game()
+    sessions[username].save_game(game_data)
     return username
 
 
