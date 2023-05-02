@@ -233,6 +233,21 @@ def logout():
     sessions[username].save_game()
     return jsonify({})
 
+@app.route("/loadgamestate", methods=["GET"])
+def loadgamestate():
+    #todo: add comments 
+    
+    username = json.loads(request.headers['username'])['username']
+    # check_user(username)
+    # sessions[username].save_game()
+    filename = 'src/saved_data/' + username + '.json'
+    try:
+        with open(filename, 'r') as f:
+            game_data = json.load(f)
+            print(game_data)
+        return jsonify(game_data)
+    except:
+        return jsonify({'error':'There is an error retrieving your data from the previous game'}) 
 
 # TODO api.save_game_data() does not exist so currently returning nothing
 
