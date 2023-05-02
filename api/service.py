@@ -249,7 +249,7 @@ def loadgamestate():
     except:
         return jsonify({'error':'There is an error retrieving your data from the previous game'}) 
 
-# TODO api.save_game_data() does not exist so currently returning nothing
+# outdated - TODO api.save_game_data() does not exist so currently returning nothing
 
 
 @app.route("/save_game_data", methods=["GET"])
