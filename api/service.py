@@ -244,7 +244,7 @@ def loadgamestate():
     try:
         with open(filename, 'r') as f:
             game_data = json.load(f)
-            print(game_data)
+            sessions[username] = User(username, game_data[username])
         return jsonify(game_data)
     except:
         return jsonify({'error':'There is an error retrieving your data from the previous game'}) 
