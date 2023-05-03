@@ -77,11 +77,16 @@ class User(object):
         self.molecule_info = update_dict
         return None
 
-    def save_game(self, game_data):
+    def save_game(self):
         """Saves user information as a dictionaruy and saves to file. File is
         named after user and the time of saving.
         """
-        user_as_dict = {self.username: game_data}
+        user_as_dict = {self.username: {
+           'money': self.money,
+           'time': self.time,
+           'chosen_mol': self.chosen_mol,
+           'molecule_info': self.molecule_info
+                                    }}
         # filename = 'src/saved_data/' + self.username + '_'\
         #     + datetime.datetime.now().strftime('%Y%m%d_%H%M') + '.json'
         filename = 'src/saved_data/' + self.username + '.json'
