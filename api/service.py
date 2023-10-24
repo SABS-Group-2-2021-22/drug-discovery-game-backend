@@ -211,11 +211,11 @@ def authenticate_login():
     """
     request_data = request.get_json()
     non_jsonified_auth_response, user = api.authenticate_login(request_data)
-    # if user.username not in sessions:
-    #     sessions[user.username] = user
-    # else:
-    #     non_jsonified_auth_response['user_status'] = 'Exists'
-    sessions[user.username] = user
+    if user.username not in sessions:
+        sessions[user.username] = user
+    else:
+        non_jsonified_auth_response['user_status'] = 'Exists'
+    # sessions[user.username] = user
     auth_response = jsonify(non_jsonified_auth_response)
     return auth_response
 
@@ -230,14 +230,29 @@ def logout():
     """
     username = json.loads(request.headers['username'])['username']
     # check_user(username)
-    sessions[username].save_game()
+    # sessions[username].save_game()
     return jsonify({})
 
+@app.route("/loadgamestate", methods=["GET"])
+def loadgamestate():
+    #todo: add comments 
+    
+    username = json.loads(request.headers['username'])['username']
+    # check_user(username)
+    # sessions[username].save_game()
+    filename = 'src/saved_data/' + username + '.json'
+    try:
+        with open(filename, 'r') as f:
+            game_data = json.load(f)
+            sessions[username] = User(username, game_data[username])
+        return jsonify(game_data)
+    except:
+        return jsonify({'error':'There is an error retrieving your data from the previous game'}) 
 
 # TODO api.save_game_data() does not exist so currently returning nothing
 
 
-@app.route("/save_game_data", methods=["GET"])
+@app.route("/save_game_data", methods=["GET", "POST"])
 def save_game_data():
     """API call for running save_game_data() (currently does not exist).
 
@@ -247,8 +262,9 @@ def save_game_data():
     :rtype: _type_
     """
     username = json.loads(request.headers['username'])['username']
+    game_data = request.json
     check_user(username)
-    sessions[username].save_game()
+    sessions[username].save_game(game_data)
     return username
 
 
