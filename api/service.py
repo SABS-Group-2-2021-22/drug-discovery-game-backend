@@ -23,16 +23,12 @@ sessions = {}
 #@app.route("/load_sessions")
 @app.before_first_request
 def load_sessions():
-    print("CP3")
     session_files = glob('src/saved_data/*.json')
     for file in session_files:
         username = file.split('/')[-1].split('_')[0].split('.')[0]
         with open(file) as f:
             session_dict = json.load(f)
-            print(session_dict)
-            print(username)
             sessions[username] = User(username, session_dict[username])
-    print(sessions)
     return None
 
 @app.route("/reset_and_clear_sessions")
@@ -43,8 +39,6 @@ def clear_sessions():
 
 # It is likely that Nele will hate this function
 def check_user(username):
-    print("CP2")
-    print(sessions)
     if username not in sessions:
         sessions[username] = User(username)
     return None
@@ -241,8 +235,6 @@ def logout():
 
 @app.route("/loadgamestate", methods=["GET"])
 def loadgamestate():
-    print("CP1")
-    print(sessions)
     #todo: add comments 
     
     username = json.loads(request.headers['username'])['username']

@@ -136,4 +136,4 @@ scratch.py
 # output files
 out
 
-src/saved_data/*
+src/saved_data/*.json
