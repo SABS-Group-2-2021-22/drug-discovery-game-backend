@@ -78,12 +78,15 @@ class User(object):
         return None
 
     def save_game(self, game_data):
-        """Saves user information as a dictionaruy and saves to file. File is
+        """Saves user information as a dictionary and saves to file. File is
         named after user and the time of saving.
         """
         user_as_dict = {self.username: game_data}
         # filename = 'src/saved_data/' + self.username + '_'\
         #     + datetime.datetime.now().strftime('%Y%m%d_%H%M') + '.json'
         filename = 'src/saved_data/' + self.username + '.json'
-        with open(filename, 'w+') as fp:
-            json.dump(user_as_dict, fp)
+        try:
+            with open(filename, 'w+') as fp:
+                json.dump(user_as_dict, fp)
+        except FileNotFoundError as e:
+            print("Error saving data:", e)

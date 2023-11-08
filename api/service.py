@@ -254,7 +254,7 @@ def loadgamestate():
 
 @app.route("/save_game_data", methods=["GET", "POST"])
 def save_game_data():
-    """API call for running save_game_data() (currently does not exist).
+    """API call for running save_game_data().
 
     Call /save_game_data.
 
