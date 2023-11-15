@@ -28,7 +28,11 @@ def load_sessions():
         username = file.split('/')[-1].split('_')[0].split('.')[0]
         with open(file) as f:
             session_dict = json.load(f)
-            sessions[username] = User(username, session_dict[username])
+            try:
+                sessions[username] = User(username, session_dict[username])
+            except KeyError as e:
+               print(e)
+               continue
     return None
 
 @app.route("/reset_and_clear_sessions")
