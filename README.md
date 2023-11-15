@@ -2,6 +2,8 @@
 [![Documentation Status](https://readthedocs.org/projects/drug-discovery-backend/badge/?version=latest)](https://drug-discovery-backend.readthedocs.io/en/latest/?badge=latest)
 
 # drug-discovery-game-backend
+## Documentation 
+Documentation can be found here: [https://drug-discovery-backend.readthedocs.io](https://drug-discovery-backend.readthedocs.io)
 
 ## Installation
 You must have miniconda installed to create the python environment.
