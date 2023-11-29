@@ -326,7 +326,8 @@ class FinalMolecule(Molecule):
             'clearance_mouse',
             'clearance_human',
             'logd',
-            'pampa'
+            'pampa',
+            'docking_affinity',
         ]
         drug_property_dict = {}
         for d in drug_properties:
