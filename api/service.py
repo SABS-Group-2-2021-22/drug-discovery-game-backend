@@ -1,5 +1,8 @@
 import base64
 import json
+from requests.exceptions import HTTPError
+
+
 from src.user import User
 
 from glob import glob
@@ -8,13 +11,17 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 # import api.backend.backend_api as api
+
+import os
 import api.backend as api
+#import openai
+
 
 app = Flask(__name__)
 
 cors = CORS(
     app,
-    resources={r"/*": {"origins": "http://localhost:3000"}},
+    resources={r"/*": {"origins": "/*"}},
 )
 
 global sessions
@@ -249,8 +256,6 @@ def loadgamestate():
     except:
         return jsonify({'error':'There is an error retrieving your data from the previous game'}) 
 
-# TODO api.save_game_data() does not exist so currently returning nothing
-
 
 @app.route("/save_game_data", methods=["GET", "POST"])
 def save_game_data():
@@ -332,7 +337,28 @@ def sketcher_getspiderdata():
      drug parameters
     :rtype: json dict
     """
-    username = json.loads(request.headers['username'])['username']
-    check_user(username)
-    session_chosen_mol = sessions[username].get_chosen_molecule()
-    return api.sketcher_return_spider_data(session_chosen_mol)
+
+
+
+# In your Flask route:
+@app.route("/post_prompt", methods=["POST"])
+def handle_query():
+    print(request.json)
+    data = request.json
+    print('CP1', data)
+    prompt = data.get('prompt')
+    print('CP2', prompt)
+
+    if not prompt:
+        return jsonify({"error": "No prompt provided"}), 400
+
+    response = api.process_prompt(prompt)
+
+    if "error" in response:
+        # Decide on the appropriate HTTP status code to return
+        return jsonify(response), 502  # Bad Gateway or another appropriate error code
+
+    return jsonify(response)
+
+
+
