@@ -340,25 +340,14 @@ def sketcher_getspiderdata():
 
 
 
-# In your Flask route:
+
+
 @app.route("/post_prompt", methods=["POST"])
 def handle_query():
-    print(request.json)
     data = request.json
-    print('CP1', data)
     prompt = data.get('prompt')
-    print('CP2', prompt)
-
-    if not prompt:
-        return jsonify({"error": "No prompt provided"}), 400
 
     response = api.process_prompt(prompt)
 
-    if "error" in response:
-        # Decide on the appropriate HTTP status code to return
-        return jsonify(response), 502  # Bad Gateway or another appropriate error code
 
     return jsonify(response)
-
-
-
