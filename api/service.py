@@ -340,16 +340,31 @@ def sketcher_getspiderdata():
 @app.route("/docking-<path:filename>")
 def serve_pdb_file(filename):
     # def serve_pdb_file(pdb_filename):
-    """API call for running serve_pdb_file() function.
+        filepath = '../static/ligand_docks/' + filename
+        with open(filepath, 'rb') as file:
+                byte_stream = file.read()
+        base64_encoded = base64.b64encode(byte_stream).decode('utf-8')
+        return jsonify({'file_content': base64_encoded, 'filename': filename})
 
-    Pass PDB filename as query: /docking-pdb_filename.
+# def convert_pdb_files_to_byte_stream():
+#     directory = 'path/to/your/directory'
+#     encoded_files = {}
 
-    :param pdb_filename: PDB file of docked molecule, eg. '6lu7.pdb'
-    :type r_group_id: String
-    :return: Image and stats of R Group in a json dict.
-    Access image bytestream with `img_html` key and stats with 'stats'
-    :rtype: json dict
-    """
-    filepath = '../static/ligand_docks/' + filename
-    return send_file(filepath)
-    
+#     for filename in os.listdir(directory):
+#         if filename.endswith('.pdb'):
+#             pdb_file_path = os.path.join(directory, filename)
+#             with open(pdb_file_path, 'rb') as file:
+#                 byte_stream = file.read()
+#             encoded_files[filename] = base64.b64encode(byte_stream).decode('utf-8')
+
+#     return jsonify(encoded_files)
+#    """API call for running serve_pdb_file() function.
+
+#     Pass PDB filename as query: /docking-pdb_filename.
+
+#     :param pdb_filename: PDB file of docked molecule, eg. '6lu7.pdb'
+#     :type r_group_id: String
+#     :return: Image and stats of R Group in a json dict.
+#     Access image bytestream with `img_html` key and stats with 'stats'
+#     :rtype: json dict
+#     """
