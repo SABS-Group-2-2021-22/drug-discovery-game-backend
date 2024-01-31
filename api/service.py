@@ -1,21 +1,36 @@
 import base64
 import json
 from src.user import User
-
-from flask import Flask, jsonify, request, send_from_directory, send_file
+from glob import glob
+from flask import Flask, jsonify, request, send_from_directory, send_file, Response
 from flask_cors import CORS
+from flask_cors import cross_origin
+from http.server import HTTPServer, SimpleHTTPRequestHandler, test
+
 
 # import api.backend.backend_api as api
 import api.backend as api
+import sys
 
 import os
+
+
 
 app = Flask(__name__)
 
 cors = CORS(
     app,
-    resources={r"/*": {"origins": "*"}},
+    resources={r"/*": {"origins": "http://localhost:3000"}},
 )
+class CORSRequestHandler (SimpleHTTPRequestHandler):
+    def end_headers (self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        SimpleHTTPRequestHandler.end_headers(self)
+
+if __name__ == '__main__':
+    test(CORSRequestHandler, HTTPServer, port=int(sys.argv[1]) if len(sys.argv) > 1 else 8000)
+
+
 
 global sessions
 sessions = {}
@@ -344,7 +359,7 @@ def serve_pdb_file(filename):
         with open(filepath, 'rb') as file:
                 byte_stream = file.read()
         base64_encoded = base64.b64encode(byte_stream).decode('utf-8')
-        return jsonify({'file_content': base64_encoded, 'filename': filename})
+        return Response(byte_stream, mimetype='application/octet-stream', headers={"Content-Disposition": "attachment;filename=" + filename})
 
 # def convert_pdb_files_to_byte_stream():
 #     directory = 'path/to/your/directory'
