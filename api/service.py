@@ -20,7 +20,10 @@ app = Flask(__name__)
 
 cors = CORS(
     app,
-    resources={r"/*": {"origins": "http://localhost:3000"}},
+    resources={r"/*": {"origins":
+                       "*" 
+                    #    "http://localhost:3000"
+                       }},
 )
 class CORSRequestHandler (SimpleHTTPRequestHandler):
     def end_headers (self):
@@ -355,10 +358,13 @@ def sketcher_getspiderdata():
 @app.route("/docking-<path:filename>")
 def serve_pdb_file(filename):
     # def serve_pdb_file(pdb_filename):
-        filepath = '../static/ligand_docks/' + filename
+        import os
+        print('CP1', os.getcwd())
+        filepath = './static/ligand_docks/' + filename
         with open(filepath, 'rb') as file:
                 byte_stream = file.read()
         base64_encoded = base64.b64encode(byte_stream).decode('utf-8')
+        print(byte_stream)
         return Response(byte_stream, mimetype='application/octet-stream', headers={"Content-Disposition": "attachment;filename=" + filename})
 
 # def convert_pdb_files_to_byte_stream():
