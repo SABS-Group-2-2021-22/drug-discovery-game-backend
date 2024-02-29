@@ -1,8 +1,8 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 import requests
-load_dotenv()
 
+load_dotenv()
 client = OpenAI()
 
 file_response = client.files.create(
@@ -59,4 +59,3 @@ assistant_response = client.beta.assistants.create(
     )
 assistant_id = assistant_response.id
 print("Assistant ID:", assistant_id)
-    
