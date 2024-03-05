@@ -20,5 +20,5 @@ This assumes the conda environment has been created and necessary packages insta
 ```
 conda activate dd_game
 export FLASK_APP=api/service
-flask run
+flask run -p 8000
 ```
