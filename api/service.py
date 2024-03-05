@@ -2,13 +2,13 @@ import base64
 import json
 from src.user import User
 
-from glob import glob
-
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory, send_file
 from flask_cors import CORS
 
 # import api.backend.backend_api as api
 import api.backend as api
+
+import os
 
 app = Flask(__name__)
 
@@ -336,3 +336,20 @@ def sketcher_getspiderdata():
     check_user(username)
     session_chosen_mol = sessions[username].get_chosen_molecule()
     return api.sketcher_return_spider_data(session_chosen_mol)
+
+@app.route("/docking-<path:filename>")
+def serve_pdb_file(filename):
+    # def serve_pdb_file(pdb_filename):
+    """API call for running serve_pdb_file() function.
+
+    Pass PDB filename as query: /docking-pdb_filename.
+
+    :param pdb_filename: PDB file of docked molecule, eg. '6lu7.pdb'
+    :type r_group_id: String
+    :return: Image and stats of R Group in a json dict.
+    Access image bytestream with `img_html` key and stats with 'stats'
+    :rtype: json dict
+    """
+    filepath = '../static/ligand_docks/' + filename
+    return send_file(filepath)
+    
