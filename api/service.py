@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 cors = CORS(
     app,
-    resources={r"/*": {"origins": "http://localhost:3000"}},
+    resources={r"/*": {"origins": "*"}},
 )
 
 global sessions
