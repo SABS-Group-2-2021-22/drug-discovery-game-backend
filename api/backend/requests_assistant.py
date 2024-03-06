@@ -5,8 +5,9 @@ import os
 from flask_cors import CORS
 from openai import OpenAI
 
+
 app = Flask(__name__)
-CORS(app, resources={r"/api/chat": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/api/chat": {"origins": "*"}})
 load_dotenv()
 client = OpenAI()
 
@@ -14,7 +15,7 @@ client = OpenAI()
 def chat():
     data = request.json
     prompt = data.get('prompt')  # gets prompt from the user from frontend
-    assistant_id = os.getenv("ASSISTANT_ID")  # Make sure the environment variable name matches
+    assistant_id = os.getenv("assistant_id")  # Make sure the environment variable name matches
     thread_response = client.beta.threads.create()
     
     message_response = client.beta.threads.messages.create(
@@ -54,4 +55,4 @@ def chat():
     return jsonify({'answer': answer})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8000)
