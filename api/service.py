@@ -1,7 +1,14 @@
 import base64
 import json
+import time
+
+import openai
 from src.user import User
 import glob
+from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
 
 from flask import Flask, jsonify, request, send_from_directory, send_file
 from flask_cors import CORS
@@ -353,4 +360,74 @@ def serve_pdb_file(filename):
     """
     filepath = '../static/ligand_docks/' + filename
     return send_file(filepath)
+
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
+assistant_id = os.getenv("ASSISTANT_ID")
+print("assistant id:", assistant_id)
+client = OpenAI()
+
+
+@app.route("/api/chat", methods=["POST", "GET"])
+def chat():
+    print("CP0")
+    data = request.get_json()
+    prompt = data['prompt']
+    if prompt is None:
+        print("prompt is empty")
+    else: print(prompt)
+
+      # gets prompt from the user from frontend
+    thread = client.beta.threads.create()
     
+    message = client.beta.threads.messages.create(
+        thread_id=thread.id,
+        role="user",
+        content=(prompt)
+    )
+
+    run = client.beta.threads.runs.create(
+        thread_id=thread.id,
+        assistant_id=assistant_id,
+        instructions="The user has a premium account.",
+    )
+
+    run = client.beta.threads.runs.retrieve(
+        thread_id=thread.id,
+        run_id=run.id
+    )
+
+    messages = client.beta.threads.messages.list(
+    thread_id=thread.id
+    )    
+    print("message is:",messages) #at this point there is still no answer. 
+      
+    print("CP3")
+    attempts = 0
+    answer = "No response received."  # Default answer initialization
+    while attempts < 15:
+        run_status = client.beta.threads.runs.retrieve(
+            thread_id=thread.id,
+            run_id=run.id
+        )
+        if run_status.status == "completed":
+            messages_response = client.beta.threads.messages.list(
+                thread_id=thread.id,
+                answer = str(messages_response)
+            )  # Close the parentheses here
+            break
+        elif run_status.status == "failed":
+            answer = "The run failed to complete successfully."
+            break
+        elif attempts >= 14:  # Last attempt
+            answer = "Run did not complete within the expected time."
+        
+        time.sleep(10)
+        attempts += 1
+
+        return jsonify({'answer': answer})
+    print(answer)
+
+
+if __name__ == "__main__":
+    app.run(debug=True, port=8000)
