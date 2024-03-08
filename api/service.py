@@ -373,11 +373,12 @@ def chat():
     print("CP0")
     data = request.get_json()
     prompt = data['prompt']
-    if prompt is None:
+    if not prompt:
         print("prompt is empty")
-    else: print(prompt)
-
-      # gets prompt from the user from frontend
+    else:
+        print(prompt)
+    
+    # gets prompt from the user from frontend
     thread = client.beta.threads.create()
     
     message = client.beta.threads.messages.create(
@@ -385,26 +386,27 @@ def chat():
         role="user",
         content=(prompt)
     )
-
+    
     run = client.beta.threads.runs.create(
         thread_id=thread.id,
         assistant_id=assistant_id,
         instructions="The user has a premium account.",
     )
-
+    
     run = client.beta.threads.runs.retrieve(
         thread_id=thread.id,
         run_id=run.id
     )
-
+    
     messages = client.beta.threads.messages.list(
-    thread_id=thread.id
+        thread_id=thread.id
     )    
-    print("message is:",messages) #at this point there is still no answer. 
-      
+    print("message is:", messages)
+    
     print("CP3")
     attempts = 0
     answer = "No response received."  # Default answer initialization
+    print("CP4")
     while attempts < 15:
         run_status = client.beta.threads.runs.retrieve(
             thread_id=thread.id,
@@ -412,9 +414,10 @@ def chat():
         )
         if run_status.status == "completed":
             messages_response = client.beta.threads.messages.list(
-                thread_id=thread.id,
-                answer = str(messages_response)
-            )  # Close the parentheses here
+                thread_id=thread.id
+            )
+            first_message = messages_response.data[0]  # Get the first message
+            answer = first_message.content[0].text.value.strip()  # Extract the answer text
             break
         elif run_status.status == "failed":
             answer = "The run failed to complete successfully."
@@ -424,10 +427,11 @@ def chat():
         
         time.sleep(10)
         attempts += 1
-
-        return jsonify({'answer': answer})
-    print(answer)
+    
+    print("answer:", answer)
+    return jsonify({'answer': answer})
 
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
+    
