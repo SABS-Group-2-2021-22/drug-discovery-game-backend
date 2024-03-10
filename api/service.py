@@ -362,42 +362,54 @@ def serve_pdb_file(filename):
     return send_file(filepath)
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
-assistant_id = os.getenv("ASSISTANT_ID")
-print("assistant id:", assistant_id)
 client = OpenAI()
-
+openai.api_key = os.getenv("OPENAI_API_KEY")
+assistant_id = "asst_xQ9PUziNM1LBGDEO7S3eRDU5" # os.getenv("ASSISTANT_ID") # not being loaded from .env file - need to fix this
+print("Hardcoded Assistant ID:", assistant_id)
 
 @app.route("/api/chat", methods=["POST", "GET"])
+
 def chat():
+    """API call to openAI for chat function.
+    retreives the prompt from the frontend, sends it to the assistant 
+    and returns the response to the frontend using openAI SDK"""
+
+    # later delete all these print functions. They are just for debugging
     print("CP0")
-    data = request.get_json()
-    prompt = data['prompt']
+    data = request.get_json() # get the data from the frontend
+    prompt = data['prompt'] # get the prompt from the data
     if not prompt:
-        print("prompt is empty")
+        print("prompt is empty") # if prompt is empty, print this
     else:
         print(prompt)
     
-    # gets prompt from the user from frontend
-    thread = client.beta.threads.create()
+    thread = client.beta.threads.create() # create a new thread (conversation)
     
+    # send the prompt to the assistant
     message = client.beta.threads.messages.create(
         thread_id=thread.id,
         role="user",
         content=(prompt)
     )
+    # thread_12M9KFRG6T3bgAYIJB2prFqQ
+    # thread_S8WuwfnFNAXzXy4nxH33eXyE - 2 threads created which means not same convo
     
+    # run the assistant with the prompt (message and thread id)
     run = client.beta.threads.runs.create(
-        thread_id=thread.id,
-        assistant_id=assistant_id,
-        instructions="The user has a premium account.",
+        thread_id=thread.id, 
+        assistant_id=assistant_id, # assistant_id="asst_xQ9PUziNM1LBGDEO7S3eRDU5",- not working!!
+        model="gpt-4-turbo-preview", # model of gpt-4,
+        tools=[{"type": "code_interpreter"}, {"type": "retrieval"}], # tools to use
+        instructions="The user has a premium account.", # instructions - is this neccessary?
     )
     
+    # retrieve the run so that we can get the response
     run = client.beta.threads.runs.retrieve(
         thread_id=thread.id,
         run_id=run.id
     )
     
+    # get the messages from the thread
     messages = client.beta.threads.messages.list(
         thread_id=thread.id
     )    
@@ -407,17 +419,20 @@ def chat():
     attempts = 0
     answer = "No response received."  # Default answer initialization
     print("CP4")
+
+    # check if the run is completed with this loop - not sure its neccessary when normal model is used but with assistant i think it is
     while attempts < 15:
         run_status = client.beta.threads.runs.retrieve(
             thread_id=thread.id,
             run_id=run.id
         )
+        # if the run is completed, get the first message and extract the answer text
         if run_status.status == "completed":
             messages_response = client.beta.threads.messages.list(
                 thread_id=thread.id
             )
-            first_message = messages_response.data[0]  # Get the first message
-            answer = first_message.content[0].text.value.strip()  # Extract the answer text
+            first_message = messages_response.data[0]  
+            answer = first_message.content[0].text.value.strip()
             break
         elif run_status.status == "failed":
             answer = "The run failed to complete successfully."
@@ -428,10 +443,10 @@ def chat():
         time.sleep(10)
         attempts += 1
     
-    print("answer:", answer)
-    return jsonify({'answer': answer})
+    print("answer:", answer) # print the answer in terminal
+    return jsonify({'answer': answer}) # return the answer to the frontend
+print("After API call Assistant ID:", assistant_id) # print this after the API call - currently it prints before the API call?
 
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
-    
