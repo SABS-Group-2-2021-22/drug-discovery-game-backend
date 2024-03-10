@@ -7,11 +7,12 @@ The metrics below each R group correspond to the:
  - Number of hydrogen acceptors (H acc)
  - Number of hydrogen donors (H don)
  - Number of aromatic rings (Rings)
-These properties are worth considering in the context of drug design. For example, MMP12 has a relatively small active site, and therefore large R groups and additional aromatic rings are unlikely to favour binding. One must also consider how strongly an optimal drug would bind, and thus factors like the number of hydrogen bond donors and acceptors will affect its binding. Furthermore, although drugs typically require some liphophilicity to allow membrane permeation, logD values which are too high will hinder solubility. The Lipinski Rule of 5 and some ADMET properties are discussed in further detail on the next page.
-Molecular docking is a computational technique used in drug design to elucidate the binding mode that a trial compound has, with the desired target, in this case MMP-12.
-By determining an estimated position and pose of a compound, you can see any favourable or unfavourable interactions that the compound might experience with the drug target.
-This information can be used to improve your understanding of the compound's affinity for MMP-12.
-Select a compound on the left to view its MMP-12 bound model.
+
+These properties are worth considering in the context of drug design. For example, MMP-12 has a relatively small active site, and therefore large R groups and additional aromatic rings are unlikely to favour binding. 
+One must also consider how strongly an optimal drug would bind, and thus factors like the number of hydrogen bond donors and acceptors will affect its binding. 
+Furthermore, although drugs typically require some liphophilicity to allow membrane permeation, logD values which are too high will hinder solubility. 
+The Lipinski Rule of 5 and some ADMET properties are discussed in further detail on the next page.
 The selected compound will have its carbons shown in green whilst MMP-12 is shown in orange.
 Click on the compound in the model to inspect interactions with nearby amino-acid residues of MMP-12.
 The affinity score, displayed below the docking model, is a relative measure of binding strength; a more negative value indicates a stronger predicted target binding.
+
