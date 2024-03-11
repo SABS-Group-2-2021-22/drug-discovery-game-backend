@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 cors = CORS(
     app,
-    resources={r"/*": {"origins": "*"}},
+    resources={r"/*": {"origins": "http://localhost:3000"}},
 )
 
 global sessions
@@ -365,7 +365,10 @@ load_dotenv()
 client = OpenAI()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 assistant_name = os.getenv("ASSISTANT_ID")
-print("Assistant ID:", assistant_name)
+file_id = os.getenv("FILE_ID")
+
+print("Assistant ID:", assistant_name) # debugging statement
+print("File ID:", file_id) # debugging statement
 
 
 @app.route("/api/chat", methods=["POST", "GET"])
@@ -383,19 +386,26 @@ def chat():
         print("prompt is empty") # if prompt is empty, print this
     else:
         print(prompt)
-    
-    thread = client.beta.threads.create() # create a new thread (conversation)
-    
+
+    if 'thread_id' in sessions:
+         thread_id = sessions['thread_id']
+    else:
+        thread = client.beta.threads.create()
+        thread_id = thread.id
+        sessions['thread_id'] = thread_id
+        print("thread_id:", thread_id)
+        
     # send the prompt to the assistant
     message = client.beta.threads.messages.create(
-        thread_id=thread.id,
+        thread_id=thread_id,
         role="user",
-        content=(prompt)
+        content=(prompt),
+        file_ids=[file_id]
     )
 
     # run the assistant with the prompt (message and thread id)
     run = client.beta.threads.runs.create(
-        thread_id=thread.id, 
+        thread_id=thread_id, 
         assistant_id=assistant_name, # assistant_id="asst_xQ9PUziNM1LBGDEO7S3eRDU5",- not working!!
         tools=[{"type": "code_interpreter"}, {"type": "retrieval"}], # tools to use
     )
@@ -403,13 +413,13 @@ def chat():
 
     # retrieve the run so that we can get the response
     run = client.beta.threads.runs.retrieve(
-        thread_id=thread.id,
+        thread_id=thread_id,
         run_id=run.id
     )
     
     # get the messages from the thread
     messages = client.beta.threads.messages.list(
-        thread_id=thread.id
+        thread_id=thread_id
     )    
     print("message is:", messages)
     
@@ -421,13 +431,13 @@ def chat():
     # check if the run is completed with this loop - not sure its neccessary when normal model is used but with assistant i think it is
     while attempts < 15:
         run_status = client.beta.threads.runs.retrieve(
-            thread_id=thread.id,
+            thread_id=thread_id,
             run_id=run.id
         )
         # if the run is completed, get the first message and extract the answer text
         if run_status.status == "completed":
             messages_response = client.beta.threads.messages.list(
-                thread_id=thread.id
+                thread_id=thread_id
             )
             first_message = messages_response.data[0]  
             answer = first_message.content[0].text.value.strip()
