@@ -12,7 +12,7 @@ file_response = client.files.create(
 print("File upload response:", file_response)
     
 assistant_response = client.beta.assistants.create(
-        name="Chemistry Tutor",
+        name="Chemistry_Tutor",
         instructions= """Restrictions: 
                                 The assistants should under no circumstances answer questions unrelated to the drug discovery and development game. 
                                 If questions are asked outside this context, it should provide no information and ask the user to seek other sources.

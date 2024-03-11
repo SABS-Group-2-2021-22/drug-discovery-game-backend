@@ -364,8 +364,9 @@ def serve_pdb_file(filename):
 load_dotenv()
 client = OpenAI()
 openai.api_key = os.getenv("OPENAI_API_KEY")
-assistant_id = "asst_xQ9PUziNM1LBGDEO7S3eRDU5" # os.getenv("ASSISTANT_ID") # not being loaded from .env file - need to fix this
-print("Hardcoded Assistant ID:", assistant_id)
+assistant_name = os.getenv("ASSISTANT_ID")
+print("Assistant ID:", assistant_name)
+
 
 @app.route("/api/chat", methods=["POST", "GET"])
 
@@ -391,18 +392,15 @@ def chat():
         role="user",
         content=(prompt)
     )
-    # thread_12M9KFRG6T3bgAYIJB2prFqQ
-    # thread_S8WuwfnFNAXzXy4nxH33eXyE - 2 threads created which means not same convo
-    
+
     # run the assistant with the prompt (message and thread id)
     run = client.beta.threads.runs.create(
         thread_id=thread.id, 
-        assistant_id=assistant_id, # assistant_id="asst_xQ9PUziNM1LBGDEO7S3eRDU5",- not working!!
-        model="gpt-4-turbo-preview", # model of gpt-4,
+        assistant_id=assistant_name, # assistant_id="asst_xQ9PUziNM1LBGDEO7S3eRDU5",- not working!!
         tools=[{"type": "code_interpreter"}, {"type": "retrieval"}], # tools to use
-        instructions="The user has a premium account.", # instructions - is this neccessary?
     )
-    
+    print("in function asst id:", assistant_name)
+
     # retrieve the run so that we can get the response
     run = client.beta.threads.runs.retrieve(
         thread_id=thread.id,
@@ -445,8 +443,10 @@ def chat():
     
     print("answer:", answer) # print the answer in terminal
     return jsonify({'answer': answer}) # return the answer to the frontend
-print("After API call Assistant ID:", assistant_id) # print this after the API call - currently it prints before the API call?
+print("After API call Assistant ID:", assistant_name) # print this after the API call - currently it prints before the API call?
 
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
+
+    # https://medium.com/leniolabs/exploring-openais-apis-assistants-vs-chat-completions-91525f73422c
