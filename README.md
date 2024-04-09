@@ -7,18 +7,29 @@ Documentation can be found here: [https://drug-discovery-backend.readthedocs.io]
 
 ## Installation
 You must have miniconda installed to create the python environment.
-After cloning the repository, install the dependencies with the following commands:
-```
-cd drug-discovery-game-backend
-conda env create -f environment.yml
-```
+Download the and then execute install.sh file into the direcotry you want the drug discovery game to be installed into. To download and run the install.sh file, run the following code in your command terminal:
+
+'''
+
+curl -O https://raw.githubusercontent.com/SABS-Group-2-2021-22/drug-discovery-game-backend/225-adding-installation-file-for-easy-install/install.sh && chmod +x install.sh && ./install.sh
+'''
+This will clone both the backend and front end repositories into a drug-discovery-game repository and install the dependencies.
 
 ## Running the backend locally
 
-This assumes the conda environment has been created and necessary packages installed.
+To run the game, in separate terminals, run 
+'''
+'./run_backend.sh'
+'''
 
-```
-conda activate dd_game
-export FLASK_APP=api/service
-flask run -p 8000
-```
+in the backend directory and 
+
+'''
+'./run_frontend.sh'
+'''
+
+ in the frontend directory. 
+
+
+
+
