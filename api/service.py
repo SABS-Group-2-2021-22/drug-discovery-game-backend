@@ -459,4 +459,3 @@ print("After API call Assistant ID:", assistant_name) # print this after the API
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
 
-    # https://medium.com/leniolabs/exploring-openais-apis-assistants-vs-chat-completions-91525f73422c

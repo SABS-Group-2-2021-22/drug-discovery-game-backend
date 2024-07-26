@@ -1,9 +1,12 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 import requests
+import os
 
 load_dotenv()
-client = OpenAI()
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+
 
 file_response = client.files.create(
     file=open("/Users/sanazkazeminia/Drug_disc_game/drug-discovery-game-backend/r_group_decomp.csv", "rb"),
@@ -55,7 +58,11 @@ assistant_response = client.beta.assistants.create(
                                 When a user says my molecule A01B03 that means = core + A01 + B03.
                                 Be able to return the SMILES string and therefore information about the molecule.""",
         tools=[{"type": "code_interpreter"}],
-        model="gpt-4-turbo-preview"                      
+        model="gpt-4o",
+        temperature=0.2, # deterministic output (do not use with top_p - one or the other.)
+        response_format="auto",
+
+                    
     )
 assistant_id = assistant_response.id
 print("Assistant ID:", assistant_id)
