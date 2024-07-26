@@ -53,9 +53,10 @@ assistant_response = client.beta.assistants.create(
                                 Clearance_mouse = mouse clearance of the molecule
                                 Clearance_human = human clearance
                                 logd
+                                
                                 pampa
                                 docking affinity in autodock.
-                                When a user says my molecule A01B03 that means = core + A01 + B03.
+                                When a user says 'my molecule' A01B03 that means = core + A01 + B03.
                                 Be able to return the SMILES string and therefore information about the molecule.""",
         tools=[{"type": "code_interpreter"}],
         model="gpt-4o",
