@@ -5,8 +5,8 @@
 mkdir Drug-discovery-game
 cd Drug-discovery-game
 
-BACKEND_REPO="git@github.com:SABS-Group-2-2021-22/drug-discovery-game-backend.git"
-FRONTEND_REPO="git@github.com:SABS-Group-2-2021-22/drug-discovery-game-app.git"
+BACKEND_REPO="https://github.com/SABS-Group-2-2021-22/drug-discovery-game-backend.git"
+FRONTEND_REPO="https://github.com/SABS-Group-2-2021-22/drug-discovery-game-app.git"
 
 # Clone repositories
 echo "Cloning repositories..."
