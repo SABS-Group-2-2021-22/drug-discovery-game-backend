@@ -23,21 +23,21 @@ conda env create -f environment.yml
 echo "Creating run_backend.sh..."
 cat <<EOF > run_backend.sh
 #!/bin/bash
-# Activate backend environment and run
 
+# Activate backend environment and run
 # Default set to no
 LLM_FLAG="n"
 
-while [[ "\$#" -gt 0 ]]; do
-    case \$1 in
-        -LLM) LLM_FLAG="\$2"; shift ;;
-        *) echo "Unknown parameter passed: \$1"; exit 1 ;;
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -LLM) LLM_FLAG="$2"; shift ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
 done
 
 # Check the LLM flag
-if [ "\$LLM_FLAG" = "y" ]; then
+if [ "$LLM_FLAG" = "y" ]; then
     echo "Switching to main_LLM branch..."
     git checkout 222-openai-api-integration-BE
 else
@@ -45,7 +45,18 @@ else
     git checkout main
 fi
 
+# Initialize conda
+eval "$(conda shell.bash hook)"
+
+# Activate the environment
 conda activate dd_game
+
+# Check if activation was successful
+if [ $? -ne 0 ]; then
+    echo "Failed to activate Conda environment. Please ensure the environment 'dd_game' exists."
+    exit 1
+fi
+
 export FLASK_APP=api/service
 flask run -p 8000
 EOF
