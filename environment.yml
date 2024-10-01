@@ -4,7 +4,7 @@ channels:
   - defaults
   - rdkit
 dependencies:
-  - python==3.7
+  - python==3.7.12
   - codecov
   - flask
   - flake8

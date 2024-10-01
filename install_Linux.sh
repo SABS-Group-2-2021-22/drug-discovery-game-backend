@@ -46,7 +46,7 @@ else
 fi
 
 # Initialize conda
-eval "$(conda shell.bash hook)"
+eval "\$(conda shell.bash hook)"
 
 # Activate the environment
 conda activate dd_game
