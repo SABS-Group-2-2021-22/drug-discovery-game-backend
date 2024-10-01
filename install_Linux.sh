@@ -28,16 +28,16 @@ cat <<EOF > run_backend.sh
 # Default set to no
 LLM_FLAG="n"
 
-while [[ "$#" -gt 0 ]]; do
-    case $1 in
-        -LLM) LLM_FLAG="$2"; shift ;;
-        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+while [[ "\$#" -gt 0 ]]; do
+    case \$1 in
+        -LLM) LLM_FLAG="\$2"; shift ;;
+        *) echo "Unknown parameter passed: \$1"; exit 1 ;;
     esac
     shift
 done
 
 # Check the LLM flag
-if [ "$LLM_FLAG" = "y" ]; then
+if [ "\$LLM_FLAG" = "y" ]; then
     echo "Switching to main_LLM branch..."
     git checkout 222-openai-api-integration-BE
 else
@@ -52,7 +52,7 @@ eval "$(conda shell.bash hook)"
 conda activate dd_game
 
 # Check if activation was successful
-if [ $? -ne 0 ]; then
+if [ \$? -ne 0 ]; then
     echo "Failed to activate Conda environment. Please ensure the environment 'dd_game' exists."
     exit 1
 fi
