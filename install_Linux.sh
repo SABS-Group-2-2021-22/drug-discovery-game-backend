@@ -16,6 +16,7 @@ git clone $FRONTEND_REPO
 # Setup Backend
 echo "Setting up the backend..."
 cd drug-discovery-game-backend
+git checkout 225-adding-installation-file-for-easy-install
 conda env create -f environment.yml
 
 
